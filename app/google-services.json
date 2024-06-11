@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "858192785417",
+    "project_id": "civicalertoriginal",
+    "storage_bucket": "civicalertoriginal.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858192785417:android:66010e84f19bcaa329c8d8",
+        "android_client_info": {
+          "package_name": "com.example.civicalertoriginal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnpgTzvn6M-m03q_tiPM9DmvUBnlItBck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
