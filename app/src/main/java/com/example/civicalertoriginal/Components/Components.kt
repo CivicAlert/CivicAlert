@@ -47,6 +47,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
@@ -69,13 +70,15 @@ fun LogAndForgotHeader(screenLabel:String) {
 
     }
 }
+
+//Text fields that accept text only
 @Composable
 fun TextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
             placeholder = { Text(text = fieldLabel, color = Color.Green)},
-            keyboardOptions = KeyboardOptions.Default,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)
                 .fillMaxWidth()
@@ -83,8 +86,71 @@ fun TextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
         )
     }
 }
+
+//Text fields that accept Numbers only
 @Composable
-fun BottomButtons( name:String , onClick : ()-> Unit ){
+fun NumberTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+    Column (verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        OutlinedTextField(value = value , onValueChange = onChange,
+            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            textStyle = TextStyle(color = Color.Black ), modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+        )
+    }
+}
+
+//Text fields that accept email only
+@Composable
+fun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+    Column (verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        OutlinedTextField(value = value , onValueChange = onChange,
+            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            textStyle = TextStyle(color = Color.Black ), modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+        )
+    }
+}
+
+@Composable
+fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+    Column (verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
+        OutlinedTextField(value = value , onValueChange = onChange,
+            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            textStyle = TextStyle(color = Color.Black ), modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+        )
+    }
+}
+
+
+@Composable
+fun BottomButtons(name: String, onClick: () -> Unit,){
+    Button(onClick = onClick, shape = ButtonDefaults.shape,
+        colors = ButtonDefaults.buttonColors(Color.Green),
+        modifier = Modifier
+            .width(200.dp)) {
+        Text(text = name, modifier = Modifier
+            .size(80.dp, 30.dp)
+            .padding(start = 17.dp, top = 4.dp)
+            .align(Alignment.CenterVertically),
+            color = Color.Black)
+    }
+}
+
+@Composable
+fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
     Button(onClick = onClick, shape = ButtonDefaults.shape,
         colors = ButtonDefaults.buttonColors(Color.Green),
         modifier = Modifier

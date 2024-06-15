@@ -51,6 +51,7 @@ fun LogIn(navController: NavController) {
             var pass by remember {
                 mutableStateOf("")
             }
+            var isFormValid by remember { mutableStateOf(false) }
 
             TextFields(value =name , onChange = { name = it}, fieldLabel = "Name or Email Address" )
 
@@ -60,7 +61,7 @@ fun LogIn(navController: NavController) {
 
             Spacer(modifier = Modifier.padding(16.dp))
 
-            BottomButtons(name = "LOG IN") {navController.navigate("makeReports")}
+            BottomButtons(name = "LOG IN", {navController.navigate("makeReports")},)
 
             Spacer(modifier = Modifier.padding(6.dp))
 
@@ -77,7 +78,7 @@ fun LogIn(navController: NavController) {
                 Spacer(modifier = Modifier.size(12.dp))
 
                 Text(text = "Register", modifier = Modifier
-                    .clickable {navController.navigate("signUp")}
+                    .clickable { navController.navigate("registration") }
                     .padding(start = 25.dp),
                     style = TextStyle( fontStyle = FontStyle.Normal)
                 )
@@ -92,3 +93,10 @@ fun LogIn(navController: NavController) {
         }
     }
 }
+
+//*@Preview
+//@Composable
+//fun LogInPreview(){
+    //val navController = rememberNavController()
+ //   LogIn(navController = navController)
+//}

@@ -8,14 +8,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Screens.DashBoard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.LogIn
-import com.example.civicalertoriginal.Screens.SignUp
+import com.example.civicalertoriginal.Screens.Registration
+
 
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "logIn") {
-        composable("signUp"){
-            SignUp(navController)
+        composable("registration"){
+            Registration(navController)
         }
         composable("Login"){
             LogIn(navController)
@@ -28,9 +29,6 @@ fun Navigation (){
         }
         composable("makeReports"){
             MakeReports(navController)
-        }
-        composable("logIn"){
-            LogIn(navController)
         }
 
     }

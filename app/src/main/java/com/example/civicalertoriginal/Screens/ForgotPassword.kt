@@ -17,10 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.BottomButtons
 import com.example.civicalertoriginal.Components.InstructionText
 import com.example.civicalertoriginal.Components.LogAndForgotHeader
@@ -53,10 +51,6 @@ fun ForgotPassword (navController: NavController){
             )
 
             // Reset button that navigates to the login screen
-            BottomButtons(name = "RESET") { navController.navigate("logIn")}
-            Text(text = "Go back to LogIn", modifier = Modifier
-                .clickable { navController.navigate("logIn")}
-                .align(Alignment.CenterHorizontally))
 
         }
     }
