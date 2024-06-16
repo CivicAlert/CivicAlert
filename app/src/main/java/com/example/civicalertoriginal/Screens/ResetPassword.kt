@@ -1,6 +1,7 @@
 package com.example.civicalertoriginal.Screens
 
 import android.provider.ContactsContract.CommonDataKinds.Email
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -29,6 +31,7 @@ import com.example.civicalertoriginal.Components.TextFields
 
 @Composable
 fun ForgotPassword (navController: NavController){
+    val context = LocalContext.current
     var email by remember {
         mutableStateOf("")
     }
@@ -53,9 +56,8 @@ fun ForgotPassword (navController: NavController){
             
             Spacer(modifier = Modifier.size(10.dp))
             
-            BottomButtons(name = "Back to Login") {
-
-            }
+            BottomButtons(name = "Back to Login") { Toast.makeText(context,"Email has been sent to $email",Toast.LENGTH_SHORT).show()
+            navController.navigate("logIn")}
             
 
         }

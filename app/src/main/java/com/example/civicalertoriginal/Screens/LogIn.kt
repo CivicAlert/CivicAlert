@@ -1,5 +1,6 @@
 package com.example.civicalertoriginal.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -51,27 +53,22 @@ fun LogIn(navController: NavController) {
 
         ){
          LogAndForgotHeader(screenLabel = "Login")
+            val context = LocalContext.current
 
             Spacer(modifier = Modifier.size(40.dp))
             var email by remember { mutableStateOf("") }
             var password by remember {mutableStateOf("")}
-            var checkDetails by remember { mutableStateOf("false")}
-            val validateForm = {
-                checkDetails = (email.all { it.isLetter() } && email.length <= 50 &&
-                        password.all { it.isLetter() } && password.length <= 50).toString()
-            }
 
 
             Spacer(modifier = Modifier.padding(16.dp))
-            EmailTextFields(value = email, onChange = {if (it.length<=100&& it.all { it.isLetter() }){
-                email = it
-            } },
+            EmailTextFields(value = email, onChange = {
+                email = it },
                 fieldLabel = "Enter Email Address" )
 
             Spacer(modifier = Modifier.size(10.dp))
-            PasswordTextFields(value = password, onChange = { if (it.length<=100 && it.all {it.isLetter() }){
+            PasswordTextFields(value = password, onChange = {
                 password=it
-            } },
+             },
                 fieldLabel = "Enter your password")
 
             Spacer(modifier = Modifier.padding(6.dp))
@@ -103,7 +100,13 @@ fun LogIn(navController: NavController) {
                     .size(50.dp,55.dp),painter = painterResource(id = R.drawable.googlepic),
                     contentDescription = "Google SignIn" )
             Spacer(modifier = Modifier.size(18.dp))
-            BottomButtons(name = "Sign In") { navController.navigate("Dashboard")}
+            if (email.length<=100 && email.all {it.isLetter() && password.length<=100&& email.all { it.isLetter() }}){
+                BottomButtons(name = "Sign In") { navController.navigate("Dashboard")}
+            }
+            else
+                Text(text = "You ave inserted incorrect details")
+                Toast.makeText(context,"Check the entered details if are correct",Toast.LENGTH_SHORT)
+
 
         }
     }
