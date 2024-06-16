@@ -179,7 +179,7 @@ fun BottomButtons(name: String, onClick: () -> Unit,){
 
 @Composable
 fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
-    Button(onClick = onClick, shape = ButtonDefaults.shape,
+    Button(onClick = onClick, enabled = enabled, shape = ButtonDefaults.shape,
         colors = ButtonDefaults.buttonColors(Color.Green),
         modifier = Modifier
             .width(200.dp)) {
