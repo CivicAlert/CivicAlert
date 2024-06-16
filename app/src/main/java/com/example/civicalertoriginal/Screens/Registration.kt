@@ -1,5 +1,6 @@
 package com.example.civicalertoriginal.Screens
 
+import android.util.Patterns
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,37 +36,43 @@ import com.example.civicalertoriginal.Components.NumberTextFields
 import com.example.civicalertoriginal.Components.PasswordTextFields
 import com.example.civicalertoriginal.Components.SignUpText
 import com.example.civicalertoriginal.Components.TextFields
-import com.google.firebase.Firebase
-import com.google.firebase.database.database
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 @Composable
-fun Registration (navController: NavController){
+fun Registration(navController: NavController) {
 
     val database = Firebase.database
     val myRef = database.getReference()
     val context = LocalContext.current
     val scrollable = rememberScrollState()
 
-    //Variables needed for user registration
+    // Variables needed for user registration
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var passwordsMatch by remember { mutableStateOf(true) }
     var isFormValid by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var registrationMessage by remember { mutableStateOf("") }
 
+    // Character limit in text fields
+    val maxName = 50
+    val maxEmail = 100
+    val maxNumber = 10
+    val maxPassword = 100
 
-    //validate entered details
-    val validateForm = {
-        isFormValid = firstName.all { it.isLetter() } && firstName.length <= 50 &&
-                lastName.all { it.isLetter() } && lastName.length <= 50 &&
-                email.length <= 100 &&
-                phoneNumber.all { it.isDigit() } && phoneNumber.length == 10 &&
-                password.length <= 100 &&
-                confirmPassword == password
+    // Validate entered details
+    fun validateForm() {
+        isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&
+                lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&
+                email.isNotEmpty() && email.length <= maxEmail &&
+                phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&
+                password.isNotEmpty() && password.length <= maxPassword &&
+                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
 
     Surface {
@@ -87,44 +93,66 @@ fun Registration (navController: NavController){
 
             TextFields(value = firstName,
                 onChange = {
-                    firstName = it
-                    validateForm()
+                    if (it.length <= maxName) {
+                        firstName = it
+                        validateForm()
+                    }
                 }, fieldLabel = "First name"
             )
 
             TextFields(value = lastName,
                 onChange = {
-                    lastName = it
-                    validateForm()
-                }, fieldLabel = " Last name"
+                    if (it.length <= maxName) {
+                        lastName = it
+                        validateForm()
+                    }
+                }, fieldLabel = "Last name"
             )
 
             EmailTextFields(value = email,
                 onChange = {
-                    email = it
-                    validateForm()
+                    if (it.length <= maxEmail) {
+                        email = it
+                        validateForm()
+                    }
                 },
-                fieldLabel = "Email Address")
+                fieldLabel = "Email Address"
+            )
 
             NumberTextFields(value = phoneNumber,
                 onChange = {
-                    phoneNumber = it
-                    validateForm()
-                }, fieldLabel = "Phone number")
+                    if (it.length <= maxNumber) {
+                        phoneNumber = it
+                        validateForm()
+                    }
+                }, fieldLabel = "Phone number"
+            )
 
             PasswordTextFields(value = password,
                 onChange = {
-                    password = it
-                    validateForm()
-                }, fieldLabel = " Password"
+                    if (it.length <= maxPassword) {
+                        password = it
+                        passwordsMatch = confirmPassword == password
+                        validateForm()
+                    }
+                }, fieldLabel = "Password"
             )
 
             PasswordTextFields(value = confirmPassword,
                 onChange = {
-                    confirmPassword = it
-                    validateForm()
+                    if (it.length <= maxPassword) {
+                        confirmPassword = it
+                       passwordsMatch = confirmPassword == password
+                        validateForm()
+                    }
                 }, fieldLabel = "Confirm password"
             )
+            if (!passwordsMatch) {
+                Text(
+                    text = "Passwords do not match",
+                    color = Color.Red
+                )
+            }
 
             Row {
                 SignUpText(value = "Do you give us permission to use your details for marketing purposes")
@@ -146,7 +174,7 @@ fun Registration (navController: NavController){
                 title = { Text("Confirm Registration") },
                 text = { Text("Are you sure you want to register with these details?") },
                 confirmButton = {
-                    Button( modifier = Modifier.padding(start = 20.dp)
+                    Button(modifier = Modifier.padding(start = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
@@ -160,7 +188,7 @@ fun Registration (navController: NavController){
                     }
                 },
                 dismissButton = {
-                    Button( modifier = Modifier.padding(end = 20.dp)
+                    Button(modifier = Modifier.padding(end = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = { showDialog = false }) {
@@ -170,13 +198,31 @@ fun Registration (navController: NavController){
                 }
             )
         }
+
+        if (registrationMessage.isNotEmpty()) {
+            AlertDialog(
+                onDismissRequest = { registrationMessage = "" },
+                title = { Text("Registration") },
+                text = { Text(registrationMessage) },
+                confirmButton = {
+                    Button(colors = ButtonDefaults.buttonColors(Color.Green),
+                        onClick = {
+                            registrationMessage = ""
+                            // Navigate to login page
+                        }
+                    ) {
+                        Text("OK",
+                            color = Color.Black)
+                    }
+                }
+            )
+        }
     }
 }
 
-
 @Preview
 @Composable
-fun RegistrationPreview(){
+fun RegistrationPreview() {
     val navController = rememberNavController()
-    Registration( navController)
+    Registration(navController)
 }

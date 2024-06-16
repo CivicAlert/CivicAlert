@@ -28,6 +28,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -48,9 +49,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
+
+
+
 
 @Composable
 fun LogAndForgotHeader(screenLabel:String) {
@@ -121,10 +127,32 @@ fun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
 
 @Composable
 fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+
+    var passwordVisibility by remember { mutableStateOf(false) }
+    val icon = if(passwordVisibility )
+        painterResource(id = R.drawable.eye)
+    else
+        painterResource(id = R.drawable.hidden)
+
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
-        OutlinedTextField(value = value , onValueChange = onChange,
+        OutlinedTextField(value = value ,
+            onValueChange = onChange,
+            supportingText = {
+                Text(text = "Passwords must match")},
             placeholder = { Text(text = fieldLabel, color = Color.Green)},
+
+
+            trailingIcon = {
+                           IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                               Icon(painter = icon, contentDescription ="",
+                                   modifier = Modifier.size(16.dp,16.dp))
+                               
+                           }
+
+            }, visualTransformation = if (passwordVisibility) VisualTransformation.None
+            else PasswordVisualTransformation(),
+
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)
@@ -164,12 +192,12 @@ fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
 }
 @Composable
 fun SignUpText(value: String){
-    Row ( modifier = Modifier.padding(10.dp)){
+    Row ( modifier = Modifier.padding(2.dp)){
         var state by remember { mutableStateOf("") }
         Text(text = value, modifier = Modifier
         )
 
-        Checkbox(checked = false, onCheckedChange = {}, enabled = true, modifier = Modifier
+        Checkbox(checked = false, onCheckedChange = { }, enabled = true, modifier = Modifier
             .size(20.dp)
             .padding(end = 16.dp, start = 12.dp)
 
