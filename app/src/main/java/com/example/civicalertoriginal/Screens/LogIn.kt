@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,13 +23,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.BottomButtons
+import com.example.civicalertoriginal.Components.EmailTextFields
 import com.example.civicalertoriginal.Components.InstructionText
 import com.example.civicalertoriginal.Components.LogAndForgotHeader
+import com.example.civicalertoriginal.Components.PasswordTextFields
 import com.example.civicalertoriginal.Components.TextFields
+import com.example.civicalertoriginal.Components.ValidateEmail
 import com.example.civicalertoriginal.R
+import java.util.regex.Pattern
 
 @Composable
 fun LogIn(navController: NavController) {
@@ -45,25 +53,29 @@ fun LogIn(navController: NavController) {
          LogAndForgotHeader(screenLabel = "Login")
 
             Spacer(modifier = Modifier.size(40.dp))
-            var name by remember {
-                mutableStateOf("")
+            var email by remember { mutableStateOf("") }
+            var password by remember {mutableStateOf("")}
+            var checkDetails by remember { mutableStateOf("false")}
+            val validateForm = {
+                checkDetails = (email.all { it.isLetter() } && email.length <= 50 &&
+                        password.all { it.isLetter() } && password.length <= 50).toString()
             }
-            var pass by remember {
-                mutableStateOf("")
-            }
-            var isFormValid by remember { mutableStateOf(false) }
 
-            TextFields(value =name , onChange = { name = it}, fieldLabel = "Name or Email Address" )
-
-            Spacer(modifier = Modifier.size(20.dp))
-
-            TextFields(value = pass, onChange ={pass=it} , fieldLabel = "Password")
 
             Spacer(modifier = Modifier.padding(16.dp))
+            EmailTextFields(value = email, onChange = {if (it.length<=100&& it.all { it.isLetter() }){
+                email = it
+            } },
+                fieldLabel = "Enter Email Address" )
 
-            BottomButtons(name = "LOG IN", {navController.navigate("makeReports")},)
+            Spacer(modifier = Modifier.size(10.dp))
+            PasswordTextFields(value = password, onChange = { if (it.length<=100 && it.all {it.isLetter() }){
+                password=it
+            } },
+                fieldLabel = "Enter your password")
 
             Spacer(modifier = Modifier.padding(6.dp))
+            //ValidateEmail(email = email, password = password)
 
             Row( verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceBetween,) {
@@ -90,13 +102,16 @@ fun LogIn(navController: NavController) {
                 Image( modifier = Modifier
                     .size(50.dp,55.dp),painter = painterResource(id = R.drawable.googlepic),
                     contentDescription = "Google SignIn" )
+            Spacer(modifier = Modifier.size(18.dp))
+            BottomButtons(name = "Sign In") { navController.navigate("Dashboard")}
+
         }
     }
 }
 
-//*@Preview
-//@Composable
-//fun LogInPreview(){
-    //val navController = rememberNavController()
- //   LogIn(navController = navController)
-//}
+@Preview
+@Composable
+fun LogInPreview(){
+    val navController = rememberNavController()
+    LogIn( navController)
+}

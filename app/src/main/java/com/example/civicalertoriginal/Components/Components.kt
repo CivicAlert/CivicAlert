@@ -1,3 +1,5 @@
+@file:Suppress("UNREACHABLE_CODE")
+
 package com.example.civicalertoriginal.Components
 
 import android.widget.Toast
@@ -51,6 +53,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
+import java.util.regex.Pattern
 
 @Composable
 fun LogAndForgotHeader(screenLabel:String) {
@@ -105,7 +108,7 @@ fun NumberTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
 
 //Text fields that accept email only
 @Composable
-fun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+fun EmailTextFields(value:String, onChange: (String)->Unit, fieldLabel:String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -120,7 +123,7 @@ fun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
 }
 
 @Composable
-fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+fun PasswordTextFields(value:String, onChange:(String)->Unit, fieldLabel:String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -334,6 +337,19 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
             .align(Alignment.CenterVertically),
             color = Color.Black)
     }
+}
+@Composable
+fun ValidateEmail(email: String, password :String): Any {
+    val emailPattern = Pattern.compile("^[a-zA-Z]{1,100}$")
+    val passwordPattern = Pattern.compile("^[a-zA-Z]{1,100}$")
+    if (email.length<100 && emailPattern.matcher(email).matches() && password.length<100
+        &&passwordPattern.matcher(email).matches()){
+        return Text(text = "Login Successful")
+    }
+    else{
+        return "Provided details are incorrect"
+    }
+    return "login Successful"
 }
 
 
