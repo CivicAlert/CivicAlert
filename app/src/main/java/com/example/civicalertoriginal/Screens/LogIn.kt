@@ -25,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -35,10 +34,9 @@ import com.example.civicalertoriginal.Components.EmailTextFields
 import com.example.civicalertoriginal.Components.InstructionText
 import com.example.civicalertoriginal.Components.LogAndForgotHeader
 import com.example.civicalertoriginal.Components.PasswordTextFields
-import com.example.civicalertoriginal.Components.TextFields
-import com.example.civicalertoriginal.Components.ValidateEmail
+
 import com.example.civicalertoriginal.R
-import java.util.regex.Pattern
+
 
 @Composable
 fun LogIn(navController: NavController) {

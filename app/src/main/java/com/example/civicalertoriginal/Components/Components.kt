@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,11 +26,14 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -50,6 +54,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
@@ -338,18 +343,25 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
             color = Color.Black)
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ValidateEmail(email: String, password :String): Any {
-    val emailPattern = Pattern.compile("^[a-zA-Z]{1,100}$")
-    val passwordPattern = Pattern.compile("^[a-zA-Z]{1,100}$")
-    if (email.length<100 && emailPattern.matcher(email).matches() && password.length<100
-        &&passwordPattern.matcher(email).matches()){
-        return Text(text = "Login Successful")
+fun Cards( value: String,){
+    Card(modifier = Modifier.size(250.dp)
+        .padding(16.dp), shape =  RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Green), elevation =
+            CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Text(text = value, modifier = Modifier.fillMaxSize(),
+            style = MaterialTheme.typography.headlineMedium.copy(
+                color = Color.Black,
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Justify
+            )
+        )
+
+
     }
-    else{
-        return "Provided details are incorrect"
-    }
-    return "login Successful"
 }
 
 
