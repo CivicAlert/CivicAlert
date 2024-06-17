@@ -70,7 +70,6 @@ fun LogIn(navController: NavController) {
                 fieldLabel = "Enter your password")
 
             Spacer(modifier = Modifier.padding(6.dp))
-            //ValidateEmail(email = email, password = password)
 
             Row( verticalAlignment = Alignment.Bottom,
                 horizontalArrangement = Arrangement.SpaceBetween,) {
