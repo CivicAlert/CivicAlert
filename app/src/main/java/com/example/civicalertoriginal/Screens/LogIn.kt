@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.example.civicalertoriginal.Components.BottomButtons
 import com.example.civicalertoriginal.Components.InstructionText
 import com.example.civicalertoriginal.Components.LogAndForgotHeader
+import com.example.civicalertoriginal.Components.PasswordTextFields
 import com.example.civicalertoriginal.Components.TextFields
 import com.example.civicalertoriginal.R
 
@@ -57,7 +58,7 @@ fun LogIn(navController: NavController) {
 
             Spacer(modifier = Modifier.size(20.dp))
 
-            TextFields(value = pass, onChange ={pass=it} , fieldLabel = "Password")
+            PasswordTextFields(value = pass, onChange ={pass=it} , fieldLabel = "Password")
 
             Spacer(modifier = Modifier.padding(16.dp))
 

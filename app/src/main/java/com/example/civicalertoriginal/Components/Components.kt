@@ -146,7 +146,7 @@ fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
             trailingIcon = {
                            IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
                                Icon(painter = icon, contentDescription ="",
-                                   modifier = Modifier.size(16.dp,16.dp))
+                                   modifier = Modifier.size(20.dp,20.dp))
                                
                            }
 
