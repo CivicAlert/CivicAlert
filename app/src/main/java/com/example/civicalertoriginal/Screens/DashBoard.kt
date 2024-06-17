@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.civicalertoriginal.Components.Cards
+
 import com.example.civicalertoriginal.R
 
 
@@ -63,12 +63,7 @@ fun DashBoard(navController: NavController) {
            }
         }, content = { innerPadding ->
             Column {
-                Cards(value = "View all new reports")
-                Row {
-                    Cards(value = "REPORT AN INCIDENT")
-                    Cards(value = "EMERGENCY CONTACTS")
-                }
-                Cards(value = "HELP & SUPPORT")
+
             }
         }
         )
