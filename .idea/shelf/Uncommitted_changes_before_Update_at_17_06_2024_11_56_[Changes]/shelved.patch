@@ -1,0 +1,461 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Components.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@file:Suppress(\"UNREACHABLE_CODE\")\r\n\r\npackage com.example.civicalertoriginal.Components\r\n\r\nimport android.widget.Toast\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.layout.wrapContentSize\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.foundation.text.KeyboardOptions\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.Info\r\nimport androidx.compose.material.icons.filled.LocationOn\r\nimport androidx.compose.material.icons.filled.Person\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ButtonDefaults\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.CardDefaults\r\nimport androidx.compose.material3.Checkbox\r\nimport androidx.compose.material3.DropdownMenuItem\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.ExposedDropdownMenuDefaults\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.OutlinedTextField\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextField\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.TextStyle\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport androidx.compose.ui.text.font.FontSynthesis\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.input.KeyboardType\r\nimport androidx.compose.ui.text.style.TextAlign\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport com.example.civicalertoriginal.R\r\nimport java.util.regex.Pattern\r\n\r\n@Composable\r\nfun LogAndForgotHeader(screenLabel:String) {\r\n    Column ( modifier = Modifier.fillMaxWidth(),\r\n        horizontalAlignment = Alignment.CenterHorizontally)\r\n    {\r\n        Image(painter = painterResource(id = R.drawable.logo),\r\n            contentDescription = \"Picture Logo\", modifier = Modifier.size(150.dp, 150.dp))\r\n        Spacer(modifier = Modifier.size(5.dp))\r\n        Text(text = screenLabel , modifier = Modifier\r\n            .align(Alignment.CenterHorizontally)\r\n            .wrapContentSize(),\r\n            style = TextStyle( color = Color.Black,\r\n                fontStyle = FontStyle.Normal,\r\n                fontSize = 20.sp)\r\n        )\r\n\r\n    }\r\n}\r\n\r\n//Text fields that accept text only\r\n@Composable\r\nfun TextFields(value:String,onChange:(String)->Unit,fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n//Text fields that accept Numbers only\r\n@Composable\r\nfun NumberTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n//Text fields that accept email only\r\n@Composable\r\nfun EmailTextFields(value:String, onChange: (String)->Unit, fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n@Composable\r\nfun PasswordTextFields(value:String, onChange:(String)->Unit, fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n\r\n@Composable\r\nfun BottomButtons(name: String, onClick: () -> Unit,){\r\n    Button(onClick = onClick, shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(200.dp)) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n\r\n@Composable\r\nfun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){\r\n    Button(onClick = onClick, shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(200.dp)) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n@Composable\r\nfun SignUpText(value: String){\r\n    Row ( modifier = Modifier.padding(10.dp)){\r\n        var state by remember { mutableStateOf(\"\") }\r\n        Text(text = value, modifier = Modifier\r\n        )\r\n\r\n        Checkbox(checked = false, onCheckedChange = {}, enabled = true, modifier = Modifier\r\n            .size(20.dp)\r\n            .padding(end = 16.dp, start = 12.dp)\r\n\r\n            .clip(RoundedCornerShape(50.dp))\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun InstructionText(value: String){\r\n    Text(\r\n        text = value,\r\n        style = TextStyle(\r\n            fontStyle = FontStyle.Normal,\r\n            fontSize = 15.sp,\r\n            color = Color.Black\r\n        )\r\n    )\r\n}\r\n@Composable\r\nfun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            trailingIcon = {\r\n                Icon(\r\n                    modifier = Modifier\r\n                        .size(35.dp, 35.dp)\r\n                        .clickable { },\r\n                    imageVector = Icons.Default.LocationOn,\r\n                    contentDescription = \"Location Icon\"\r\n                ) },\r\n            keyboardOptions = KeyboardOptions.Default,\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun ReportDescriptionText(value1: String, value:String){\r\n    Column {\r\n\r\n        Text(text = value1, style = TextStyle(\r\n            fontFamily = FontFamily.SansSerif,\r\n            fontSize = 20.sp, fontWeight = FontWeight.Bold,\r\n            fontSynthesis = FontSynthesis.All\r\n        )\r\n        )\r\n        Text(text = value, style = TextStyle(\r\n            fontFamily = FontFamily.Default,\r\n            fontSize = 16.sp,\r\n            fontWeight = FontWeight.Light,\r\n        )\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun PictureTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            trailingIcon = {\r\n                Icon(\r\n                    modifier = Modifier\r\n                        .size(35.dp, 35.dp)\r\n                        .clickable { },\r\n                    imageVector = Icons.Default.Person,\r\n                    contentDescription = \"Location Icon\"\r\n                ) },\r\n            keyboardOptions = KeyboardOptions.Default,\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            trailingIcon = {\r\n                Icon(\r\n                    modifier = Modifier\r\n                        .size(35.dp, 35.dp)\r\n                        .clickable { },\r\n                    imageVector = Icons.Default.Info,\r\n                    contentDescription = \"Location Icon\"\r\n                ) },\r\n            keyboardOptions = KeyboardOptions.Default,\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun ExposedDropdownMenuBox() {\r\n    val context = LocalContext.current\r\n    val Incidents= arrayOf(\"Water\", \"Electricity\", \"Pothole\", \"Other\")\r\n    var expanded by remember { mutableStateOf(false) }\r\n    var selectedText by remember { mutableStateOf(Incidents[0]) }\r\n\r\n    Box(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n\r\n    ) {\r\n        androidx.compose.material3.ExposedDropdownMenuBox(\r\n            expanded = expanded,\r\n            onExpandedChange = {\r\n                expanded = !expanded\r\n            }\r\n        ) {\r\n            TextField(\r\n                value = selectedText,\r\n                onValueChange = {},\r\n                readOnly = true,\r\n                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },\r\n                modifier = Modifier\r\n                    .menuAnchor()\r\n                    .fillMaxWidth()\r\n            )\r\n\r\n            ExposedDropdownMenu(\r\n                expanded = expanded,\r\n                onDismissRequest = { expanded = false }\r\n            ) {\r\n                Incidents.forEach { item ->\r\n                    DropdownMenuItem(\r\n                        text = { Text(text = item) },\r\n                        onClick = {\r\n                            selectedText = item\r\n                            expanded = false\r\n                            Toast.makeText(context, item, Toast.LENGTH_SHORT).show()\r\n                        }\r\n                    )\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun SignUpBottomButtons( name:String , onClick : ()-> Unit ){\r\n    Button(\r\n        onClick = onClick,\r\n        shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(200.dp)\r\n    ) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun Cards( value: String,){\r\n    Card(modifier = Modifier.size(250.dp)\r\n        .padding(16.dp), shape =  RoundedCornerShape(16.dp),\r\n        colors = CardDefaults.cardColors(containerColor = Color.Green), elevation =\r\n            CardDefaults.cardElevation(defaultElevation = 8.dp)\r\n    ) {\r\n        Text(text = value, modifier = Modifier.fillMaxSize(),\r\n            style = MaterialTheme.typography.headlineMedium.copy(\r\n                color = Color.Black,\r\n                fontSize = 25.sp,\r\n                fontWeight = FontWeight.Bold,\r\n                textAlign = TextAlign.Justify\r\n            )\r\n        )\r\n\r\n\r\n    }\r\n}\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt	(revision af341019ea88947a515ba21d522ae56d55d3c8a3)
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt	(date 1718618038533)
+@@ -1,5 +1,3 @@
+-@file:Suppress("UNREACHABLE_CODE")
+-
+ package com.example.civicalertoriginal.Components
+ 
+ import android.widget.Toast
+@@ -11,7 +9,6 @@
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Row
+ import androidx.compose.foundation.layout.Spacer
+-import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.fillMaxWidth
+ import androidx.compose.foundation.layout.height
+ import androidx.compose.foundation.layout.padding
+@@ -26,14 +23,11 @@
+ import androidx.compose.material.icons.filled.Person
+ import androidx.compose.material3.Button
+ import androidx.compose.material3.ButtonDefaults
+-import androidx.compose.material3.Card
+-import androidx.compose.material3.CardDefaults
+ import androidx.compose.material3.Checkbox
+ import androidx.compose.material3.DropdownMenuItem
+ import androidx.compose.material3.ExperimentalMaterial3Api
+ import androidx.compose.material3.ExposedDropdownMenuDefaults
+ import androidx.compose.material3.Icon
+-import androidx.compose.material3.MaterialTheme
+ import androidx.compose.material3.OutlinedTextField
+ import androidx.compose.material3.Text
+ import androidx.compose.material3.TextField
+@@ -54,11 +48,9 @@
+ import androidx.compose.ui.text.font.FontSynthesis
+ import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.text.input.KeyboardType
+-import androidx.compose.ui.text.style.TextAlign
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
+ import com.example.civicalertoriginal.R
+-import java.util.regex.Pattern
+ 
+ @Composable
+ fun LogAndForgotHeader(screenLabel:String) {
+@@ -113,7 +105,7 @@
+ 
+ //Text fields that accept email only
+ @Composable
+-fun EmailTextFields(value:String, onChange: (String)->Unit, fieldLabel:String){
++fun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+     Column (verticalArrangement = Arrangement.Center,
+         horizontalAlignment = Alignment.CenterHorizontally){
+         OutlinedTextField(value = value , onValueChange = onChange,
+@@ -128,7 +120,7 @@
+ }
+ 
+ @Composable
+-fun PasswordTextFields(value:String, onChange:(String)->Unit, fieldLabel:String){
++fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+     Column (verticalArrangement = Arrangement.Center,
+         horizontalAlignment = Alignment.CenterHorizontally){
+         OutlinedTextField(value = value , onValueChange = onChange,
+@@ -343,26 +335,6 @@
+             color = Color.Black)
+     }
+ }
+-@OptIn(ExperimentalMaterial3Api::class)
+-@Composable
+-fun Cards( value: String,){
+-    Card(modifier = Modifier.size(250.dp)
+-        .padding(16.dp), shape =  RoundedCornerShape(16.dp),
+-        colors = CardDefaults.cardColors(containerColor = Color.Green), elevation =
+-            CardDefaults.cardElevation(defaultElevation = 8.dp)
+-    ) {
+-        Text(text = value, modifier = Modifier.fillMaxSize(),
+-            style = MaterialTheme.typography.headlineMedium.copy(
+-                color = Color.Black,
+-                fontSize = 25.sp,
+-                fontWeight = FontWeight.Bold,
+-                textAlign = TextAlign.Justify
+-            )
+-        )
+-
+-
+-    }
+-}
+ 
+ 
+ 
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.jetbrains.kotlin.android)\r\n    alias(libs.plugins.google.gms.google.services)\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.example.civicalertoriginal\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.example.civicalertoriginal\"\r\n        minSdk = 24\r\n        targetSdk = 34\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n        vectorDrawables {\r\n            useSupportLibrary = true\r\n        }\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n    composeOptions {\r\n        kotlinCompilerExtensionVersion = \"1.5.1\"\r\n    }\r\n    packaging {\r\n        resources {\r\n            excludes += \"/META-INF/{AL2.0,LGPL2.1}\"\r\n        }\r\n    }\r\n}\r\n\r\ndependencies {\r\n\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    implementation(libs.firebase.common.ktx)\r\n    implementation(libs.androidx.navigation.compose)\r\n    implementation(libs.firebase.database)\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision af341019ea88947a515ba21d522ae56d55d3c8a3)
++++ b/app/build.gradle.kts	(date 1718618015965)
+@@ -51,7 +51,6 @@
+ }
+ 
+ dependencies {
+-
+     implementation(libs.androidx.core.ktx)
+     implementation(libs.androidx.lifecycle.runtime.ktx)
+     implementation(libs.androidx.activity.compose)
+@@ -70,4 +69,4 @@
+     androidTestImplementation(libs.androidx.ui.test.junit4)
+     debugImplementation(libs.androidx.ui.tooling)
+     debugImplementation(libs.androidx.ui.test.manifest)
+-}
+\ No newline at end of file
++}
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material3.AlertDialog\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ButtonColors\r\nimport androidx.compose.material3.ButtonDefaults\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.EmailTextFields\r\nimport com.example.civicalertoriginal.Components.InstructionText\r\nimport com.example.civicalertoriginal.Components.LogBottomButtons\r\nimport com.example.civicalertoriginal.Components.NumberTextFields\r\nimport com.example.civicalertoriginal.Components.PasswordTextFields\r\nimport com.example.civicalertoriginal.Components.SignUpText\r\nimport com.example.civicalertoriginal.Components.TextFields\r\nimport com.google.firebase.Firebase\r\nimport com.google.firebase.database.database\r\n\r\n@Composable\r\nfun Registration (navController: NavController){\r\n\r\n    val database = Firebase.database\r\n    val myRef = database.getReference()\r\n    val context = LocalContext.current\r\n    val scrollable = rememberScrollState()\r\n\r\n    //Variables needed for user registration\r\n    var firstName by remember { mutableStateOf(\"\") }\r\n    var lastName by remember { mutableStateOf(\"\") }\r\n    var email by remember { mutableStateOf(\"\") }\r\n    var phoneNumber by remember { mutableStateOf(\"\") }\r\n    var password by remember { mutableStateOf(\"\") }\r\n    var confirmPassword by remember { mutableStateOf(\"\") }\r\n    var isFormValid by remember { mutableStateOf(false) }\r\n    var showDialog by remember { mutableStateOf(false) }\r\n    var registrationMessage by remember { mutableStateOf(\"\") }\r\n\r\n\r\n    //validate entered details\r\n    val validateForm = {\r\n        isFormValid = firstName.all { it.isLetter() } && firstName.length <= 50 &&\r\n                lastName.all { it.isLetter() } && lastName.length <= 50 &&\r\n                email.length <= 100 &&\r\n                phoneNumber.all { it.isDigit() } && phoneNumber.length == 10 &&\r\n                password.length <= 100 &&\r\n                confirmPassword == password\r\n    }\r\n\r\n    Surface {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(20.dp)\r\n                .verticalScroll(scrollable),\r\n            verticalArrangement = Arrangement.spacedBy(18.dp),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            InstructionText(value = \"Sign Up\")\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            TextFields(value = firstName,\r\n                onChange = {\r\n                    firstName = it\r\n                    validateForm()\r\n                }, fieldLabel = \"First name\"\r\n            )\r\n\r\n            TextFields(value = lastName,\r\n                onChange = {\r\n                    lastName = it\r\n                    validateForm()\r\n                }, fieldLabel = \" Last name\"\r\n            )\r\n\r\n            EmailTextFields(value = email,\r\n                onChange = {\r\n                    email = it\r\n                    validateForm()\r\n                },\r\n                fieldLabel = \"Email Address\")\r\n\r\n            NumberTextFields(value = phoneNumber,\r\n                onChange = {\r\n                    phoneNumber = it\r\n                    validateForm()\r\n                }, fieldLabel = \"Phone number\")\r\n\r\n            PasswordTextFields(value = password,\r\n                onChange = {\r\n                    password = it\r\n                    validateForm()\r\n                }, fieldLabel = \" Password\"\r\n            )\r\n\r\n            PasswordTextFields(value = confirmPassword,\r\n                onChange = {\r\n                    confirmPassword = it\r\n                    validateForm()\r\n                }, fieldLabel = \"Confirm password\"\r\n            )\r\n\r\n            Row {\r\n                SignUpText(value = \"Do you give us permission to use your details for marketing purposes\")\r\n            }\r\n            Row {\r\n                SignUpText(value = \"Do you agree to Term & Conditions of the app\")\r\n            }\r\n\r\n            LogBottomButtons(\r\n                name = \"Register\",\r\n                onClick = { showDialog = true },\r\n                enabled = isFormValid\r\n            )\r\n\r\n        }\r\n        if (showDialog) {\r\n            AlertDialog(\r\n                onDismissRequest = { showDialog = false },\r\n                title = { Text(\"Confirm Registration\") },\r\n                text = { Text(\"Are you sure you want to register with these details?\") },\r\n                confirmButton = {\r\n                    Button( modifier = Modifier.padding(start = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            // method to save data to database\r\n                            registrationMessage = \"Successfully registered!\"\r\n                            showDialog = false\r\n                        }\r\n                    ) {\r\n                        Text(\"Confirm\",\r\n                            color = Color.Black)\r\n                    }\r\n                },\r\n                dismissButton = {\r\n                    Button( modifier = Modifier.padding(end = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = { showDialog = false }) {\r\n                        Text(\"Cancel\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n    }\r\n}\r\n\r\n\r\n@Preview\r\n@Composable\r\nfun RegistrationPreview(){\r\n    val navController = rememberNavController()\r\n    Registration( navController)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(revision af341019ea88947a515ba21d522ae56d55d3c8a3)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(date 1718618015969)
+@@ -1,5 +1,6 @@
+ package com.example.civicalertoriginal.Screens
+ 
++import android.util.Patterns
+ import androidx.compose.foundation.layout.Arrangement
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Row
+@@ -12,7 +13,6 @@
+ import androidx.compose.foundation.verticalScroll
+ import androidx.compose.material3.AlertDialog
+ import androidx.compose.material3.Button
+-import androidx.compose.material3.ButtonColors
+ import androidx.compose.material3.ButtonDefaults
+ import androidx.compose.material3.Surface
+ import androidx.compose.material3.Text
+@@ -36,37 +36,43 @@
+ import com.example.civicalertoriginal.Components.PasswordTextFields
+ import com.example.civicalertoriginal.Components.SignUpText
+ import com.example.civicalertoriginal.Components.TextFields
+-import com.google.firebase.Firebase
+-import com.google.firebase.database.database
++import com.google.firebase.database.ktx.database
++import com.google.firebase.ktx.Firebase
+ 
+ @Composable
+-fun Registration (navController: NavController){
++fun Registration(navController: NavController) {
+ 
+     val database = Firebase.database
+     val myRef = database.getReference()
+     val context = LocalContext.current
+     val scrollable = rememberScrollState()
+ 
+-    //Variables needed for user registration
++    // Variables needed for user registration
+     var firstName by remember { mutableStateOf("") }
+     var lastName by remember { mutableStateOf("") }
+     var email by remember { mutableStateOf("") }
+     var phoneNumber by remember { mutableStateOf("") }
+     var password by remember { mutableStateOf("") }
+     var confirmPassword by remember { mutableStateOf("") }
++    var passwordsMatch by remember { mutableStateOf(true) }
+     var isFormValid by remember { mutableStateOf(false) }
+     var showDialog by remember { mutableStateOf(false) }
+     var registrationMessage by remember { mutableStateOf("") }
+ 
++    // Character limit in text fields
++    val maxName = 50
++    val maxEmail = 100
++    val maxNumber = 10
++    val maxPassword = 100
+ 
+-    //validate entered details
+-    val validateForm = {
+-        isFormValid = firstName.all { it.isLetter() } && firstName.length <= 50 &&
+-                lastName.all { it.isLetter() } && lastName.length <= 50 &&
+-                email.length <= 100 &&
+-                phoneNumber.all { it.isDigit() } && phoneNumber.length == 10 &&
+-                password.length <= 100 &&
+-                confirmPassword == password
++    // Validate entered details
++    fun validateForm() {
++        isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&
++                lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&
++                email.isNotEmpty() && email.length <= maxEmail &&
++                phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&
++                password.isNotEmpty() && password.length <= maxPassword &&
++                 confirmPassword.isNotEmpty() && confirmPassword == password
+     }
+ 
+     Surface {
+@@ -87,44 +93,66 @@
+ 
+             TextFields(value = firstName,
+                 onChange = {
+-                    firstName = it
+-                    validateForm()
++                    if (it.length <= maxName) {
++                        firstName = it
++                        validateForm()
++                    }
+                 }, fieldLabel = "First name"
+             )
+ 
+             TextFields(value = lastName,
+                 onChange = {
+-                    lastName = it
+-                    validateForm()
+-                }, fieldLabel = " Last name"
++                    if (it.length <= maxName) {
++                        lastName = it
++                        validateForm()
++                    }
++                }, fieldLabel = "Last name"
+             )
+ 
+             EmailTextFields(value = email,
+                 onChange = {
+-                    email = it
+-                    validateForm()
++                    if (it.length <= maxEmail) {
++                        email = it
++                        validateForm()
++                    }
+                 },
+-                fieldLabel = "Email Address")
++                fieldLabel = "Email Address"
++            )
+ 
+             NumberTextFields(value = phoneNumber,
+                 onChange = {
+-                    phoneNumber = it
+-                    validateForm()
+-                }, fieldLabel = "Phone number")
++                    if (it.length <= maxNumber) {
++                        phoneNumber = it
++                        validateForm()
++                    }
++                }, fieldLabel = "Phone number"
++            )
+ 
+             PasswordTextFields(value = password,
+                 onChange = {
+-                    password = it
+-                    validateForm()
+-                }, fieldLabel = " Password"
++                    if (it.length <= maxPassword) {
++                        password = it
++                        passwordsMatch = confirmPassword == password
++                        validateForm()
++                    }
++                }, fieldLabel = "Password"
+             )
+ 
+             PasswordTextFields(value = confirmPassword,
+                 onChange = {
+-                    confirmPassword = it
+-                    validateForm()
++                    if (it.length <= maxPassword) {
++                        confirmPassword = it
++                       passwordsMatch = confirmPassword == password
++                        validateForm()
++                    }
+                 }, fieldLabel = "Confirm password"
+             )
++            if (!passwordsMatch) {
++                Text(
++                    text = "Passwords do not match",
++                    color = Color.Red
++                )
++            }
+ 
+             Row {
+                 SignUpText(value = "Do you give us permission to use your details for marketing purposes")
+@@ -146,7 +174,7 @@
+                 title = { Text("Confirm Registration") },
+                 text = { Text("Are you sure you want to register with these details?") },
+                 confirmButton = {
+-                    Button( modifier = Modifier.padding(start = 20.dp)
++                    Button(modifier = Modifier.padding(start = 20.dp)
+                         .width(100.dp),
+                         colors = ButtonDefaults.buttonColors(Color.Green),
+                         onClick = {
+@@ -160,7 +188,7 @@
+                     }
+                 },
+                 dismissButton = {
+-                    Button( modifier = Modifier.padding(end = 20.dp)
++                    Button(modifier = Modifier.padding(end = 20.dp)
+                         .width(100.dp),
+                         colors = ButtonDefaults.buttonColors(Color.Green),
+                         onClick = { showDialog = false }) {
+@@ -170,13 +198,31 @@
+                 }
+             )
+         }
++
++        if (registrationMessage.isNotEmpty()) {
++            AlertDialog(
++                onDismissRequest = { registrationMessage = "" },
++                title = { Text("Registration") },
++                text = { Text(registrationMessage) },
++                confirmButton = {
++                    Button(colors = ButtonDefaults.buttonColors(Color.Green),
++                        onClick = {
++                            registrationMessage = ""
++                            // Navigate to login page
++                        }
++                    ) {
++                        Text("OK",
++                            color = Color.Black)
++                    }
++                }
++            )
++        }
+     }
+ }
+ 
+-
+ @Preview
+ @Composable
+-fun RegistrationPreview(){
++fun RegistrationPreview() {
+     val navController = rememberNavController()
+-    Registration( navController)
+-}
+\ No newline at end of file
++    Registration(navController)
++}
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.widget.Toast\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.TextStyle\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.BottomButtons\r\nimport com.example.civicalertoriginal.Components.EmailTextFields\r\nimport com.example.civicalertoriginal.Components.InstructionText\r\nimport com.example.civicalertoriginal.Components.LogAndForgotHeader\r\nimport com.example.civicalertoriginal.Components.PasswordTextFields\r\n\r\nimport com.example.civicalertoriginal.R\r\n\r\n\r\n@Composable\r\nfun LogIn(navController: NavController) {\r\n    Surface(\r\n        color = Color.White\r\n    ) {\r\n        Column (\r\n            horizontalAlignment = Alignment.CenterHorizontally,\r\n            modifier = Modifier\r\n                .padding(start = 16.dp, end = 16.dp, top = 80.dp)\r\n                .fillMaxSize()\r\n\r\n        ){\r\n         LogAndForgotHeader(screenLabel = \"Login\")\r\n            val context = LocalContext.current\r\n\r\n            Spacer(modifier = Modifier.size(40.dp))\r\n            var email by remember { mutableStateOf(\"\") }\r\n            var password by remember {mutableStateOf(\"\")}\r\n\r\n\r\n            Spacer(modifier = Modifier.padding(16.dp))\r\n            EmailTextFields(value = email, onChange = {\r\n                email = it },\r\n                fieldLabel = \"Enter Email Address\" )\r\n\r\n            Spacer(modifier = Modifier.size(10.dp))\r\n            PasswordTextFields(value = password, onChange = {\r\n                password=it\r\n             },\r\n                fieldLabel = \"Enter your password\")\r\n\r\n            Spacer(modifier = Modifier.padding(6.dp))\r\n            //ValidateEmail(email = email, password = password)\r\n\r\n            Row( verticalAlignment = Alignment.Bottom,\r\n                horizontalArrangement = Arrangement.SpaceBetween,) {\r\n\r\n                Text(text = \"Forgot Password?\", modifier = Modifier\r\n                    .clickable { navController.navigate(\"ForgotPassword\") }\r\n                    .padding(end = 25.dp),\r\n                    style = TextStyle(\r\n                        fontStyle = FontStyle.Normal\r\n                    )\r\n                )\r\n                Spacer(modifier = Modifier.size(12.dp))\r\n\r\n                Text(text = \"Register\", modifier = Modifier\r\n                    .clickable { navController.navigate(\"registration\") }\r\n                    .padding(start = 25.dp),\r\n                    style = TextStyle( fontStyle = FontStyle.Normal)\r\n                )\r\n            }\r\n\r\n            Spacer(modifier = Modifier.size(50.dp))\r\n            InstructionText(value = \"Sign with google\")\r\n\r\n                Image( modifier = Modifier\r\n                    .size(50.dp,55.dp),painter = painterResource(id = R.drawable.googlepic),\r\n                    contentDescription = \"Google SignIn\" )\r\n            Spacer(modifier = Modifier.size(18.dp))\r\n            if (email.length<=100 && email.all {it.isLetter() && password.length<=100&& email.all { it.isLetter() }}){\r\n                BottomButtons(name = \"Sign In\") { navController.navigate(\"Dashboard\")}\r\n            }\r\n            else\r\n                Text(text = \"You ave inserted incorrect details\")\r\n                Toast.makeText(context,\"Check the entered details if are correct\",Toast.LENGTH_SHORT)\r\n\r\n\r\n        }\r\n    }\r\n}\r\n\r\n@Preview\r\n@Composable\r\nfun LogInPreview(){\r\n    val navController = rememberNavController()\r\n    LogIn( navController)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt	(revision af341019ea88947a515ba21d522ae56d55d3c8a3)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt	(date 1718618109069)
+@@ -1,6 +1,5 @@
+ package com.example.civicalertoriginal.Screens
+ 
+-import android.widget.Toast
+ import androidx.compose.foundation.Image
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.Arrangement
+@@ -10,7 +9,6 @@
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.padding
+ import androidx.compose.foundation.layout.size
+-import androidx.compose.material3.Button
+ import androidx.compose.material3.Surface
+ import androidx.compose.material3.Text
+ import androidx.compose.runtime.Composable
+@@ -21,23 +19,17 @@
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.graphics.Color
+-import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.text.TextStyle
+ import androidx.compose.ui.text.font.FontStyle
+-import androidx.compose.ui.tooling.preview.Preview
+ import androidx.compose.ui.unit.dp
+ import androidx.navigation.NavController
+-import androidx.navigation.compose.rememberNavController
+ import com.example.civicalertoriginal.Components.BottomButtons
+-import com.example.civicalertoriginal.Components.EmailTextFields
+ import com.example.civicalertoriginal.Components.InstructionText
+ import com.example.civicalertoriginal.Components.LogAndForgotHeader
+-import com.example.civicalertoriginal.Components.PasswordTextFields
+-
++import com.example.civicalertoriginal.Components.TextFields
+ import com.example.civicalertoriginal.R
+ 
+-
+ @Composable
+ fun LogIn(navController: NavController) {
+     Surface(
+@@ -51,26 +43,27 @@
+ 
+         ){
+          LogAndForgotHeader(screenLabel = "Login")
+-            val context = LocalContext.current
+ 
+             Spacer(modifier = Modifier.size(40.dp))
+-            var email by remember { mutableStateOf("") }
+-            var password by remember {mutableStateOf("")}
++            var name by remember {
++                mutableStateOf("")
++            }
++            var pass by remember {
++                mutableStateOf("")
++            }
++            var isFormValid by remember { mutableStateOf(false) }
++
++            TextFields(value =name , onChange = { name = it}, fieldLabel = "Name or Email Address" )
+ 
++            Spacer(modifier = Modifier.size(20.dp))
++
++            TextFields(value = pass, onChange ={pass=it} , fieldLabel = "Password")
+ 
+             Spacer(modifier = Modifier.padding(16.dp))
+-            EmailTextFields(value = email, onChange = {
+-                email = it },
+-                fieldLabel = "Enter Email Address" )
+ 
+-            Spacer(modifier = Modifier.size(10.dp))
+-            PasswordTextFields(value = password, onChange = {
+-                password=it
+-             },
+-                fieldLabel = "Enter your password")
++            BottomButtons(name = "LOG IN", {navController.navigate("makeReports")},)
+ 
+             Spacer(modifier = Modifier.padding(6.dp))
+-            //ValidateEmail(email = email, password = password)
+ 
+             Row( verticalAlignment = Alignment.Bottom,
+                 horizontalArrangement = Arrangement.SpaceBetween,) {
+@@ -97,22 +90,13 @@
+                 Image( modifier = Modifier
+                     .size(50.dp,55.dp),painter = painterResource(id = R.drawable.googlepic),
+                     contentDescription = "Google SignIn" )
+-            Spacer(modifier = Modifier.size(18.dp))
+-            if (email.length<=100 && email.all {it.isLetter() && password.length<=100&& email.all { it.isLetter() }}){
+-                BottomButtons(name = "Sign In") { navController.navigate("Dashboard")}
+-            }
+-            else
+-                Text(text = "You ave inserted incorrect details")
+-                Toast.makeText(context,"Check the entered details if are correct",Toast.LENGTH_SHORT)
+-
+-
+         }
+     }
+ }
+ 
+-@Preview
+-@Composable
+-fun LogInPreview(){
+-    val navController = rememberNavController()
+-    LogIn( navController)
+-}
+\ No newline at end of file
++//*@Preview
++//@Composable
++//fun LogInPreview(){
++    //val navController = rememberNavController()
++ //   LogIn(navController = navController)
++//}
+\ No newline at end of file
