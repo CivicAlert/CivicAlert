@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,7 +57,7 @@ fun LogIn(navController: NavController) {
             var password by remember {mutableStateOf("")}
 
 
-            Spacer(modifier = Modifier.padding(16.dp))
+            Spacer(modifier = Modifier.padding(10.dp))
             EmailTextFields(value = email, onChange = {
                 email = it },
                 fieldLabel = "Enter Email Address" )
@@ -72,22 +71,27 @@ fun LogIn(navController: NavController) {
             Spacer(modifier = Modifier.padding(6.dp))
 
             Row( verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.SpaceBetween,) {
+                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(20.dp).align(Alignment.CenterHorizontally)
 
-                Text(text = "Forgot Password?", modifier = Modifier
+            ) {
+
+              Text(text = "Forgot Password?", modifier = Modifier
                     .clickable { navController.navigate("ForgotPassword") }
                     .padding(end = 25.dp),
                     style = TextStyle(
-                        fontStyle = FontStyle.Normal
+                        fontStyle = FontStyle.Normal,
+                        color = Color.Blue
                     )
                 )
-                Spacer(modifier = Modifier.size(12.dp))
+                Spacer(modifier = Modifier.size(15.dp))
 
                 Text(text = "Register", modifier = Modifier
                     .clickable { navController.navigate("registration") }
                     .padding(start = 25.dp),
-                    style = TextStyle( fontStyle = FontStyle.Normal)
+                    style = TextStyle( fontStyle = FontStyle.Normal,
+                        color = Color.Blue)
                 )
+
             }
 
             Spacer(modifier = Modifier.size(50.dp))
