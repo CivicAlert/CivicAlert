@@ -56,7 +56,7 @@ fun ForgotPassword (navController: NavController){
             
             Spacer(modifier = Modifier.size(10.dp))
             
-            BottomButtons(name = "Back to Login") { Toast.makeText(context,"Email has been sent to $email",Toast.LENGTH_SHORT).show()
+            BottomButtons(name = "Reset") { Toast.makeText(context,"Email has been sent to $email",Toast.LENGTH_SHORT).show()
             navController.navigate("logIn")}
             
 

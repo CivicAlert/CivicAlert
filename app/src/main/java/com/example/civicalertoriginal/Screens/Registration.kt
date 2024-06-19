@@ -75,7 +75,7 @@ fun Registration(navController: NavController) {
                  confirmPassword.isNotEmpty() && confirmPassword == password
     }
 
-    Surface {
+    Surface (color = Color.White){
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -160,6 +160,8 @@ fun Registration(navController: NavController) {
             Row {
                 SignUpText(value = "Do you agree to Term & Conditions of the app")
             }
+
+            Spacer(modifier = Modifier.size(16.dp))
 
             LogBottomButtons(
                 name = "Register",

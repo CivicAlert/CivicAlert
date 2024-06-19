@@ -190,21 +190,29 @@ fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
             color = Color.Black)
     }
 }
+
+
 @Composable
-fun SignUpText(value: String){
-    Row ( modifier = Modifier.padding(2.dp)){
-        var state by remember { mutableStateOf("") }
-        Text(text = value, modifier = Modifier
-        )
+fun SignUpText(value: String) {
+    Row(modifier = Modifier.padding(end = 20.dp)) {
+        var state by remember { mutableStateOf(false) }
 
-        Checkbox(checked = false, onCheckedChange = { }, enabled = true, modifier = Modifier
-            .size(20.dp)
-            .padding(end = 16.dp, start = 12.dp)
+        Text(text = value, modifier = Modifier)
 
-            .clip(RoundedCornerShape(50.dp))
+        Checkbox(
+            checked = state,
+            onCheckedChange = { isChecked ->
+                state = isChecked
+            },
+            enabled = true,
+            modifier = Modifier
+                .size(20.dp)
+                .padding(end = 16.dp, start = 12.dp)
+                .clip(RoundedCornerShape(50.dp))
         )
     }
 }
+
 @Composable
 fun InstructionText(value: String){
     Text(
