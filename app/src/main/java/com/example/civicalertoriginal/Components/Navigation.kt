@@ -14,7 +14,9 @@ import com.example.civicalertoriginal.Screens.Registration
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "Login") {
+    NavHost(navController = navController, startDestination = "logIn" +
+            "" +
+            "") {
         composable("registration"){
             Registration(navController)
         }

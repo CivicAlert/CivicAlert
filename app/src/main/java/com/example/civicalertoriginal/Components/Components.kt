@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,8 +23,6 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -147,11 +144,11 @@ fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
 
 
             trailingIcon = {
-                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
-                    Icon(painter = icon, contentDescription ="",
-                        modifier = Modifier.size(20.dp,20.dp))
-
-                }
+                           IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                               Icon(painter = icon, contentDescription ="",
+                                   modifier = Modifier.size(20.dp,20.dp))
+                               
+                           }
 
             }, visualTransformation = if (passwordVisibility) VisualTransformation.None
             else PasswordVisualTransformation(),
@@ -165,10 +162,6 @@ fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
     }
 }
 
-@Composable
-fun Logo(){
-    Image(painter = painterResource(id = R.drawable.logo), contentDescription = "" )
-}
 
 @Composable
 fun BottomButtons(name: String, onClick: () -> Unit,){
@@ -197,56 +190,21 @@ fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
             color = Color.Black)
     }
 }
-
 @Composable
-fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .size(160.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = "",
-                modifier = Modifier.size(40.dp)
-            )
-            Text(text = label)
-        }
-    }
-}
+fun SignUpText(value: String){
+    Row ( modifier = Modifier.padding(2.dp)){
+        var state by remember { mutableStateOf("") }
+        Text(text = value, modifier = Modifier
+        )
 
+        Checkbox(checked = false, onCheckedChange = { }, enabled = true, modifier = Modifier
+            .size(20.dp)
+            .padding(end = 16.dp, start = 12.dp)
 
-@Composable
-fun SignUpText(value: String) {
-    Row(modifier = Modifier.padding(2.dp)) {
-        var state by remember { mutableStateOf(false) }
-
-        Text(text = value, modifier = Modifier)
-
-        Checkbox(
-            checked = state,
-            onCheckedChange = { isChecked ->
-                state = isChecked
-            },
-            enabled = true,
-            modifier = Modifier
-                .size(20.dp)
-                .padding(end = 16.dp, start = 12.dp)
-                .clip(RoundedCornerShape(50.dp))
+            .clip(RoundedCornerShape(50.dp))
         )
     }
 }
-
-
 @Composable
 fun InstructionText(value: String){
     Text(
@@ -405,3 +363,6 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
             color = Color.Black)
     }
 }
+
+
+

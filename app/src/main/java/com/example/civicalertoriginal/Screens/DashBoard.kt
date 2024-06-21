@@ -1,140 +1,73 @@
 package com.example.civicalertoriginal.Screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Components.CardButton
-import com.example.civicalertoriginal.Components.Logo
+
 import com.example.civicalertoriginal.R
 
+
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashBoard(navController: NavController){
-
-    Surface(color = Color.White,
-        modifier = Modifier.verticalScroll(rememberScrollState())
-    ) {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 12.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Row (
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .height(80.dp)
-                    .fillMaxWidth()
-            ) {
-                Logo()
-                Image(
-                    painter = painterResource(id = R.drawable.profie),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(50.dp, 70.dp)
-                        .clickable { }
-                )
-            }
-
-            Column(
-                modifier = Modifier.height(300.dp)
-            ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text(text = "Recent report",
-                            fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        Image(
-                            painter = painterResource(id = R.drawable.photo),
-                            contentDescription = "Picture of reported incident",
-                            modifier = Modifier.height(150.dp)
-                        )
-                        Text(text = "Broken Street Light",
-                            fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        Text(text = "3 Webb St, Sonheuwal Central, Mbombela")
-                        Text(text = "14 March")
-                        Text(text = "Streetlight")
-                    }
+fun DashBoard(navController: NavController) {
+    Surface(color = Color.White) {
+        Scaffold(topBar = {
+            TopAppBar(title = {
+                Row(
+                    verticalAlignment = Alignment.Top,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo), contentDescription = "",
+                         modifier = Modifier.size(100.dp)
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.AccountCircle, contentDescription = "",
+                        modifier = Modifier.size(100.dp)
+                    )
                 }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                CardButton(iconRes = R.drawable.info, label = "Report Incident") {
-                    // logic to take you to report incident  page
-                }
-                CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
-                    // logic to take you reported incidents  page
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
-                    // logic to take you to help page
-                }
-                CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
-                    // logic to take you to emergency contacts page
-                }
-            }
-
-            Row (modifier = Modifier
-                .height(20.dp)){
+            })
+        }, bottomBar = {
+           Row (verticalAlignment = Alignment.Bottom,
+               horizontalArrangement = Arrangement.SpaceAround){
+               Icon(imageVector = Icons.Filled.Home, contentDescription = "", modifier = Modifier.size(50.dp))
+               Spacer(modifier = Modifier.size(140.dp))
+               Icon(imageVector = Icons.Outlined.Info, contentDescription = "", modifier = Modifier.size(50.dp))
+               Spacer(modifier = Modifier.size(140.dp))
+               Icon(imageVector = Icons.Rounded.Person, contentDescription = "", modifier = Modifier.size(50.dp))
+           }
+        }, content = { innerPadding ->
+            Column {
 
             }
         }
+        )
     }
 }
 
 
-
-@Preview
-@Composable
-fun DashBoardPreview(){
-    val navController = rememberNavController()
-    DashBoard(navController)
-}

@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CivicAlertOriginalTheme {
                 Navigation()
+
             }
         }
     }
