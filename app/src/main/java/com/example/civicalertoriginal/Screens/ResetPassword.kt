@@ -28,6 +28,7 @@ import com.example.civicalertoriginal.Components.EmailTextFields
 import com.example.civicalertoriginal.Components.InstructionText
 import com.example.civicalertoriginal.Components.LogAndForgotHeader
 import com.example.civicalertoriginal.Components.TextFields
+import java.util.regex.Pattern
 
 @Composable
 fun ForgotPassword (navController: NavController){
@@ -49,10 +50,15 @@ fun ForgotPassword (navController: NavController){
             LogAndForgotHeader(screenLabel = "Forgot Password?")
 
             InstructionText(value = "Enter your email to recover your password" )
+            fun validateEmail(email: String): Boolean {
+                val emailPattern = "[a-zA-Z0-9_]+@+\\.[a-zA-Z]"
+                return Pattern.matches(emailPattern, email)
+            }
 
-           EmailTextFields(value = email, onChange = {if (email.length<=100 && email.all { it.isLetter() }){
-               email = it
-           }}, fieldLabel = "Enter your email ")
+           EmailTextFields(value = email, onChange = {if (email.length<100){
+               validateEmail(email)
+           } }, fieldLabel = "Enter your email ")
+
             
             Spacer(modifier = Modifier.size(10.dp))
             
