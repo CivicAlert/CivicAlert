@@ -78,6 +78,36 @@ fun LogAndForgotHeader(screenLabel:String) {
 
     }
 }
+@Composable
+fun Logo(){
+
+}
+@Composable
+fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .size(160.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = "",
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = label)
+        }
+    }
+}
+
 
 //Text fields that accept text only
 @Composable
