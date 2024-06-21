@@ -72,7 +72,7 @@ fun Registration(navController: NavController) {
                 email.isNotEmpty() && email.length <= maxEmail &&
                 phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&
                 password.isNotEmpty() && password.length <= maxPassword &&
-                 confirmPassword.isNotEmpty() && confirmPassword == password
+                confirmPassword.isNotEmpty() && confirmPassword == password
     }
 
     Surface (color = Color.White){
@@ -142,7 +142,7 @@ fun Registration(navController: NavController) {
                 onChange = {
                     if (it.length <= maxPassword) {
                         confirmPassword = it
-                       passwordsMatch = confirmPassword == password
+                        passwordsMatch = confirmPassword == password
                         validateForm()
                     }
                 }, fieldLabel = "Confirm password"

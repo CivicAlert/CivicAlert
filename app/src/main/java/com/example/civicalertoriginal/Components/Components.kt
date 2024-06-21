@@ -1,5 +1,3 @@
-@file:Suppress("UNREACHABLE_CODE")
-
 package com.example.civicalertoriginal.Components
 
 import android.widget.Toast
@@ -33,7 +31,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -54,11 +52,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
-import java.util.regex.Pattern
+
+
+
 
 @Composable
 fun LogAndForgotHeader(screenLabel:String) {
@@ -78,36 +79,6 @@ fun LogAndForgotHeader(screenLabel:String) {
 
     }
 }
-@Composable
-fun Logo(){
-
-}
-@Composable
-fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .size(160.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = "",
-                modifier = Modifier.size(40.dp)
-            )
-            Text(text = label)
-        }
-    }
-}
-
 
 //Text fields that accept text only
 @Composable
@@ -143,7 +114,7 @@ fun NumberTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
 
 //Text fields that accept email only
 @Composable
-fun EmailTextFields(value:String, onChange: (String)->Unit, fieldLabel:String){
+fun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -158,11 +129,33 @@ fun EmailTextFields(value:String, onChange: (String)->Unit, fieldLabel:String){
 }
 
 @Composable
-fun PasswordTextFields(value:String, onChange:(String)->Unit, fieldLabel:String){
+fun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){
+
+    var passwordVisibility by remember { mutableStateOf(false) }
+    val icon = if(passwordVisibility )
+        painterResource(id = R.drawable.eye)
+    else
+        painterResource(id = R.drawable.hidden)
+
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
-        OutlinedTextField(value = value , onValueChange = onChange,
+        OutlinedTextField(value = value ,
+            onValueChange = onChange,
+            supportingText = {
+                Text(text = "Passwords must match")},
             placeholder = { Text(text = fieldLabel, color = Color.Green)},
+
+
+            trailingIcon = {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                    Icon(painter = icon, contentDescription ="",
+                        modifier = Modifier.size(20.dp,20.dp))
+
+                }
+
+            }, visualTransformation = if (passwordVisibility) VisualTransformation.None
+            else PasswordVisualTransformation(),
+
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)
@@ -172,6 +165,10 @@ fun PasswordTextFields(value:String, onChange:(String)->Unit, fieldLabel:String)
     }
 }
 
+@Composable
+fun Logo(){
+    Image(painter = painterResource(id = R.drawable.logo), contentDescription = "" )
+}
 
 @Composable
 fun BottomButtons(name: String, onClick: () -> Unit,){
@@ -189,7 +186,7 @@ fun BottomButtons(name: String, onClick: () -> Unit,){
 
 @Composable
 fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
-    Button(onClick = onClick, shape = ButtonDefaults.shape,
+    Button(onClick = onClick, enabled = enabled, shape = ButtonDefaults.shape,
         colors = ButtonDefaults.buttonColors(Color.Green),
         modifier = Modifier
             .width(200.dp)) {
@@ -200,21 +197,56 @@ fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
             color = Color.Black)
     }
 }
+
 @Composable
-fun SignUpText(value: String){
-    Row ( modifier = Modifier.padding(10.dp)){
-        var state by remember { mutableStateOf("") }
-        Text(text = value, modifier = Modifier
-        )
+fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .size(160.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = "",
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = label)
+        }
+    }
+}
 
-        Checkbox(checked = false, onCheckedChange = {}, enabled = true, modifier = Modifier
-            .size(20.dp)
-            .padding(end = 16.dp, start = 12.dp)
 
-            .clip(RoundedCornerShape(50.dp))
+@Composable
+fun SignUpText(value: String) {
+    Row(modifier = Modifier.padding(2.dp)) {
+        var state by remember { mutableStateOf(false) }
+
+        Text(text = value, modifier = Modifier)
+
+        Checkbox(
+            checked = state,
+            onCheckedChange = { isChecked ->
+                state = isChecked
+            },
+            enabled = true,
+            modifier = Modifier
+                .size(20.dp)
+                .padding(end = 16.dp, start = 12.dp)
+                .clip(RoundedCornerShape(50.dp))
         )
     }
 }
+
+
 @Composable
 fun InstructionText(value: String){
     Text(
@@ -373,26 +405,3 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
             color = Color.Black)
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun Cards( value: String,){
-    Card(modifier = Modifier.size(250.dp)
-        .padding(16.dp), shape =  RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Green), elevation =
-            CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ) {
-        Text(text = value, modifier = Modifier.fillMaxSize(),
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = Color.Black,
-                fontSize = 25.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Justify
-            )
-        )
-
-
-    }
-}
-
-
-
