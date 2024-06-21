@@ -101,7 +101,7 @@ fun LogIn(navController: NavController) {
                 BottomButtons(name = "Sign In") { navController.navigate("Dashboard")}
             }
             else
-                Text(text = "You ave inserted incorrect details")
+                Text(text = "You have inserted incorrect details")
                 Toast.makeText(context,"Check the entered details if are correct",Toast.LENGTH_SHORT)
 
 

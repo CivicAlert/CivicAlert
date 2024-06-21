@@ -50,7 +50,7 @@ fun ForgotPassword (navController: NavController){
 
             InstructionText(value = "Enter your email to recover your password" )
 
-           EmailTextFields(value = email, onChange = {if (email.length<=100&& email.all { it.isLetter() }){
+           EmailTextFields(value = email, onChange = {if (email.length<=100 && email.all { it.isLetter() }){
                email = it
            }}, fieldLabel = "Enter your email ")
             
