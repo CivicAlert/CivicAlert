@@ -1,4 +1,4 @@
-package com.example.civicalertoriginal.Components
+package com.example.Civicalert.Components
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,8 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,8 +57,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
-
-
 
 
 @Composable
@@ -256,6 +257,37 @@ fun ReportDescriptionText(value1: String, value:String){
         )
     }
 }
+@Composable
+fun Logo(){
+    Image(painter = painterResource(id = R.drawable.logo),
+        contentDescription = "", modifier = Modifier.size(120.dp, 120.dp))
+}
+@Composable
+fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .size(160.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = "",
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = label)
+        }
+    }
+}
+
 @Composable
 fun PictureTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,

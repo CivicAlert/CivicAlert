@@ -1,14 +1,14 @@
-package com.example.civicalertoriginal.Components
+package com.example.Civicalert.Components
 
 import CivicAlert.Screen.MakeReports
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Screens.DashBoard
-import com.example.civicalertoriginal.Screens.ForgotPassword
-import com.example.civicalertoriginal.Screens.LogIn
-import com.example.civicalertoriginal.Screens.Registration
+import com.example.Civicalert.Screens.DashBoard
+import com.example.Civicalert.Screens.ForgotPassword
+import com.example.Civicalert.Screens.LogIn
+import com.example.Civicalert.Screens.Registration
 
 
 @Composable

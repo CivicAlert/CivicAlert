@@ -1,4 +1,4 @@
-package com.example.civicalertoriginal.ui.theme
+package com.example.Civicalert.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

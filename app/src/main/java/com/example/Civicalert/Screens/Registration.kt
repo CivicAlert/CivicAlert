@@ -1,41 +1,21 @@
-package com.example.civicalertoriginal.Screens
+package com.example.Civicalert.Screens
 
 import android.util.Patterns
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Components.EmailTextFields
-import com.example.civicalertoriginal.Components.InstructionText
-import com.example.civicalertoriginal.Components.LogBottomButtons
-import com.example.civicalertoriginal.Components.NumberTextFields
-import com.example.civicalertoriginal.Components.PasswordTextFields
-import com.example.civicalertoriginal.Components.SignUpText
-import com.example.civicalertoriginal.Components.TextFields
+import com.example.Civicalert.Components.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -58,6 +38,11 @@ fun Registration(navController: NavController) {
     var isFormValid by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var registrationMessage by remember { mutableStateOf("") }
+    var isEmailValid by remember { mutableStateOf(true) }
+    var isPasswordValid by remember { mutableStateOf(true) }
+    var hasUpperCase by remember { mutableStateOf(false) }
+    var hasDigit by remember { mutableStateOf(false) }
+    var hasSymbol by remember { mutableStateOf(false) }
 
     // Character limit in text fields
     val maxName = 50
@@ -65,17 +50,26 @@ fun Registration(navController: NavController) {
     val maxNumber = 10
     val maxPassword = 100
 
+    // Regex patterns
+    val emailPattern = Patterns.EMAIL_ADDRESS.toRegex()
+    val passwordPattern = Regex("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@\$!%*#?&])[A-Za-z\\d@\$!%*#?&]{8,}$")
+
     // Validate entered details
     fun validateForm() {
+        isEmailValid = emailPattern.matches(email)
+        isPasswordValid = passwordPattern.matches(password)
+        hasUpperCase = password.any { it.isUpperCase() }
+        hasDigit = password.any { it.isDigit() }
+        hasSymbol = password.any { !it.isLetterOrDigit() }
         isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&
                 lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&
-                email.isNotEmpty() && email.length <= maxEmail &&
+                email.isNotEmpty() && email.length <= maxEmail && isEmailValid &&
                 phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&
-                password.isNotEmpty() && password.length <= maxPassword &&
+                password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
 
-    Surface (color = Color.White){
+    Surface(color = Color.White) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -119,6 +113,13 @@ fun Registration(navController: NavController) {
                 fieldLabel = "Email Address"
             )
 
+            if (!isEmailValid) {
+                Text(
+                    text = "Please enter a valid email address",
+                    color = Color.Red
+                )
+            }
+
             NumberTextFields(value = phoneNumber,
                 onChange = {
                     if (it.length <= maxNumber) {
@@ -138,6 +139,24 @@ fun Registration(navController: NavController) {
                 }, fieldLabel = "Password"
             )
 
+            Column (
+
+            ){
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = hasUpperCase, onCheckedChange = null)
+                    Text(text = "Must have at least one capital letter"
+                    , fontSize = 12.sp)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = hasDigit, onCheckedChange = null)
+                    Text(text = "Must have at least one digit",fontSize = 12.sp)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = hasSymbol, onCheckedChange = null)
+                    Text(text = "Must have at least one symbol",fontSize = 12.sp)
+                }
+            }
+
             PasswordTextFields(value = confirmPassword,
                 onChange = {
                     if (it.length <= maxPassword) {
@@ -147,6 +166,14 @@ fun Registration(navController: NavController) {
                     }
                 }, fieldLabel = "Confirm password"
             )
+
+            if (!isPasswordValid) {
+                Text(
+                    text = "Enter a valid password",
+                    color = Color.Red
+                )
+            }
+
             if (!passwordsMatch) {
                 Text(
                     text = "Passwords do not match",
@@ -158,7 +185,7 @@ fun Registration(navController: NavController) {
                 SignUpText(value = "Do you give us permission to use your details for marketing purposes")
             }
             Row {
-                SignUpText(value = "Do you agree to Term & Conditions of the app")
+                SignUpText(value = "Do you agree to Terms & Conditions of the app")
             }
 
             Spacer(modifier = Modifier.size(16.dp))
@@ -176,7 +203,8 @@ fun Registration(navController: NavController) {
                 title = { Text("Confirm Registration") },
                 text = { Text("Are you sure you want to register with these details?") },
                 confirmButton = {
-                    Button(modifier = Modifier.padding(start = 20.dp)
+                    Button(modifier = Modifier
+                        .padding(start = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
@@ -190,7 +218,8 @@ fun Registration(navController: NavController) {
                     }
                 },
                 dismissButton = {
-                    Button(modifier = Modifier.padding(end = 20.dp)
+                    Button(modifier = Modifier
+                        .padding(end = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = { showDialog = false }) {

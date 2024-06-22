@@ -1,4 +1,4 @@
-package com.example.civicalertoriginal
+package com.example.Civicalert
 
 import org.junit.Test
 
