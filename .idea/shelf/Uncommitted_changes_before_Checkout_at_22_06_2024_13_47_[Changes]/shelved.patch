@@ -1,0 +1,93 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/UserProfile.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.Home\r\nimport androidx.compose.material.icons.outlined.Info\r\nimport androidx.compose.material.icons.rounded.Call\r\nimport androidx.compose.material.icons.rounded.List\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun UserProfile (navController: NavController){\r\n    Surface(color = Color.White) {\r\n        Scaffold(topBar = {\r\n            TopAppBar(title = {\r\n                Row(\r\n                    verticalAlignment = Alignment.Top,\r\n                    horizontalArrangement = Arrangement.Center,\r\n                    modifier = Modifier.fillMaxWidth()) {\r\n                    Text(text = \"MY PROFILE\", fontSize = 50.sp , fontWeight = FontWeight.Bold)\r\n                    \r\n                }\r\n            })\r\n        }, bottomBar = {\r\n            Row (verticalAlignment = Alignment.Bottom,\r\n                horizontalArrangement = Arrangement.SpaceEvenly){\r\n                Spacer(modifier = Modifier.size(25.dp))\r\n\r\n                Box( modifier = Modifier.size(50.dp)) {\r\n                    Column () {\r\n                        Icon(imageVector = Icons.Filled.Home, contentDescription = \"\", modifier = Modifier.size(29.dp))\r\n                        Text(text = \"Home\", fontSize = 10.sp)\r\n                    }\r\n                }\r\n                Spacer(modifier = Modifier.size(50.dp))\r\n                \r\n                Box (modifier = Modifier.size(50.dp)){\r\n                    Column () {\r\n                        Icon(imageVector = Icons.Outlined.Info, contentDescription = \"\", modifier = Modifier.size(29.dp))\r\n                        Text(text = \"Make Report\", fontSize = 10.sp)\r\n                    }\r\n\r\n                }\r\n                Spacer(modifier = Modifier.size(50.dp))\r\n                Box(modifier = Modifier.size(50.dp)){\r\n                     Column {\r\n                        Icon(imageVector = Icons.Rounded.List, contentDescription = \"\", modifier = Modifier.size(29.dp))\r\n                         Text(text = \"View Reports\", fontSize = 10.sp)\r\n                    }\r\n                }\r\n                Spacer(modifier = Modifier.size(50.dp))\r\n                Box(modifier = Modifier.size(50.dp)){\r\n                    Column () {\r\n                        Icon(imageVector = Icons.Rounded.Call, contentDescription = \"\", modifier = Modifier.size(29.dp))\r\n                        Text(text = \"Emergency call\", fontSize = 10.sp)\r\n                    }\r\n                }\r\n               \r\n            }\r\n        }, content = { innerPadding ->\r\n\r\n                Text(text = \"Personal Information\")\r\n                Button(onClick = { /*TODO*/ }) {\r\n                    \r\n                }\r\n                \r\n            \r\n        }\r\n        )\r\n    }\r\n\r\n}\r\n@Preview\r\n@Composable\r\nfun MyProfilePreview(){\r\n    val navController = rememberNavController()\r\n    UserProfile( navController)\r\n    \r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/UserProfile.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/UserProfile.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/UserProfile.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/UserProfile.kt	
+@@ -12,7 +12,10 @@
+ import androidx.compose.material.icons.filled.Home
+ import androidx.compose.material.icons.outlined.Info
+ import androidx.compose.material.icons.rounded.Call
++import androidx.compose.material.icons.rounded.Edit
++import androidx.compose.material.icons.rounded.Home
+ import androidx.compose.material.icons.rounded.List
++import androidx.compose.material3.BottomAppBar
+ import androidx.compose.material3.Button
+ import androidx.compose.material3.ExperimentalMaterial3Api
+ import androidx.compose.material3.Icon
+@@ -35,63 +38,16 @@
+ @Composable
+ fun UserProfile (navController: NavController){
+     Surface(color = Color.White) {
+-        Scaffold(topBar = {
+-            TopAppBar(title = {
+-                Row(
+-                    verticalAlignment = Alignment.Top,
+-                    horizontalArrangement = Arrangement.Center,
+-                    modifier = Modifier.fillMaxWidth()) {
+-                    Text(text = "MY PROFILE", fontSize = 50.sp , fontWeight = FontWeight.Bold)
+-                    
+-                }
+-            })
+-        }, bottomBar = {
+-            Row (verticalAlignment = Alignment.Bottom,
+-                horizontalArrangement = Arrangement.SpaceEvenly){
+-                Spacer(modifier = Modifier.size(25.dp))
+-
+-                Box( modifier = Modifier.size(50.dp)) {
+-                    Column () {
+-                        Icon(imageVector = Icons.Filled.Home, contentDescription = "", modifier = Modifier.size(29.dp))
+-                        Text(text = "Home", fontSize = 10.sp)
+-                    }
+-                }
+-                Spacer(modifier = Modifier.size(50.dp))
+-                
+-                Box (modifier = Modifier.size(50.dp)){
+-                    Column () {
+-                        Icon(imageVector = Icons.Outlined.Info, contentDescription = "", modifier = Modifier.size(29.dp))
+-                        Text(text = "Make Report", fontSize = 10.sp)
+-                    }
+-
+-                }
+-                Spacer(modifier = Modifier.size(50.dp))
+-                Box(modifier = Modifier.size(50.dp)){
+-                     Column {
+-                        Icon(imageVector = Icons.Rounded.List, contentDescription = "", modifier = Modifier.size(29.dp))
+-                         Text(text = "View Reports", fontSize = 10.sp)
+-                    }
+-                }
+-                Spacer(modifier = Modifier.size(50.dp))
+-                Box(modifier = Modifier.size(50.dp)){
+-                    Column () {
+-                        Icon(imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier.size(29.dp))
+-                        Text(text = "Emergency call", fontSize = 10.sp)
+-                    }
+-                }
+-               
+-            }
+-        }, content = { innerPadding ->
+-
+-                Text(text = "Personal Information")
+-                Button(onClick = { /*TODO*/ }) {
+-                    
+-                }
+-                
+-            
+-        }
+-        )
+-    }
++        Scaffold ( bottomBar = { BottomAppBar {
++            Icon(imageVector = Icons.Rounded.Home, contentDescription = "")
++            Spacer(modifier = Modifier.size(20.dp))
++            Icon(imageVector = Icons.Rounded.Edit, contentDescription = "")
++            Spacer(modifier =)Modi
++            
++        }}){}
++        
++    }
++
+ 
+ }
+ @Preview

@@ -1,4 +1,6 @@
-package com.example.Civicalert.Components
+@file:Suppress("UNUSED_EXPRESSION")
+
+package com.example.civicalertoriginal.Components
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -9,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,14 +25,13 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -53,10 +53,14 @@ import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
+
+
 
 
 @Composable
@@ -258,37 +262,6 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun Logo(){
-    Image(painter = painterResource(id = R.drawable.logo),
-        contentDescription = "", modifier = Modifier.size(120.dp, 120.dp))
-}
-@Composable
-fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .size(160.dp)
-            .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = "",
-                modifier = Modifier.size(40.dp)
-            )
-            Text(text = label)
-        }
-    }
-}
-
-@Composable
 fun PictureTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
@@ -395,6 +368,73 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
             color = Color.Black)
     }
 }
+@Composable
+fun ProfileText(description: String , value: String) {
+    var textFieldVisible by remember { mutableStateOf(false) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        // Clickable Text
+        Text(text = description, fontFamily = FontFamily.SansSerif, fontSize = 17.sp)
+        Spacer(modifier = Modifier.size(10.dp))
+        Text(
+            text = value,
+            modifier = Modifier.clickable {
+                textFieldVisible = true
+            },
+            fontSize = 25.sp,
+            fontFamily = FontFamily.Default,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                textDecoration = TextDecoration.Underline
+            )
+        )
+
+        // Conditional Text Field
+        if (textFieldVisible) {
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = textFieldValue,
+                onValueChange = { textFieldValue = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    textFieldVisible = false
+                    // Perform any actions with the text field value here
+                },
+                modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.End)
+            ) {
+                Text("Save")
+            }
+        }
+    }
+}
+
+
+    @Composable
+    fun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {
+        Button(
+            onClick = onClick, shape = ButtonDefaults.shape,
+            colors = ButtonDefaults.buttonColors(Color.Green),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = name, modifier = Modifier
+                    .size(80.dp, 30.dp)
+                    .padding(start = 17.dp, top = 4.dp)
+                    .align(Alignment.CenterVertically)
+                    .fillMaxWidth(),
+                color = Color.Black
+            )
+        }
+    }
 
 
 
