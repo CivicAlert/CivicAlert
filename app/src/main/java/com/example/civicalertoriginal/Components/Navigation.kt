@@ -9,14 +9,13 @@ import com.example.civicalertoriginal.Screens.DashBoard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.LogIn
 import com.example.civicalertoriginal.Screens.Registration
+import com.example.civicalertoriginal.Screens.UpdateProfile
 
 
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "logIn" +
-            "" +
-            "") {
+    NavHost(navController = navController, startDestination = "userProfile") {
         composable("registration"){
             Registration(navController)
         }
@@ -31,6 +30,9 @@ fun Navigation (){
         }
         composable("makeReports"){
             MakeReports(navController)
+        }
+        composable("userProfile"){
+            UpdateProfile(navController)
         }
 
     }

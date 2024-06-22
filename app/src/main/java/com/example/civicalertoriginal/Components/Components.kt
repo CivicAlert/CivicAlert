@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_EXPRESSION")
+
 package com.example.civicalertoriginal.Components
 
 import android.widget.Toast
@@ -29,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -50,7 +53,9 @@ import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.civicalertoriginal.R
@@ -363,6 +368,73 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
             color = Color.Black)
     }
 }
+@Composable
+fun ProfileText(description: String , value: String) {
+    var textFieldVisible by remember { mutableStateOf(false) }
+    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+    ) {
+        // Clickable Text
+        Text(text = description, fontFamily = FontFamily.SansSerif, fontSize = 17.sp)
+        Spacer(modifier = Modifier.size(10.dp))
+        Text(
+            text = value,
+            modifier = Modifier.clickable {
+                textFieldVisible = true
+            },
+            fontSize = 25.sp,
+            fontFamily = FontFamily.Default,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                textDecoration = TextDecoration.Underline
+            )
+        )
+
+        // Conditional Text Field
+        if (textFieldVisible) {
+            Spacer(modifier = Modifier.height(16.dp))
+            TextField(
+                value = textFieldValue,
+                onValueChange = { textFieldValue = it },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    textFieldVisible = false
+                    // Perform any actions with the text field value here
+                },
+                modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.End)
+            ) {
+                Text("Save")
+            }
+        }
+    }
+}
+
+
+    @Composable
+    fun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {
+        Button(
+            onClick = onClick, shape = ButtonDefaults.shape,
+            colors = ButtonDefaults.buttonColors(Color.Green),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = name, modifier = Modifier
+                    .size(80.dp, 30.dp)
+                    .padding(start = 17.dp, top = 4.dp)
+                    .align(Alignment.CenterVertically)
+                    .fillMaxWidth(),
+                color = Color.Black
+            )
+        }
+    }
 
 
 
