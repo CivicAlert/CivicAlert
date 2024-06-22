@@ -1,10 +1,10 @@
-package com.example.Civicalert
+package com.example.civicalertoriginal
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.example.Civicalert.Components.Navigation
-import com.example.Civicalert.ui.theme.CivicAlertOriginalTheme
+import com.example.civicalertoriginal.Components.Navigation
+import com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme
 import com.google.firebase.FirebaseApp
 
 class MainActivity : ComponentActivity() {

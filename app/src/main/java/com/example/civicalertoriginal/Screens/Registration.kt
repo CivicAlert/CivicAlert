@@ -1,4 +1,4 @@
-package com.example.Civicalert.Screens
+package com.example.civicalertoriginal.Screens
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.*
@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.Civicalert.Components.*
+import com.example.civicalertoriginal.Components.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 

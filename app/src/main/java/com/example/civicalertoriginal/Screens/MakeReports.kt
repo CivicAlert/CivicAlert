@@ -13,12 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.Civicalert.Components.BottomButtons
-import com.example.Civicalert.Components.DescriptionTextFields
-import com.example.Civicalert.Components.ExposedDropdownMenuBox
-import com.example.Civicalert.Components.LocationTextFields
-import com.example.Civicalert.Components.PictureTextFields
-import com.example.Civicalert.Components.ReportDescriptionText
+import com.example.civicalertoriginal.Components.BottomButtons
+import com.example.civicalertoriginal.Components.DescriptionTextFields
+import com.example.civicalertoriginal.Components.ExposedDropdownMenuBox
+import com.example.civicalertoriginal.Components.LocationTextFields
+import com.example.civicalertoriginal.Components.PictureTextFields
+import com.example.civicalertoriginal.Components.ReportDescriptionText
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 

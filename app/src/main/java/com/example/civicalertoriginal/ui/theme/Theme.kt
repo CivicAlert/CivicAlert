@@ -1,4 +1,4 @@
-package com.example.Civicalert.ui.theme
+package com.example.civicalertoriginal.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

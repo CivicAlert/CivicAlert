@@ -1,4 +1,4 @@
-package com.example.Civicalert.Screens
+package com.example.civicalertoriginal.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.Civicalert.Components.CardButton
-import com.example.Civicalert.Components.Logo
+import com.example.civicalertoriginal.Components.CardButton
+import com.example.civicalertoriginal.Components.Logo
 import com.example.civicalertoriginal.R
 
 @OptIn(ExperimentalMaterial3Api::class)

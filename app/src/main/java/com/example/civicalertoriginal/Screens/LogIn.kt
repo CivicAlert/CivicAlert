@@ -1,4 +1,4 @@
-package com.example.Civicalert.Screens
+package com.example.civicalertoriginal.Screens
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -28,12 +28,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.Civicalert.Components.BottomButtons
-import com.example.Civicalert.Components.EmailTextFields
-import com.example.Civicalert.Components.InstructionText
-import com.example.Civicalert.Components.LogAndForgotHeader
-import com.example.Civicalert.Components.PasswordTextFields
-import com.example.Civicalert.Components.SignUpBottomButtons
+import com.example.civicalertoriginal.Components.EmailTextFields
+import com.example.civicalertoriginal.Components.InstructionText
+import com.example.civicalertoriginal.Components.LogAndForgotHeader
+import com.example.civicalertoriginal.Components.PasswordTextFields
+import com.example.civicalertoriginal.Components.SignUpBottomButtons
 import com.example.civicalertoriginal.R
 
 import java.util.regex.Pattern
