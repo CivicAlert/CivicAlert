@@ -1,6 +1,7 @@
 package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.rounded.List
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -32,12 +34,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.civicalertoriginal.Components.BottomButtonsMyProfile
 import com.example.civicalertoriginal.Components.ProfileText
+import com.google.firebase.database.core.Context
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -82,19 +86,20 @@ fun UpdateProfile (navController: NavController){
         }){innerPadding ->
             Column {
                 Spacer(modifier = Modifier.size(10.dp))
+                var current = LocalContext.current
+
                 Column ( modifier = Modifier.fillMaxWidth() ,
                     verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
                     Icon(imageVector = Icons.Rounded.Face, contentDescription = "", modifier = Modifier.size(80.dp
                     ))
                     Text(text = "USER NAME", fontSize = 25.sp)
                 }
-                val cardColor by remember {
-                    mutableStateOf(Color.Green)
-                }
+
 
                 Card (  modifier = Modifier
-                    .fillMaxWidth()
-                    .background(cardColor) ){
+                    .fillMaxWidth() .padding(20.dp) .background(Color.White),
+                    shape = RoundedCornerShape(10.dp),
+                ){
                     Column {
                         ProfileText(description = "First Name", value = "User name")
                         Spacer(modifier = Modifier.size(10.dp))
@@ -107,9 +112,11 @@ fun UpdateProfile (navController: NavController){
                     } }
 
                 Spacer(modifier = Modifier.size(20.dp))
-                BottomButtonsMyProfile(name = "UPDATE") {}
+                BottomButtonsMyProfile(name = "UPDATE") {
+                    Toast.makeText(current, "Details has been successfully  updated", Toast.LENGTH_LONG).show()
+                }
                 Spacer(modifier = Modifier.size(20.dp))
-                BottomButtonsMyProfile(name = "Log Out") {}
+                BottomButtonsMyProfile(name = "Log Out") { navController.navigate("Login")}
             }
         }
 

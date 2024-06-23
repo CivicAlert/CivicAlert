@@ -1,0 +1,19 @@
+Index: app/src/main/java/com/example/Civicalert/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.Civicalert.Components\r\n\r\nimport CivicAlert.Screen.MakeReports\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.Civicalert.Screens.DashBoard\r\nimport com.example.Civicalert.Screens.ForgotPassword\r\nimport com.example.Civicalert.Screens.LogIn\r\nimport com.example.Civicalert.Screens.Registration\r\n\r\n\r\n@Composable\r\nfun Navigation (){\r\n    val navController = rememberNavController()\r\n    NavHost(navController = navController, startDestination = \"logIn\" +\r\n            \"\" +\r\n            \"\") {\r\n        composable(\"registration\"){\r\n            Registration(navController)\r\n        }\r\n        composable(\"Login\"){\r\n            LogIn(navController)\r\n        }\r\n        composable(\"forgotPassword\"){\r\n            ForgotPassword(navController)\r\n        }\r\n        composable(\"Dashboard\"){\r\n            DashBoard(navController)\r\n        }\r\n        composable(\"makeReports\"){\r\n            MakeReports(navController)\r\n        }\r\n\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Components/Navigation.kt b/app/src/main/java/com/example/Civicalert/Components/Navigation.kt
+--- a/app/src/main/java/com/example/Civicalert/Components/Navigation.kt	
++++ b/app/src/main/java/com/example/Civicalert/Components/Navigation.kt	
+@@ -14,9 +14,7 @@
+ @Composable
+ fun Navigation (){
+     val navController = rememberNavController()
+-    NavHost(navController = navController, startDestination = "logIn" +
+-            "" +
+-            "") {
++    NavHost(navController = navController, startDestination = "Dashboard") {
+         composable("registration"){
+             Registration(navController)
+         }

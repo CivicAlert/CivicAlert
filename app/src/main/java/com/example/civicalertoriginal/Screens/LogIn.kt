@@ -129,7 +129,9 @@ fun LogIn(navController: NavController) {
                     .size(50.dp,55.dp),painter = painterResource(id = R.drawable.googlepic),
                     contentDescription = "Google SignIn" )
             Spacer(modifier = Modifier.size(18.dp))
-            BottomButtons(name = "Sign Up") {Toast.makeText(context,"Sign in Successful",Toast.LENGTH_SHORT).show()}
+            BottomButtons(name = "Sign Up") {Toast.makeText(context,"Sign in Successful",Toast.LENGTH_SHORT).show()
+            navController.navigate("Dashboard")}
+
 
         }
     }
