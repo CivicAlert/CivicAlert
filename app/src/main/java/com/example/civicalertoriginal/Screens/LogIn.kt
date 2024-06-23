@@ -129,9 +129,13 @@ fun LogIn(navController: NavController) {
 
             Spacer(modifier = Modifier.size(18.dp))
 
-            SignUpBottomButtons(name = "Sign in",)
-
-            {Toast.makeText(context,"Sign in Successful",Toast.LENGTH_SHORT).show()}
+            SignUpBottomButtons(
+                name = "Sign in",
+                onClick = {
+                    Toast.makeText(context, "Sign in Successful", Toast.LENGTH_SHORT).show()
+                    navController.navigate("dashboard")
+                }
+            )
 
         }
     }
