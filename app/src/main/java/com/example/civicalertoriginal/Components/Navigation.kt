@@ -1,6 +1,6 @@
 package com.example.civicalertoriginal.Components
 
-import CivicAlert.Screen.MakeReports
+import civicalertoriginal.Screen.MakeReports
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
