@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -58,6 +61,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.civicalertoriginal.R
 
 
@@ -375,7 +379,7 @@ fun ProfileText(description: String , value: String) {
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(10.dp)
             .fillMaxWidth()
     ) {
         // Clickable Text
@@ -395,7 +399,7 @@ fun ProfileText(description: String , value: String) {
 
         // Conditional Text Field
         if (textFieldVisible) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             TextField(
                 value = textFieldValue,
                 onValueChange = { textFieldValue = it },
@@ -421,9 +425,9 @@ fun ProfileText(description: String , value: String) {
     fun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {
         Button(
             onClick = onClick, shape = ButtonDefaults.shape,
-            colors = ButtonDefaults.buttonColors(Color.Green),
+            colors = ButtonDefaults.buttonColors(Color.Red),
             modifier = Modifier
-                .fillMaxWidth()
+                .width(400.dp)
         ) {
             Text(
                 text = name, modifier = Modifier
@@ -435,6 +439,7 @@ fun ProfileText(description: String , value: String) {
             )
         }
     }
+
 
 
 
