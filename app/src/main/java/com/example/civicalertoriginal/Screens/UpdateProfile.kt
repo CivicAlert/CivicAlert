@@ -10,9 +10,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Edit
@@ -106,11 +111,12 @@ fun UpdateProfile(navController: NavController) {
                     Icon(
                         imageVector = Icons.Rounded.Face, contentDescription = "", modifier = Modifier.size(80.dp)
                     )
-                    Text(text = "USER NAME", fontSize = 25.sp)
+                    Text(text = "Tshepiso Makuoa", fontSize = 25.sp)
                 }
                 Spacer(modifier = Modifier.size(20.dp))
 
                 Column (horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                    val items =
                     Card(
                         modifier = Modifier
                             .size(400.dp,350.dp),
@@ -118,12 +124,29 @@ fun UpdateProfile(navController: NavController) {
                         border = BorderStroke(2.dp, Color.LightGray),
                         shape = RoundedCornerShape(15.dp),
                     ) {
-                        Column {
+                       /* LazyColumn (modifier = Modifier.verticalScroll(rememberScrollState())) {
                             ProfileText(description = "First Name", value = "User name")
                             ProfileText(description = "Last Name", value = "Sirname")
                             ProfileText(description = "Email address", value = "emailInForm@gmail.com")
                             ProfileText(description = "Phone number", value = "+27 68801025")
+                        }*/
+                       data class ProfileData(val description: String, val value: String)
+
+                        val profileItems = listOf(
+                            ProfileData("First Name", "Tshepiso"),
+                            ProfileData("Last Name", "Makuoa"),
+                            ProfileData("Email address", "userEmail@gmail.com"),
+                            ProfileData("Phone number", "+27 68801025")
+                        )
+                        LazyColumn (modifier = Modifier
+                            .fillMaxSize()
+                           /* .verticalScroll(rememberScrollState())*/){
+                            items(profileItems){ profileItems->
+                                ProfileText(description = profileItems.description, value = profileItems.value)
+                            }
                         }
+
+
                     }
 
                     Spacer(modifier = Modifier.size(50.dp))
