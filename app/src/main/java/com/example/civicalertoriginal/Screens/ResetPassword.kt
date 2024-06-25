@@ -52,9 +52,12 @@ fun ForgotPassword (navController: NavController){
                 return Pattern.matches(emailPattern, email)
             }
 
-           EmailTextFields(value = email, onChange = {if (email.length<100){
-               validateEmail(email)
-           } }, fieldLabel = "Enter your email ")
+            EmailTextFields(value = email, onChange = {
+                if (email.length<=100){
+                    email=it
+                    validateEmail(email)
+                }                                     },
+                fieldLabel = "Enter Email Address" )
 
             
             Spacer(modifier = Modifier.size(10.dp))
