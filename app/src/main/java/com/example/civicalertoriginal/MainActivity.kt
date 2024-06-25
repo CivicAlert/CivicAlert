@@ -16,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.Navigation
-import com.example.civicalertoriginal.Screens.DashBoard
+import com.example.civicalertoriginal.Screens.Dashboard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.LogIn
 import com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme

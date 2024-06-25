@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -183,6 +184,35 @@ fun BottomButtons(name: String, onClick: () -> Unit,){
             .padding(start = 17.dp, top = 4.dp)
             .align(Alignment.CenterVertically),
             color = Color.Black)
+    }
+}
+@Composable
+fun Logo(){
+    Image(painter = painterResource(id = R.drawable.logo), contentDescription ="" )
+}
+@Composable
+fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .size(160.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = "",
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = label)
+        }
     }
 }
 
