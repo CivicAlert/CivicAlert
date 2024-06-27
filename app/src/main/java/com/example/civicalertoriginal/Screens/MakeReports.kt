@@ -69,6 +69,8 @@ fun MakeReports(navController: NavController) {
         DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = "Give a brief description of the incident")
 
         val report = hashMapOf(
+
+
             "Report Description" to description,
             "Report picture" to picture,
             "Report location" to location
