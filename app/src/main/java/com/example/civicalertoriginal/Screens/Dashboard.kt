@@ -57,7 +57,7 @@ fun Dashboard(navController: NavController) {
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp, 70.dp)
-                            .clickable { }
+                            .clickable {navController.navigate("userProfile") }
                     )
                 }
             }
@@ -121,9 +121,7 @@ fun Dashboard(navController: NavController) {
                     CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
                         // logic to take you to help page
                     }
-                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
-                        // logic to take you to emergency contacts page
-                    }
+                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {navController.navigate("emergencyContact")}
                 }
             }
 

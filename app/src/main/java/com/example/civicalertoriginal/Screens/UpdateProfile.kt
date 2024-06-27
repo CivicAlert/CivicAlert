@@ -49,15 +49,14 @@ fun UpdateProfile (navController: NavController){
 
                 Row {
 
-                    Column (
-                    ) {
+                    Column ( modifier = Modifier.clickable { navController.navigate("Dashboard") }) {
                         Icon(imageVector = Icons.Rounded.Home, contentDescription = "", modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.CenterHorizontally))
                         Text(text = "HOME")
                     }
                     Spacer(modifier = Modifier.size(20.dp))
-                    Column (){
+                    Column (modifier = Modifier.clickable { navController.navigate("makeReports") }){
                         Icon(imageVector = Icons.Rounded.Edit, contentDescription = "", modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.CenterHorizontally)
@@ -65,14 +64,14 @@ fun UpdateProfile (navController: NavController){
                         Text(text = "MAKE REPORTS")
                     }
                     Spacer(modifier = Modifier.size(20.dp))
-                    Column () {
+                    Column ( modifier = Modifier.clickable { navController.navigate("") }) {
                         Icon(imageVector = Icons.Rounded.List, contentDescription = "", modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.CenterHorizontally))
                         Text(text = "VIEW REPORTS")
                     }
                     Spacer(modifier = Modifier.size(20.dp))
-                    Column () {
+                    Column (modifier = Modifier.clickable { navController.navigate("emergencyCall") }) {
                         Icon(imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.CenterHorizontally))
