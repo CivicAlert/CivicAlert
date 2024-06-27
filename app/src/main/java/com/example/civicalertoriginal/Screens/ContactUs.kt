@@ -18,9 +18,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
 import com.example.civicalertoriginal.R
 
@@ -120,4 +122,11 @@ fun BottomNavItem(icon: ImageVector, label: String, onClick: () -> Unit) {
         Icon(imageVector = icon, contentDescription = label, modifier = Modifier.size(30.dp))
         Text(text = label, fontSize = 15.sp)
     }
+}
+
+@Preview
+@Composable
+fun ContactUsPreview() {
+    val navController = rememberNavController()
+    ContactUs(navController)
 }

@@ -477,7 +477,7 @@ fun ProfileText(description: String , value: String) {
 
 @Composable
 fun ContactUsContactButton(value: String){
-    Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+    Button(onClick = { /* contact logic*/ }, colors = ButtonDefaults.buttonColors(
         contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .padding(8.dp)
@@ -491,7 +491,7 @@ fun ContactUsContactButton(value: String){
 }
 @Composable
 fun ContactUSEmailButton(value: String){
-    Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+    Button(onClick = { /*email logic*/ }, colors = ButtonDefaults.buttonColors(
         contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .padding(8.dp)
