@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import civicalertoriginal.Screen.AnimatedMakeReports
 import com.example.civicalertoriginal.Screens.Dashboard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.LogIn
@@ -29,7 +30,7 @@ fun Navigation (){
             Dashboard(navController)
         }
         composable("makeReports"){
-            MakeReports(navController)
+           MakeReports(navController)
         }
         composable("userProfile"){
             UpdateProfile(navController)

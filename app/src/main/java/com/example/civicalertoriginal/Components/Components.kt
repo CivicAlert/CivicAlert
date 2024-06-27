@@ -3,6 +3,11 @@
 package com.example.civicalertoriginal.Components
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +41,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -59,8 +65,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import civicalertoriginal.Screen.MakeReports
 import com.example.civicalertoriginal.R
 
 
@@ -269,7 +278,7 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, fieldLabel: Str
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            placeholder = { Text(text = fieldLabel, color = Color.Black)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -467,6 +476,7 @@ fun ProfileText(description: String , value: String) {
             )
         }
     }
+
 
 
 

@@ -2,6 +2,7 @@ package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,7 +60,8 @@ fun UpdateProfile (navController: NavController){
                     Column (){
                         Icon(imageVector = Icons.Rounded.Edit, contentDescription = "", modifier = Modifier
                             .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
+                            .align(Alignment.CenterHorizontally)
+                            .clickable { navController.navigate("makeReports") })
                         Text(text = "MAKE REPORTS")
                     }
                     Spacer(modifier = Modifier.size(20.dp))
