@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.civicalertoriginal.Screens.ContactUs
 import com.example.civicalertoriginal.Screens.Dashboard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.LogIn
@@ -33,6 +34,9 @@ fun Navigation (){
         }
         composable("userProfile"){
             UpdateProfile(navController)
+        }
+        composable("emergencyContacts"){
+            ContactUs(navController)
         }
 
     }

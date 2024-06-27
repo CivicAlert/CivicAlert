@@ -56,7 +56,7 @@ fun Dashboard(navController: NavController) {
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp, 70.dp)
-                            .clickable { }
+                            .clickable {navController.navigate("userProfile") }
                     )
                 }
             }
@@ -107,10 +107,10 @@ fun Dashboard(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     CardButton(iconRes = R.drawable.info, label = "Report Incident") {
-                        // logic to take you to report incident page
+                        navController.navigate("") // logic to take you to report incident page
                     }
                     CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
-                        // logic to take you to reported incidents page
+                        navController.navigate("") // logic to take you to reported incidents page
                     }
                 }
             }
@@ -122,10 +122,10 @@ fun Dashboard(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
-                        // logic to take you to help page
+                        navController.navigate("") // logic to take you to help page
                     }
                     CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
-                        // logic to take you to emergency contacts page
+                        navController.navigate("emergencyContacts") // logic to take you to emergency contacts page
                     }
                 }
             }
