@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -61,6 +62,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.example.civicalertoriginal.R
 
 
@@ -182,6 +184,35 @@ fun BottomButtons(name: String, onClick: () -> Unit,){
             .padding(start = 17.dp, top = 4.dp)
             .align(Alignment.CenterVertically),
             color = Color.Black)
+    }
+}
+@Composable
+fun Logo(){
+    Image(painter = painterResource(id = R.drawable.logo), contentDescription ="" )
+}
+@Composable
+fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .size(160.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = iconRes),
+                contentDescription = "",
+                modifier = Modifier.size(40.dp)
+            )
+            Text(text = label)
+        }
     }
 }
 
@@ -407,7 +438,7 @@ fun ProfileText(description: String , value: String) {
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(10.dp)
             .fillMaxWidth()
     ) {
         // Clickable Text
@@ -427,7 +458,7 @@ fun ProfileText(description: String , value: String) {
 
         // Conditional Text Field
         if (textFieldVisible) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             TextField(
                 value = textFieldValue,
                 onValueChange = { textFieldValue = it },
@@ -453,9 +484,9 @@ fun ProfileText(description: String , value: String) {
     fun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {
         Button(
             onClick = onClick, shape = ButtonDefaults.shape,
-            colors = ButtonDefaults.buttonColors(Color.Green),
+            colors = ButtonDefaults.buttonColors(Color.Red),
             modifier = Modifier
-                .fillMaxWidth()
+                .width(400.dp)
         ) {
             Text(
                 text = name, modifier = Modifier
@@ -467,6 +498,7 @@ fun ProfileText(description: String , value: String) {
             )
         }
     }
+
 
 
 
