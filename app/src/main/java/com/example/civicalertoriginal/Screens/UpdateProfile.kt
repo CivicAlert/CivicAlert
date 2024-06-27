@@ -70,7 +70,7 @@ fun UpdateProfile(navController: NavController) {
                         Text(text = "HOME", fontSize = 12.sp)
                     }
                     Spacer(modifier = Modifier.size(20.dp))
-                    Column(modifier = Modifier.clickable {  }) {
+                    Column(modifier = Modifier.clickable { navController.navigate("makeReports") }) {
                         Icon(
                             imageVector = Icons.Rounded.Edit, contentDescription = "", modifier = Modifier
                                 .size(30.dp)
@@ -88,7 +88,7 @@ fun UpdateProfile(navController: NavController) {
                         Text(text = "VIEW REPORTS", fontSize = 12.sp)
                     }
                     Spacer(modifier = Modifier.size(20.dp))
-                    Column(modifier = Modifier.clickable {  }) {
+                    Column(modifier = Modifier.clickable { navController.navigate("emergencyContacts") }) {
                         Icon(
                             imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier
                                 .size(30.dp)
@@ -124,12 +124,6 @@ fun UpdateProfile(navController: NavController) {
                         border = BorderStroke(2.dp, Color.LightGray),
                         shape = RoundedCornerShape(15.dp),
                     ) {
-                       /* LazyColumn (modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            ProfileText(description = "First Name", value = "User name")
-                            ProfileText(description = "Last Name", value = "Sirname")
-                            ProfileText(description = "Email address", value = "emailInForm@gmail.com")
-                            ProfileText(description = "Phone number", value = "+27 68801025")
-                        }*/
                        data class ProfileData(val description: String, val value: String)
 
                         val profileItems = listOf(

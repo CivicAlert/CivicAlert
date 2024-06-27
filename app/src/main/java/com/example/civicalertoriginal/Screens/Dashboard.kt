@@ -107,7 +107,7 @@ fun Dashboard(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     CardButton(iconRes = R.drawable.info, label = "Report Incident") {
-                        navController.navigate("") // logic to take you to report incident page
+                        navController.navigate("makeReports") // logic to take you to report incident page
                     }
                     CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
                         navController.navigate("") // logic to take you to reported incidents page
