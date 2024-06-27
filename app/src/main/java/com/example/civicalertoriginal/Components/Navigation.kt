@@ -5,7 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import civicalertoriginal.Screen.AnimatedMakeReports
 import com.example.civicalertoriginal.Screens.Dashboard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.LogIn
@@ -16,7 +15,7 @@ import com.example.civicalertoriginal.Screens.UpdateProfile
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "userProfile") {
+    NavHost(navController = navController, startDestination = "Login") {
         composable("registration"){
             Registration(navController)
         }
@@ -30,10 +29,13 @@ fun Navigation (){
             Dashboard(navController)
         }
         composable("makeReports"){
-           MakeReports(navController)
+            MakeReports(navController)
         }
         composable("userProfile"){
             UpdateProfile(navController)
+        }
+        composable("makeReports"){
+            MakeReports(navController)
         }
 
     }

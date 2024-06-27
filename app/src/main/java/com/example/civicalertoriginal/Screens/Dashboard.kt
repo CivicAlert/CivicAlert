@@ -107,12 +107,8 @@ fun Dashboard(navController: NavController) {
                         .padding(top = 20.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {
-                        // logic to take you to report incident page
-                    }
-                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
-                        // logic to take you to reported incidents page
-                    }
+                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {navController.navigate("makeReports")}
+                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {}
                 }
             }
 
