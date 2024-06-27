@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -478,7 +480,8 @@ fun ProfileText(description: String , value: String) {
 @Composable
 fun ContactUsContactButton(value: String){
     Button(onClick = { /* contact logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
+        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),
         modifier = Modifier
             .padding(8.dp)
             .size(170.dp, 50.dp)
@@ -492,7 +495,8 @@ fun ContactUsContactButton(value: String){
 @Composable
 fun ContactUSEmailButton(value: String){
     Button(onClick = { /*email logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
+        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),
         modifier = Modifier
             .padding(8.dp)
             .size(170.dp, 50.dp)
@@ -504,44 +508,126 @@ fun ContactUSEmailButton(value: String){
     }
 
 }
+
+
+
 @Composable
-fun ContactUsWhatsApp(value: String){
+fun ContactUsWhatsApp(value: String) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.offset(x = -20.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.whatsapp),
+                contentDescription = "",
+                modifier = Modifier.size(50.dp)
+            )
+            Column {
+                Text(
+                    text = value,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "083 3456 345",
+                    color = Color.Cyan,
+                    modifier = Modifier.clickable {
+                        uriHandler.openUri("https://wa.me/0833456345")
+                    }
+                )
+            }
+        }
+    }
+}
+@Composable
+fun ContactUsWMessanger(value: String) {
+    val uriHandler = LocalUriHandler.current
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.whatsapp),
-                contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "083 3456 345", color = Color.Cyan)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.messenger),
+                contentDescription = "",
+                modifier = Modifier.size(50.dp)
+            )
+            Column {
+                Text(
+                    text = value,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Facebook",
+                    color = Color.Cyan,
+                    modifier = Modifier.clickable {
+                        uriHandler.openUri("https://www.messenger.com/t/facebook")
+                    }
+                )
+            }
+        }
     }
-
 }
-@Composable
-fun ContactUsWMessanger(value: String){
-    Column (horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.messenger), contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "facebook", color = Color.Cyan)
-    }
 
+
+
+
+@Composable
+fun ContactUsInsta(value: String) {
+    val uriHandler = LocalUriHandler.current
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.offset(x = -25.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.instagram),
+                contentDescription = "",
+                modifier = Modifier.size(50.dp)
+            )
+            Column {
+                Text(
+                    text = value,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "instagram",
+                    color = Color.Cyan,
+                    modifier = Modifier.clickable {
+                        uriHandler.openUri("https://www.instagram.com/")
+                    }
+                )
+            }
+        }
+    }
 }
-@Composable
-fun ContactUsInsta(value: String){
-    Column (horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.instagram), contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "@civicAlert", color = Color.Cyan)
-    }
 
-}
 @Composable
-fun ContactUsTwitter(value: String){
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.twitter), contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "@civicAlert", color = Color.Cyan)
-    }
+fun ContactUsTwitter(value: String) {
+    val uriHandler = LocalUriHandler.current
 
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.offset(x = -14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Image(
+                painter = painterResource(id = R.drawable.twitter),
+                contentDescription = "",
+                modifier = Modifier.size(50.dp)
+            )
+            Column {
+                Text(
+                    text = value,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "twitter",
+                    color = Color.Cyan,
+                    modifier = Modifier.clickable {
+                        uriHandler.openUri("https://twitter.com/")
+                    }
+                )
+            }
+        }
+    }
 }
