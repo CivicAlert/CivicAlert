@@ -478,7 +478,8 @@ fun ProfileText(description: String , value: String) {
 @Composable
 fun ContactUsContactButton(value: String){
     Button(onClick = { /* contact logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
+        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),
         modifier = Modifier
             .padding(8.dp)
             .size(170.dp, 50.dp)
@@ -492,7 +493,8 @@ fun ContactUsContactButton(value: String){
 @Composable
 fun ContactUSEmailButton(value: String){
     Button(onClick = { /*email logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
+        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),
         modifier = Modifier
             .padding(8.dp)
             .size(170.dp, 50.dp)
@@ -510,8 +512,9 @@ fun ContactUsWhatsApp(value: String){
         Row {
             Image(painter = painterResource(id = R.drawable.whatsapp),
                 contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "083 3456 345", color = Color.Cyan)
+            Text(text = value, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(text = "083 3456 345", color = Color.Cyan)}
+
     }
 
 }

@@ -38,22 +38,22 @@ fun ContactUs(navController: NavController) {
                     ) {
                         BottomNavItem(
                             icon = Icons.Rounded.Home,
-                            label = "HOME",
+                            label = "Home",
                             onClick = { navController.navigate("Dashboard") }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.Edit,
-                            label = "MAKE REPORTS",
+                            label = "Make report",
                             onClick = { /* Handle make reports click */ }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.List,
-                            label = "VIEW REPORTS",
+                            label = "View reports",
                             onClick = { /* Handle view reports click */ }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.Call,
-                            label = "CALL",
+                            label = "Emergency \n   contact",
                             onClick = { navController.navigate("emergencyContacts") }
                         )
                     }
@@ -67,13 +67,16 @@ fun ContactUs(navController: NavController) {
                 Image(
                     painter = painterResource(id = R.drawable.contact),
                     contentDescription = "",
-                    modifier = Modifier.size(120.dp, 150.dp)
+                    modifier = Modifier
+                        .size(120.dp, 150.dp)
+                        .offset(x = -100.dp)
+
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = "Contact Us",
+                    text = "Contact us",
                     modifier = Modifier.fillMaxWidth(),
-                    fontSize = 50.sp,
+                    fontSize = 35.sp,
                     fontFamily = FontFamily.Default,
                     fontStyle = FontStyle.Normal,
                     fontWeight = FontWeight.Bold
@@ -89,7 +92,10 @@ fun ContactUs(navController: NavController) {
                     ContactUSEmailButton(value = "Email")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = "Social Media", fontSize = 25.sp)
+                Text(text = "Social Media", fontSize = 25.sp,
+                    fontFamily = FontFamily.Default,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Normal)
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
