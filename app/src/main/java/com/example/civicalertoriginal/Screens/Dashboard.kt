@@ -49,7 +49,7 @@ fun Dashboard(navController: NavController) {
                     modifier = Modifier
                         .height(80.dp)
                         .fillMaxWidth()
-                ) {
+                ){
                     Logo()
                     Image(
                         painter = painterResource(id = R.drawable.profie),
