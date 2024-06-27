@@ -33,7 +33,6 @@ import com.example.civicalertoriginal.Components.CardButton
 import com.example.civicalertoriginal.Components.Logo
 import com.example.civicalertoriginal.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard(navController: NavController) {
     Surface(color = Color.White) {
