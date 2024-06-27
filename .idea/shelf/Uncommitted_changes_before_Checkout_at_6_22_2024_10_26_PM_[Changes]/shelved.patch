@@ -1,0 +1,19 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Components\r\n\r\nimport CivicAlert.Screen.MakeReports\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Screens.DashBoard\r\nimport com.example.civicalertoriginal.Screens.ForgotPassword\r\nimport com.example.civicalertoriginal.Screens.LogIn\r\nimport com.example.civicalertoriginal.Screens.Registration\r\nimport com.example.civicalertoriginal.Screens.UserProfile\r\n\r\n\r\n@Composable\r\nfun Navigation (){\r\n    val navController = rememberNavController()\r\n    NavHost(navController = navController, startDestination = \"userProfile\" +\r\n            \"\" +\r\n            \"\") {\r\n        composable(\"registration\"){\r\n            Registration(navController)\r\n        }\r\n        composable(\"Login\"){\r\n            LogIn(navController)\r\n        }\r\n        composable(\"forgotPassword\"){\r\n            ForgotPassword(navController)\r\n        }\r\n        composable(\"Dashboard\"){\r\n            DashBoard(navController)\r\n        }\r\n        composable(\"makeReports\"){\r\n            MakeReports(navController)\r\n        }\r\n        composable(\"userProfile\"){\r\n            UserProfile(navController)\r\n        }\r\n\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	
+@@ -15,9 +15,7 @@
+ @Composable
+ fun Navigation (){
+     val navController = rememberNavController()
+-    NavHost(navController = navController, startDestination = "userProfile" +
+-            "" +
+-            "") {
++    NavHost(navController = navController, startDestination = "Login" ) {
+         composable("registration"){
+             Registration(navController)
+         }

@@ -1,0 +1,261 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/ContactUs.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.rounded.Call\r\nimport androidx.compose.material.icons.rounded.Edit\r\nimport androidx.compose.material.icons.rounded.Home\r\nimport androidx.compose.material.icons.rounded.List\r\nimport androidx.compose.material3.BottomAppBar\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport com.example.civicalertoriginal.Components.ContactUSEmailButton\r\nimport com.example.civicalertoriginal.Components.ContactUsContactButton\r\nimport com.example.civicalertoriginal.Components.ContactUsInsta\r\nimport com.example.civicalertoriginal.Components.ContactUsTwitter\r\nimport com.example.civicalertoriginal.Components.ContactUsWMessanger\r\nimport com.example.civicalertoriginal.Components.ContactUsWhatsApp\r\nimport com.example.civicalertoriginal.R\r\n\r\n@Composable\r\nfun ContactUs (navController: NavController){\r\n    Surface(color = Color.White) {\r\n       Scaffold (bottomBar = {\r\n           BottomAppBar {\r\n\r\n               Row {\r\n\r\n                   Column (\r\n                   ) {\r\n                       Icon(imageVector = Icons.Rounded.Home, contentDescription = \"\", modifier = Modifier\r\n                           .size(30.dp)\r\n                           .align(Alignment.CenterHorizontally)\r\n                           .clickable { navController.navigate(\"dashBoard\") })\r\n                       Text(text = \"HOME\", fontSize = 15.sp)\r\n                   }\r\n                   Spacer(modifier = Modifier.size(20.dp))\r\n                   Column (){\r\n                       Icon(imageVector = Icons.Rounded.Edit, contentDescription = \"\", modifier = Modifier\r\n                           .size(30.dp)\r\n                           .align(Alignment.CenterHorizontally))\r\n                       Text(text = \"MAKE REPORTS\", fontSize = 15.sp)\r\n                   }\r\n                   Spacer(modifier = Modifier.size(20.dp))\r\n                   Column () {\r\n                       Icon(imageVector = Icons.Rounded.List, contentDescription = \"\", modifier = Modifier\r\n                           .size(30.dp)\r\n                           .align(Alignment.CenterHorizontally))\r\n                       Text(text = \"VIEW REPORTS\", fontSize = 15.sp)\r\n                   }\r\n                   Spacer(modifier = Modifier.size(20.dp))\r\n                   Column () {\r\n                       Icon(imageVector = Icons.Rounded.Call, contentDescription = \"\", modifier = Modifier\r\n                           .size(30.dp)\r\n                           .align(Alignment.CenterHorizontally)\r\n                           .clickable { navController.navigate(\"contactUs\") })\r\n                       Text(text = \"CALL\", fontSize = 15.sp)\r\n                   }\r\n               } } }){innerPadding ->\r\n           Column {\r\n               Image(contentDescription =\"\", painter = painterResource(id = R.drawable.contact), modifier = Modifier.size(120.dp,150.dp) )\r\n               Spacer(modifier = Modifier.size(5.dp))\r\n               Text(text = \"Contact Us\", modifier = Modifier\r\n                   .fillMaxWidth(), fontSize = 50.sp, fontFamily = FontFamily.Default, fontStyle = FontStyle.Normal, fontWeight = FontWeight.Bold)\r\n               Text(text = \"If you have enquires get in touch with us. We will be more than happy to help you.\")\r\n               Spacer(modifier = Modifier.size(20.dp))\r\n               Row (modifier = Modifier.fillMaxWidth() , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){\r\n                   ContactUsContactButton(value = \"Call\")\r\n                   ContactUSEmailButton(value = \"Email\")\r\n               }\r\n               Spacer(modifier = Modifier\r\n                   .size(20.dp)\r\n                   .align(Alignment.Start))\r\n               Text(text = \"Social Media\", fontSize = 25.sp)\r\n               Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround){\r\n                   Spacer(modifier = Modifier.size(15.dp))\r\n                   Row {\r\n                       ContactUsWhatsApp(value = \"WhatsApp\")\r\n                       Spacer(modifier = Modifier.size(35.dp))\r\n                       ContactUsInsta(value = \"Instagram\")\r\n                   }\r\n                   Row {\r\n                       ContactUsWMessanger(value = \"Facebook\")\r\n                       Spacer(modifier = Modifier.size(35.dp))\r\n                       ContactUsTwitter(value = \"Twitter\")\r\n                   }\r\n\r\n               }\r\n\r\n\r\n           }\r\n       }\r\n\r\n    }\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/ContactUs.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/ContactUs.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/ContactUs.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/ContactUs.kt	
+@@ -2,26 +2,18 @@
+ 
+ import androidx.compose.foundation.Image
+ import androidx.compose.foundation.clickable
+-import androidx.compose.foundation.layout.Arrangement
+-import androidx.compose.foundation.layout.Column
+-import androidx.compose.foundation.layout.Row
+-import androidx.compose.foundation.layout.Spacer
+-import androidx.compose.foundation.layout.fillMaxWidth
+-import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.layout.*
+ import androidx.compose.material.icons.Icons
+ import androidx.compose.material.icons.rounded.Call
+ import androidx.compose.material.icons.rounded.Edit
+ import androidx.compose.material.icons.rounded.Home
+ import androidx.compose.material.icons.rounded.List
+-import androidx.compose.material3.BottomAppBar
+-import androidx.compose.material3.Icon
+-import androidx.compose.material3.Scaffold
+-import androidx.compose.material3.Surface
+-import androidx.compose.material3.Text
++import androidx.compose.material3.*
+ import androidx.compose.runtime.Composable
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+ import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.graphics.vector.ImageVector
+ import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.text.font.FontFamily
+ import androidx.compose.ui.text.font.FontStyle
+@@ -29,86 +21,144 @@
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
+ import androidx.navigation.NavController
+-import com.example.civicalertoriginal.Components.ContactUSEmailButton
+-import com.example.civicalertoriginal.Components.ContactUsContactButton
+-import com.example.civicalertoriginal.Components.ContactUsInsta
+-import com.example.civicalertoriginal.Components.ContactUsTwitter
+-import com.example.civicalertoriginal.Components.ContactUsWMessanger
+-import com.example.civicalertoriginal.Components.ContactUsWhatsApp
++import androidx.compose.ui.tooling.preview.Preview
++import androidx.navigation.compose.rememberNavController
++import com.example.civicalertoriginal.Components.*
+ import com.example.civicalertoriginal.R
+ 
+ @Composable
+-fun ContactUs (navController: NavController){
++fun ContactUs(navController: NavController) {
+     Surface(color = Color.White) {
+-       Scaffold (bottomBar = {
+-           BottomAppBar {
++        Scaffold(bottomBar = { ContactUsBottomAppBar(navController) }) { innerPadding ->
++            Column(
++                modifier = Modifier
++                    .padding(innerPadding)
++                    .fillMaxWidth(),
++                horizontalAlignment = Alignment.CenterHorizontally,
++            ) {
++                Image(
++                    painter = painterResource(id = R.drawable.contact),
++                    contentDescription = "",
++                    modifier = Modifier
++                        .size(120.dp, 150.dp)
++                        .padding(top = 16.dp)
++                )
++                Spacer(modifier = Modifier.height(16.dp))
++                Text(
++                    text = "Contact Us",
++                    fontSize = 36.sp,
++                    fontFamily = FontFamily.Default,
++                    fontStyle = FontStyle.Normal,
++                    fontWeight = FontWeight.Bold
++                )
++                Text(
++                    text = "If you have inquiries, get in touch with us. We will be more than happy to help you.",
++                    modifier = Modifier.padding(16.dp),
++                    fontSize = 16.sp,
++                )
++                Spacer(modifier = Modifier.height(16.dp))
++                ContactUsActions()
++                Spacer(modifier = Modifier.height(24.dp))
++                Text(text = "Social Media", fontSize = 25.sp, fontWeight = FontWeight.Bold)
++                Spacer(modifier = Modifier.height(16.dp))
++                SocialMediaButtons()
++            }
++        }
++    }
++}
++
++@Composable
++fun ContactUsBottomAppBar(navController: NavController) {
++    BottomAppBar {
++        Row(
++            modifier = Modifier.fillMaxWidth(),
++            horizontalArrangement = Arrangement.SpaceEvenly,
++            verticalAlignment = Alignment.CenterVertically
++        ) {
++            BottomNavItem(
++                icon = Icons.Rounded.Home,
++                label = "HOME",
++                onClick = { navController.navigate("dashBoard") }
++            )
++            BottomNavItem(
++                icon = Icons.Rounded.Edit,
++                label = "MAKE REPORTS",
++                onClick = { /* Add your action here */ }
++            )
++            BottomNavItem(
++                icon = Icons.Rounded.List,
++                label = "VIEW REPORTS",
++                onClick = { /* Add your action here */ }
++            )
++            BottomNavItem(
++                icon = Icons.Rounded.Call,
++                label = "CALL",
++                onClick = { navController.navigate("contactUs") }
++            )
++        }
++    }
++}
+ 
+-               Row {
+-
+-                   Column (
+-                   ) {
+-                       Icon(imageVector = Icons.Rounded.Home, contentDescription = "", modifier = Modifier
+-                           .size(30.dp)
+-                           .align(Alignment.CenterHorizontally)
+-                           .clickable { navController.navigate("dashBoard") })
+-                       Text(text = "HOME", fontSize = 15.sp)
+-                   }
+-                   Spacer(modifier = Modifier.size(20.dp))
+-                   Column (){
+-                       Icon(imageVector = Icons.Rounded.Edit, contentDescription = "", modifier = Modifier
+-                           .size(30.dp)
+-                           .align(Alignment.CenterHorizontally))
+-                       Text(text = "MAKE REPORTS", fontSize = 15.sp)
+-                   }
+-                   Spacer(modifier = Modifier.size(20.dp))
+-                   Column () {
+-                       Icon(imageVector = Icons.Rounded.List, contentDescription = "", modifier = Modifier
+-                           .size(30.dp)
+-                           .align(Alignment.CenterHorizontally))
+-                       Text(text = "VIEW REPORTS", fontSize = 15.sp)
+-                   }
+-                   Spacer(modifier = Modifier.size(20.dp))
+-                   Column () {
+-                       Icon(imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier
+-                           .size(30.dp)
+-                           .align(Alignment.CenterHorizontally)
+-                           .clickable { navController.navigate("contactUs") })
+-                       Text(text = "CALL", fontSize = 15.sp)
+-                   }
+-               } } }){innerPadding ->
+-           Column {
+-               Image(contentDescription ="", painter = painterResource(id = R.drawable.contact), modifier = Modifier.size(120.dp,150.dp) )
+-               Spacer(modifier = Modifier.size(5.dp))
+-               Text(text = "Contact Us", modifier = Modifier
+-                   .fillMaxWidth(), fontSize = 50.sp, fontFamily = FontFamily.Default, fontStyle = FontStyle.Normal, fontWeight = FontWeight.Bold)
+-               Text(text = "If you have enquires get in touch with us. We will be more than happy to help you.")
+-               Spacer(modifier = Modifier.size(20.dp))
+-               Row (modifier = Modifier.fillMaxWidth() , verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly){
+-                   ContactUsContactButton(value = "Call")
+-                   ContactUSEmailButton(value = "Email")
+-               }
+-               Spacer(modifier = Modifier
+-                   .size(20.dp)
+-                   .align(Alignment.Start))
+-               Text(text = "Social Media", fontSize = 25.sp)
+-               Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceAround){
+-                   Spacer(modifier = Modifier.size(15.dp))
+-                   Row {
+-                       ContactUsWhatsApp(value = "WhatsApp")
+-                       Spacer(modifier = Modifier.size(35.dp))
+-                       ContactUsInsta(value = "Instagram")
+-                   }
+-                   Row {
+-                       ContactUsWMessanger(value = "Facebook")
+-                       Spacer(modifier = Modifier.size(35.dp))
+-                       ContactUsTwitter(value = "Twitter")
+-                   }
+-
+-               }
+-
+-
+-           }
+-       }
++@Composable
++fun BottomNavItem(icon: ImageVector, label: String, onClick: () -> Unit) {
++    Column(
++        horizontalAlignment = Alignment.CenterHorizontally,
++        modifier = Modifier
++            .clickable(onClick = onClick)
++            .padding(8.dp)
++    ) {
++        Icon(
++            imageVector = icon,
++            contentDescription = null,
++            modifier = Modifier.size(30.dp)
++        )
++        Text(text = label, fontSize = 12.sp)
++    }
++}
++
++@Composable
++fun ContactUsActions() {
++    Row(
++        modifier = Modifier.fillMaxWidth(),
++        horizontalArrangement = Arrangement.SpaceEvenly,
++        verticalAlignment = Alignment.CenterVertically
++    ) {
++        ContactUsContactButton(value = "Call")
++        ContactUSEmailButton(value = "Email")
++    }
++}
++
++@Composable
++fun SocialMediaButtons() {
++    Column(
++        modifier = Modifier.fillMaxWidth(),
++        horizontalAlignment = Alignment.CenterHorizontally,
++    ) {
++        Row(
++            horizontalArrangement = Arrangement.SpaceEvenly,
++            verticalAlignment = Alignment.CenterVertically,
++            modifier = Modifier.fillMaxWidth()
++        ) {
++            ContactUsWhatsApp(value = "WhatsApp")
++            Spacer(modifier = Modifier.width(35.dp))
++            ContactUsInsta(value = "Instagram")
++        }
++        Spacer(modifier = Modifier.height(16.dp))
++        Row(
++            horizontalArrangement = Arrangement.SpaceEvenly,
++            verticalAlignment = Alignment.CenterVertically,
++            modifier = Modifier.fillMaxWidth()
++        ) {
++            ContactUsWMessanger(value = "Facebook")
++            Spacer(modifier = Modifier.width(35.dp))
++            ContactUsTwitter(value = "Twitter")
++        }
++    }
++}
+ 
+-    }
+-}
+\ No newline at end of file
++@Preview()
++@Composable
++fun PreviewContactUs() {
++    val navController = rememberNavController()
++    ContactUs(navController)
++}

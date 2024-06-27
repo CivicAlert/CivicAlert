@@ -1,0 +1,356 @@
+Index: app/src/main/java/com/example/Civicalert/Screens/DashBoard.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Screens/DashBoard.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt
+rename from app/src/main/java/com/example/Civicalert/Screens/DashBoard.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt
+--- a/app/src/main/java/com/example/Civicalert/Screens/DashBoard.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.Screens
++package com.example.civicalertoriginal.Screens
+ 
+ import androidx.compose.foundation.Image
+ import androidx.compose.foundation.clickable
+@@ -29,13 +29,12 @@
+ import androidx.compose.ui.unit.sp
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+-import com.example.Civicalert.Components.CardButton
+-import com.example.Civicalert.Components.Logo
++import com.example.civicalertoriginal.Components.*
+ import com.example.civicalertoriginal.R
+ 
+ @OptIn(ExperimentalMaterial3Api::class)
+ @Composable
+-fun DashBoard(navController: NavController){
++fun DashBoard(navController: NavController) {
+ 
+     Surface(color = Color.White,
+         modifier = Modifier.verticalScroll(rememberScrollState())
+@@ -101,10 +100,10 @@
+                 horizontalArrangement = Arrangement.SpaceAround
+             ) {
+                 CardButton(iconRes = R.drawable.info, label = "Report Incident") {
+-                    // logic to take you to report incident  page
++                    navController.navigate("report_incident")
+                 }
+                 CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
+-                    // logic to take you reported incidents  page
++                    navController.navigate("View_reports")
+                 }
+             }
+ 
+@@ -114,10 +113,10 @@
+                 horizontalArrangement = Arrangement.SpaceAround
+             ) {
+                 CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
+-                    // logic to take you to help page
++                    navController.navigate("help_&_support")
+                 }
+                 CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
+-                    // logic to take you to emergency contacts page
++                    navController.navigate("emergency_contacts")
+                 }
+             }
+ 
+Index: app/src/main/java/com/example/Civicalert/Screens/LogIn.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Screens/LogIn.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt
+rename from app/src/main/java/com/example/Civicalert/Screens/LogIn.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt
+--- a/app/src/main/java/com/example/Civicalert/Screens/LogIn.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.Screens
++package com.example.civicalertoriginal.Screens
+ 
+ import android.widget.Toast
+ import androidx.compose.foundation.Image
+@@ -28,12 +28,11 @@
+ import androidx.compose.ui.unit.dp
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+-import com.example.Civicalert.Components.BottomButtons
+-import com.example.Civicalert.Components.EmailTextFields
+-import com.example.Civicalert.Components.InstructionText
+-import com.example.Civicalert.Components.LogAndForgotHeader
+-import com.example.Civicalert.Components.PasswordTextFields
+-import com.example.Civicalert.Components.SignUpBottomButtons
++import com.example.civicalertoriginal.Components.EmailTextFields
++import com.example.civicalertoriginal.Components.InstructionText
++import com.example.civicalertoriginal.Components.LogAndForgotHeader
++import com.example.civicalertoriginal.Components.PasswordTextFields
++import com.example.civicalertoriginal.Components.SignUpBottomButtons
+ import com.example.civicalertoriginal.R
+ 
+ import java.util.regex.Pattern
+@@ -130,10 +129,13 @@
+ 
+             Spacer(modifier = Modifier.size(18.dp))
+ 
+-            SignUpBottomButtons(name = "Sign in",)
+-
+-            {Toast.makeText(context,"Sign in Successful",Toast.LENGTH_SHORT).show()}
+-
++            SignUpBottomButtons(
++                name = "Sign in",
++                onClick = {
++                    Toast.makeText(context, "Sign in Successful", Toast.LENGTH_SHORT).show()
++                    navController.navigate("Dashboard")
++                }
++            )
+         }
+     }
+ }
+Index: app/src/main/java/com/example/Civicalert/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Components/Navigation.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+rename from app/src/main/java/com/example/Civicalert/Components/Navigation.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+--- a/app/src/main/java/com/example/Civicalert/Components/Navigation.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	
+@@ -15,7 +15,7 @@
+ @Composable
+ fun Navigation (){
+     val navController = rememberNavController()
+-    NavHost(navController = navController, startDestination = "userProfile") {
++    NavHost(navController = navController, startDestination = "Login") {
+         composable("registration"){
+             Registration(navController)
+         }
+Index: app/src/main/java/com/example/Civicalert/Screens/Registration.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Screens/Registration.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+rename from app/src/main/java/com/example/Civicalert/Screens/Registration.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+--- a/app/src/main/java/com/example/Civicalert/Screens/Registration.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.Screens
++package com.example.civicalertoriginal.Screens
+ 
+ import android.util.Patterns
+ import androidx.compose.foundation.layout.*
+@@ -15,7 +15,13 @@
+ import androidx.compose.ui.unit.sp
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+-import com.example.Civicalert.Components.*
++import com.example.civicalertoriginal.Components.EmailTextFields
++import com.example.civicalertoriginal.Components.InstructionText
++import com.example.civicalertoriginal.Components.LogBottomButtons
++import com.example.civicalertoriginal.Components.NumberTextFields
++import com.example.civicalertoriginal.Components.PasswordTextFields
++import com.example.civicalertoriginal.Components.SignUpText
++import com.example.civicalertoriginal.Components.TextFields
+ import com.google.firebase.database.ktx.database
+ import com.google.firebase.ktx.Firebase
+ 
+Index: app/src/main/java/com/example/Civicalert/Screens/ResetPassword.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Screens/ResetPassword.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/ResetPassword.kt
+rename from app/src/main/java/com/example/Civicalert/Screens/ResetPassword.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Screens/ResetPassword.kt
+--- a/app/src/main/java/com/example/Civicalert/Screens/ResetPassword.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/ResetPassword.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.Screens
++package com.example.civicalertoriginal.Screens
+ 
+ import android.widget.Toast
+ import androidx.compose.foundation.layout.Arrangement
+@@ -21,10 +21,7 @@
+ import androidx.compose.ui.unit.dp
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+-import com.example.Civicalert.Components.BottomButtons
+-import com.example.Civicalert.Components.EmailTextFields
+-import com.example.Civicalert.Components.InstructionText
+-import com.example.Civicalert.Components.LogAndForgotHeader
++import com.example.civicalertoriginal.Components.*
+ import java.util.regex.Pattern
+ 
+ @Composable
+Index: app/src/main/java/com/example/Civicalert/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/MainActivity.kt b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+rename from app/src/main/java/com/example/Civicalert/MainActivity.kt
+rename to app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+--- a/app/src/main/java/com/example/Civicalert/MainActivity.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	
+@@ -1,10 +1,10 @@
+-package com.example.Civicalert
++package com.example.civicalertoriginal
+ 
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+-import com.example.Civicalert.Components.Navigation
+-import com.example.Civicalert.ui.theme.CivicAlertOriginalTheme
++import com.example.civicalertoriginal.Components.*
++import com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme
+ import com.google.firebase.FirebaseApp
+ 
+ class MainActivity : ComponentActivity() {
+Index: app/src/main/java/com/example/Civicalert/ui/theme/Type.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/ui/theme/Type.kt b/app/src/main/java/com/example/civicalertoriginal/ui/theme/Type.kt
+rename from app/src/main/java/com/example/Civicalert/ui/theme/Type.kt
+rename to app/src/main/java/com/example/civicalertoriginal/ui/theme/Type.kt
+--- a/app/src/main/java/com/example/Civicalert/ui/theme/Type.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/ui/theme/Type.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.ui.theme
++package com.example.civicalertoriginal.ui.theme
+ 
+ import androidx.compose.material3.Typography
+ import androidx.compose.ui.text.TextStyle
+Index: app/src/main/java/com/example/Civicalert/ui/theme/Color.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/ui/theme/Color.kt b/app/src/main/java/com/example/civicalertoriginal/ui/theme/Color.kt
+rename from app/src/main/java/com/example/Civicalert/ui/theme/Color.kt
+rename to app/src/main/java/com/example/civicalertoriginal/ui/theme/Color.kt
+--- a/app/src/main/java/com/example/Civicalert/ui/theme/Color.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/ui/theme/Color.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.ui.theme
++package com.example.civicalertoriginal.ui.theme
+ 
+ import androidx.compose.ui.graphics.Color
+ 
+Index: app/src/main/java/com/example/Civicalert/Screens/MakeReports.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Screens/MakeReports.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+rename from app/src/main/java/com/example/Civicalert/Screens/MakeReports.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+--- a/app/src/main/java/com/example/Civicalert/Screens/MakeReports.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	
+@@ -13,12 +13,12 @@
+ import androidx.compose.ui.unit.sp
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+-import com.example.Civicalert.Components.BottomButtons
+-import com.example.Civicalert.Components.DescriptionTextFields
+-import com.example.Civicalert.Components.ExposedDropdownMenuBox
+-import com.example.Civicalert.Components.LocationTextFields
+-import com.example.Civicalert.Components.PictureTextFields
+-import com.example.Civicalert.Components.ReportDescriptionText
++import com.example.civicalertoriginal.Components.BottomButtons
++import com.example.civicalertoriginal.Components.DescriptionTextFields
++import com.example.civicalertoriginal.Components.ExposedDropdownMenuBox
++import com.example.civicalertoriginal.Components.LocationTextFields
++import com.example.civicalertoriginal.Components.PictureTextFields
++import com.example.civicalertoriginal.Components.ReportDescriptionText
+ import com.google.firebase.database.ktx.database
+ import com.google.firebase.ktx.Firebase
+ 
+Index: app/src/main/java/com/example/Civicalert/Components/Components.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/Components/Components.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt
+rename from app/src/main/java/com/example/Civicalert/Components/Components.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Components/Components.kt
+--- a/app/src/main/java/com/example/Civicalert/Components/Components.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt	
+@@ -11,6 +11,7 @@
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.Row
+ import androidx.compose.foundation.layout.Spacer
++import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.fillMaxWidth
+ import androidx.compose.foundation.layout.height
+ import androidx.compose.foundation.layout.padding
+@@ -25,6 +26,8 @@
+ import androidx.compose.material.icons.filled.Person
+ import androidx.compose.material3.Button
+ import androidx.compose.material3.ButtonDefaults
++import androidx.compose.material3.Card
++import androidx.compose.material3.CardDefaults
+ import androidx.compose.material3.Checkbox
+ import androidx.compose.material3.DropdownMenuItem
+ import androidx.compose.material3.ExperimentalMaterial3Api
+@@ -368,6 +371,36 @@
+             color = Color.Black)
+     }
+ }
++@Composable
++fun Logo(){
++    Image(painter = painterResource(id = R.drawable.logo), contentDescription ="" )
++}
++@Composable
++fun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {
++    Card(
++        modifier = Modifier
++            .size(160.dp)
++            .clickable(onClick = onClick),
++        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white
++        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow
++    ) {
++        Column(
++            modifier = Modifier
++                .fillMaxSize()
++                .padding(8.dp),
++            verticalArrangement = Arrangement.Center,
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
++            Image(
++                painter = painterResource(id = iconRes),
++                contentDescription = "",
++                modifier = Modifier.size(40.dp)
++            )
++            Text(text = label)
++        }
++    }
++}
++
+ @Composable
+ fun ProfileText(description: String , value: String) {
+     var textFieldVisible by remember { mutableStateOf(false) }
+Index: app/src/main/java/com/example/Civicalert/ui/theme/Theme.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/Civicalert/ui/theme/Theme.kt b/app/src/main/java/com/example/civicalertoriginal/ui/theme/Theme.kt
+rename from app/src/main/java/com/example/Civicalert/ui/theme/Theme.kt
+rename to app/src/main/java/com/example/civicalertoriginal/ui/theme/Theme.kt
+--- a/app/src/main/java/com/example/Civicalert/ui/theme/Theme.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/ui/theme/Theme.kt	
+@@ -1,4 +1,4 @@
+-package com.example.Civicalert.ui.theme
++package com.example.civicalertoriginal.ui.theme
+ 
+ import android.os.Build
+ import androidx.compose.foundation.isSystemInDarkTheme
+diff --git a/app/src/main/java/com/example/Civicalert/Screens/UpdateProfile.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/UpdateProfile.kt
+rename from app/src/main/java/com/example/Civicalert/Screens/UpdateProfile.kt
+rename to app/src/main/java/com/example/civicalertoriginal/Screens/UpdateProfile.kt

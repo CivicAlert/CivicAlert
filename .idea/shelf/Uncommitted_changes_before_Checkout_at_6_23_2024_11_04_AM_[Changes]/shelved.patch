@@ -1,0 +1,374 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Components\r\n\r\nimport CivicAlert.Screen.MakeReports\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Screens.DashBoard\r\nimport com.example.civicalertoriginal.Screens.ForgotPassword\r\nimport com.example.civicalertoriginal.Screens.LogIn\r\nimport com.example.civicalertoriginal.Screens.Registration\r\nimport com.example.civicalertoriginal.Screens.UpdateProfile\r\n\r\n\r\n@Composable\r\nfun Navigation (){\r\n    val navController = rememberNavController()\r\n    NavHost(navController = navController, startDestination = \"login\") {\r\n        composable(\"registration\"){\r\n            Registration(navController)\r\n        }\r\n        composable(\"Login\"){\r\n            LogIn(navController)\r\n        }\r\n        composable(\"forgotPassword\"){\r\n            ForgotPassword(navController)\r\n        }\r\n        composable(\"Dashboard\"){\r\n            DashBoard(navController)\r\n        }\r\n        composable(\"makeReports\"){\r\n            MakeReports(navController)\r\n        }\r\n        composable(\"userProfile\"){\r\n            UpdateProfile(navController)\r\n        }\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	(revision 50634f59fabe006ec475185a3db59e48b29c455b)
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	(date 1719131720777)
+@@ -5,7 +5,7 @@
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.rememberNavController
+-import com.example.civicalertoriginal.Screens.DashBoard
++import com.example.civicalertoriginal.Screens.Dashboard
+ import com.example.civicalertoriginal.Screens.ForgotPassword
+ import com.example.civicalertoriginal.Screens.LogIn
+ import com.example.civicalertoriginal.Screens.Registration
+@@ -15,7 +15,7 @@
+ @Composable
+ fun Navigation (){
+     val navController = rememberNavController()
+-    NavHost(navController = navController, startDestination = "login") {
++    NavHost(navController = navController, startDestination = "Login") {
+         composable("registration"){
+             Registration(navController)
+         }
+@@ -26,7 +26,7 @@
+             ForgotPassword(navController)
+         }
+         composable("Dashboard"){
+-            DashBoard(navController)
++            Dashboard(navController)
+         }
+         composable("makeReports"){
+             MakeReports(navController)
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.widget.Toast\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.TextStyle\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.EmailTextFields\r\nimport com.example.civicalertoriginal.Components.InstructionText\r\nimport com.example.civicalertoriginal.Components.LogAndForgotHeader\r\nimport com.example.civicalertoriginal.Components.PasswordTextFields\r\nimport com.example.civicalertoriginal.Components.SignUpBottomButtons\r\nimport com.example.civicalertoriginal.R\r\n\r\nimport java.util.regex.Pattern\r\n\r\n\r\n@Composable\r\nfun LogIn(navController: NavController) {\r\n    Surface(\r\n        color = Color.White\r\n    ) {\r\n        Column (\r\n            horizontalAlignment = Alignment.CenterHorizontally,\r\n            modifier = Modifier\r\n                .padding(start = 16.dp, end = 16.dp, top = 80.dp)\r\n                .fillMaxSize()\r\n\r\n        ){\r\n         LogAndForgotHeader(screenLabel = \"Login\")\r\n            val context = LocalContext.current\r\n\r\n            Spacer(modifier = Modifier.size(40.dp))\r\n            var email by remember { mutableStateOf(\"\") }\r\n            var password by remember {mutableStateOf(\"\")}\r\n\r\n            Spacer(modifier = Modifier.padding(10.dp))\r\n\r\n            fun validatePassword(password:String):Boolean{\r\n                val passwordPattern = \"[a-zA-Z0-9]\"\r\n               return  Pattern.matches(passwordPattern,password)\r\n            }\r\n            fun validateEmail(email: String): Boolean {\r\n                val emailPattern = \"[a-zA-Z0-9_]+@+\\\\.[a-zA-Z]\"\r\n                return Pattern.matches(emailPattern, email)\r\n            }\r\n            //matches the alphas numerics, matches the @, matches alpha numeric, matches atleast two charecters\r\n\r\n\r\n\r\n\r\n            EmailTextFields(value = email, onChange = {\r\n                if (email.length<=100){\r\n                    email=it\r\n                    validateEmail(email)\r\n                }                                     },\r\n                fieldLabel = \"Enter Email Address\" )\r\n\r\n\r\n            Spacer(modifier = Modifier.size(10.dp))\r\n            PasswordTextFields(value = password, onChange = {\r\n\r\n                if (password.length<9){\r\n                    password=it\r\n                    validatePassword(password)\r\n                }\r\n\r\n             },\r\n                fieldLabel = \"Enter your password\")\r\n\r\n            Spacer(modifier = Modifier.padding(6.dp))\r\n\r\n            Row( verticalAlignment = Alignment.Bottom,\r\n                horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier\r\n                    .padding(20.dp)\r\n                    .align(Alignment.CenterHorizontally)\r\n\r\n            ) {\r\n\r\n              Text(text = \"Forgot Password?\", modifier = Modifier\r\n                  .clickable { navController.navigate(\"ForgotPassword\") }\r\n                  .padding(end = 25.dp),\r\n                    style = TextStyle(\r\n                        fontStyle = FontStyle.Normal,\r\n                        color = Color.Blue\r\n                    )\r\n                )\r\n                Spacer(modifier = Modifier.size(15.dp))\r\n\r\n                Text(text = \"Register\", modifier = Modifier\r\n                    .clickable { navController.navigate(\"registration\") }\r\n                    .padding(start = 25.dp),\r\n                    style = TextStyle( fontStyle = FontStyle.Normal,\r\n                        color = Color.Blue)\r\n                )\r\n\r\n            }\r\n\r\n            Spacer(modifier = Modifier.size(50.dp))\r\n            InstructionText(value = \"Sign with google\")\r\n\r\n                Image( modifier = Modifier\r\n                    .size(50.dp,55.dp)\r\n                    .clickable {  },painter = painterResource(id = R.drawable.googlepic),\r\n                    contentDescription = \"Google SignIn\" )\r\n\r\n            Spacer(modifier = Modifier.size(18.dp))\r\n\r\n            SignUpBottomButtons(name = \"Sign in\",)\r\n\r\n            {Toast.makeText(context,\"Sign in Successful\",Toast.LENGTH_SHORT).show()}\r\n\r\n        }\r\n    }\r\n}\r\n\r\n@Preview\r\n@Composable\r\nfun LogInPreview(){\r\n    val navController = rememberNavController()\r\n    LogIn( navController)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt	(revision 50634f59fabe006ec475185a3db59e48b29c455b)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/LogIn.kt	(date 1719131527443)
+@@ -129,9 +129,13 @@
+ 
+             Spacer(modifier = Modifier.size(18.dp))
+ 
+-            SignUpBottomButtons(name = "Sign in",)
+-
+-            {Toast.makeText(context,"Sign in Successful",Toast.LENGTH_SHORT).show()}
++            SignUpBottomButtons(
++                name = "Sign in",
++                onClick = {
++                    Toast.makeText(context, "Sign in Successful", Toast.LENGTH_SHORT).show()
++                    navController.navigate("dashboard")
++                }
++            )
+ 
+         }
+     }
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt
+deleted file mode 100644
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/DashBoard.kt	(revision 50634f59fabe006ec475185a3db59e48b29c455b)
++++ /dev/null	(revision 50634f59fabe006ec475185a3db59e48b29c455b)
+@@ -1,139 +0,0 @@
+-package com.example.civicalertoriginal.Screens
+-
+-import androidx.compose.foundation.Image
+-import androidx.compose.foundation.clickable
+-import androidx.compose.foundation.layout.Arrangement
+-import androidx.compose.foundation.layout.Column
+-import androidx.compose.foundation.layout.Row
+-import androidx.compose.foundation.layout.fillMaxHeight
+-import androidx.compose.foundation.layout.fillMaxSize
+-import androidx.compose.foundation.layout.fillMaxWidth
+-import androidx.compose.foundation.layout.height
+-import androidx.compose.foundation.layout.padding
+-import androidx.compose.foundation.layout.size
+-import androidx.compose.foundation.rememberScrollState
+-import androidx.compose.foundation.verticalScroll
+-import androidx.compose.material3.Card
+-import androidx.compose.material3.CardDefaults
+-import androidx.compose.material3.ExperimentalMaterial3Api
+-import androidx.compose.material3.Surface
+-import androidx.compose.material3.Text
+-import androidx.compose.runtime.Composable
+-import androidx.compose.ui.Alignment
+-import androidx.compose.ui.Modifier
+-import androidx.compose.ui.graphics.Color
+-import androidx.compose.ui.res.painterResource
+-import androidx.compose.ui.text.font.FontWeight
+-import androidx.compose.ui.tooling.preview.Preview
+-import androidx.compose.ui.unit.dp
+-import androidx.compose.ui.unit.sp
+-import androidx.navigation.NavController
+-import androidx.navigation.compose.rememberNavController
+-import com.example.civicalertoriginal.Components.CardButton
+-import com.example.civicalertoriginal.Components.Logo
+-import com.example.civicalertoriginal.R
+-
+-@OptIn(ExperimentalMaterial3Api::class)
+-@Composable
+-fun DashBoard(navController: NavController){
+-
+-    Surface(color = Color.White,
+-        modifier = Modifier.verticalScroll(rememberScrollState())
+-    ) {
+-        Column (
+-            modifier = Modifier
+-                .fillMaxSize()
+-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 12.dp)
+-                .verticalScroll(rememberScrollState()),
+-            verticalArrangement = Arrangement.spacedBy(18.dp),
+-            horizontalAlignment = Alignment.CenterHorizontally
+-        ){
+-            Row (
+-                horizontalArrangement = Arrangement.SpaceBetween,
+-                modifier = Modifier
+-                    .height(80.dp)
+-                    .fillMaxWidth()
+-            ) {
+-                Logo()
+-                Image(
+-                    painter = painterResource(id = R.drawable.profie),
+-                    contentDescription = "",
+-                    modifier = Modifier
+-                        .size(50.dp, 70.dp)
+-                        .clickable { }
+-                )
+-            }
+-
+-            Column(
+-                modifier = Modifier.height(300.dp)
+-            ) {
+-                Card(
+-                    modifier = Modifier
+-                        .fillMaxWidth()
+-                        .fillMaxHeight(),
+-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+-                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+-                ) {
+-                    Column(
+-                        modifier = Modifier
+-                            .padding(16.dp)
+-                    ) {
+-                        Text(text = "Recent report",
+-                            fontWeight = FontWeight.Bold, fontSize = 20.sp)
+-                        Image(
+-                            painter = painterResource(id = R.drawable.photo),
+-                            contentDescription = "Picture of reported incident",
+-                            modifier = Modifier.height(150.dp)
+-                        )
+-                        Text(text = "Broken Street Light",
+-                            fontWeight = FontWeight.Bold, fontSize = 20.sp)
+-                        Text(text = "3 Webb St, Sonheuwal Central, Mbombela")
+-                        Text(text = "14 March")
+-                        Text(text = "Streetlight")
+-                    }
+-                }
+-            }
+-
+-            Row(
+-                modifier = Modifier
+-                    .fillMaxWidth()
+-                    .padding(top = 20.dp),
+-                horizontalArrangement = Arrangement.SpaceAround
+-            ) {
+-                CardButton(iconRes = R.drawable.info, label = "Report Incident") {
+-                    // logic to take you to report incident  page
+-                }
+-                CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
+-                    // logic to take you reported incidents  page
+-                }
+-            }
+-
+-            Row(
+-                modifier = Modifier
+-                    .fillMaxWidth(),
+-                horizontalArrangement = Arrangement.SpaceAround
+-            ) {
+-                CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
+-                    // logic to take you to help page
+-                }
+-                CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
+-                    // logic to take you to emergency contacts page
+-                }
+-            }
+-
+-            Row (modifier = Modifier
+-                .height(20.dp)){
+-
+-            }
+-        }
+-    }
+-}
+-
+-
+-
+-@Preview
+-@Composable
+-fun DashBoardPreview(){
+-    val navController = rememberNavController()
+-    DashBoard(navController)
+-}
+\ No newline at end of file
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt
+new file mode 100644
+--- /dev/null	(date 1719133281367)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt	(date 1719133281367)
+@@ -0,0 +1,150 @@
++package com.example.civicalertoriginal.Screens
++
++import androidx.compose.foundation.Image
++import androidx.compose.foundation.clickable
++import androidx.compose.foundation.layout.Arrangement
++import androidx.compose.foundation.layout.Column
++import androidx.compose.foundation.layout.Row
++import androidx.compose.foundation.layout.fillMaxHeight
++import androidx.compose.foundation.layout.fillMaxSize
++import androidx.compose.foundation.layout.fillMaxWidth
++import androidx.compose.foundation.layout.height
++import androidx.compose.foundation.layout.padding
++import androidx.compose.foundation.layout.size
++import androidx.compose.foundation.lazy.LazyColumn
++import androidx.compose.foundation.lazy.items
++import androidx.compose.material3.Card
++import androidx.compose.material3.CardDefaults
++import androidx.compose.material3.ExperimentalMaterial3Api
++import androidx.compose.material3.Surface
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.text.font.FontWeight
++import androidx.compose.ui.tooling.preview.Preview
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import androidx.navigation.NavController
++import androidx.navigation.compose.rememberNavController
++import com.example.civicalertoriginal.Components.CardButton
++import com.example.civicalertoriginal.Components.Logo
++import com.example.civicalertoriginal.R
++
++@OptIn(ExperimentalMaterial3Api::class)
++@Composable
++fun Dashboard(navController: NavController) {
++    Surface(color = Color.White) {
++        LazyColumn(
++            modifier = Modifier
++                .fillMaxSize()
++                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 12.dp),
++            verticalArrangement = Arrangement.spacedBy(18.dp),
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
++            item {
++                Row(
++                    horizontalArrangement = Arrangement.SpaceBetween,
++                    modifier = Modifier
++                        .height(80.dp)
++                        .fillMaxWidth()
++                ) {
++                    Logo()
++                    Image(
++                        painter = painterResource(id = R.drawable.profie),
++                        contentDescription = "",
++                        modifier = Modifier
++                            .size(50.dp, 70.dp)
++                            .clickable { }
++                    )
++                }
++            }
++
++            item {
++                Column(
++                    modifier = Modifier.height(300.dp)
++                ) {
++                    Card(
++                        modifier = Modifier
++                            .fillMaxWidth()
++                            .fillMaxHeight(),
++                        colors = CardDefaults.cardColors(containerColor = Color.White),
++                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
++                    ) {
++                        Column(
++                            modifier = Modifier
++                                .padding(16.dp)
++                        ) {
++                            Text(
++                                text = "Recent report",
++                                fontWeight = FontWeight.Bold,
++                                fontSize = 20.sp
++                            )
++                            Image(
++                                painter = painterResource(id = R.drawable.photo),
++                                contentDescription = "Picture of reported incident",
++                                modifier = Modifier.height(150.dp)
++                            )
++                            Text(
++                                text = "Broken Street Light",
++                                fontWeight = FontWeight.Bold,
++                                fontSize = 20.sp
++                            )
++                            Text(text = "3 Webb St, Sonheuwal Central, Mbombela")
++                            Text(text = "14 March")
++                            Text(text = "Streetlight")
++                        }
++                    }
++                }
++            }
++
++            item {
++                Row(
++                    modifier = Modifier
++                        .fillMaxWidth()
++                        .padding(top = 20.dp),
++                    horizontalArrangement = Arrangement.SpaceAround
++                ) {
++                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {
++                        // logic to take you to report incident page
++                    }
++                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
++                        // logic to take you to reported incidents page
++                    }
++                }
++            }
++
++            item {
++                Row(
++                    modifier = Modifier
++                        .fillMaxWidth(),
++                    horizontalArrangement = Arrangement.SpaceAround
++                ) {
++                    CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
++                        // logic to take you to help page
++                    }
++                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
++                        // logic to take you to emergency contacts page
++                    }
++                }
++            }
++
++            item {
++                Row(
++                    modifier = Modifier.height(20.dp)
++                ) {
++                    // Placeholder for spacing
++                }
++            }
++        }
++    }
++}
++
++@Preview
++@Composable
++fun DashboardPreview() {
++    val navController = rememberNavController()
++    Dashboard(navController)
++}
