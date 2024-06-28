@@ -57,7 +57,7 @@ fun Dashboard(navController: NavController) {
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp, 70.dp)
-                            .clickable {navController.navigate("userProfile") }
+                            .clickable { navController.navigate("userProfile") }
                     )
                 }
             }
@@ -107,38 +107,51 @@ fun Dashboard(navController: NavController) {
                         .padding(top = 20.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {navController.navigate("makeReports")}
-                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {}
+                    CardButton(
+                        iconRes = R.drawable.info,
+                        label = "Report Incident",
+                        onClick = { navController.navigate("makeReports") }
+                    )
+                    CardButton(
+                        iconRes = R.drawable.clipboard,
+                        label = "View Reports",
+                        onClick = { navController.navigate("Viewreports") }
+                    )
                 }
             }
 
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
-                        // logic to take you to help page
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
+                            // logic to take you to help page
+                        }
+                        CardButton(
+                            iconRes = R.drawable.emergency_contacts,
+                            label = "Emergency Contacts"
+                        )
+                        { navController.navigate("emergencyContact") }
                     }
-                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {navController.navigate("emergencyContact")}
                 }
-            }
 
-            item {
-                Row(
-                    modifier = Modifier.height(20.dp)
-                ) {
-                    // Placeholder for spacing
+                item {
+                    Row(
+                        modifier = Modifier.height(20.dp)
+                    ) {
+                        // Placeholder for spacing
+                    }
                 }
             }
         }
     }
-}
 
-@Preview
-@Composable
-fun DashboardPreview() {
-    val navController = rememberNavController()
-    Dashboard(navController)
-}
+
+    @Preview
+    @Composable
+    fun DashboardPreview() {
+        val navController = rememberNavController()
+        Dashboard(navController)
+    }

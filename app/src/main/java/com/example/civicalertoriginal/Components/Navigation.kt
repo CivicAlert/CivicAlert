@@ -1,16 +1,12 @@
 package com.example.civicalertoriginal.Components
 
-import civicalertoriginal.Screen.MakeReports
+
+import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Screens.ContactUs
-import com.example.civicalertoriginal.Screens.Dashboard
-import com.example.civicalertoriginal.Screens.ForgotPassword
-import com.example.civicalertoriginal.Screens.LogIn
-import com.example.civicalertoriginal.Screens.Registration
-import com.example.civicalertoriginal.Screens.UpdateProfile
+import com.example.civicalertoriginal.Screens.*
 
 
 @Composable
@@ -38,6 +34,8 @@ fun Navigation (){
         composable("emergencyContacts"){
             ContactUs(navController)
         }
-
+        composable("Viewreports"){
+            ViewReports(navController)
+        }
     }
 }
