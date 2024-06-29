@@ -85,8 +85,8 @@ fun ContactUs(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ContactUsContactButton(value = "Call")
-                    ContactUSEmailButton(value = "Email")
+                    //ContactUsContactButton(value = "Call")
+                   // ContactUSEmailButton(value = "Email")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(text = "Social Media", fontSize = 25.sp)
@@ -97,15 +97,15 @@ fun ContactUs(navController: NavController) {
                 ) {
                     Spacer(modifier = Modifier.height(15.dp))
                     Row {
-                        ContactUsWhatsApp(value = "WhatsApp")
+                      //  ContactUsWhatsApp(value = "WhatsApp")
                         Spacer(modifier = Modifier.width(35.dp))
-                        ContactUsInsta(value = "Instagram")
+                      //  ContactUsInsta(value = "Instagram")
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     Row {
-                        ContactUsWMessanger(value = "Facebook")
+                      //  ContactUsWMessanger(value = "Facebook")
                         Spacer(modifier = Modifier.width(35.dp))
-                        ContactUsTwitter(value = "Twitter")
+                            // ContactUsTwitter(value = "Twitter")
                     }
                 }
             }
