@@ -84,9 +84,9 @@ fun ViewReports(navController: NavController) {
                     ) {
                         OutlinedTextField(
                             modifier = Modifier
-                                .weight(12f)
-                                .fillMaxWidth()
-                                .height(61.dp),
+                                .weight(2f)
+                                .width(25.dp)
+                                .height(60.dp),
                             value = searchText,
                             onValueChange = { searchText = it },
                             leadingIcon = {
@@ -159,6 +159,7 @@ fun <T> ExposedDropdownMenu(
                 .clipToBounds() // Clip the bounds of the TextField
                 .offset(y = -4.dp)
                 .fillMaxHeight()
+                .padding(end = 4.dp)
         )
 
         DropdownMenu(
@@ -227,7 +228,10 @@ fun ExpandableReportItem(report: Report) {
                         )
                         Spacer(modifier = Modifier.width(40.dp))
                         Text(
-                            text = report.description.take(10), // Show only the first 10 letters
+                            text = report.description,
+                            modifier = Modifier
+                                .height(25.dp)
+                                .clipToBounds(),// Show only the first 10 letters
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
                         )
                     }
@@ -245,10 +249,12 @@ fun ExpandableReportItem(report: Report) {
             if (expanded) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Description: ${report.description}",
+                    text = "${report.description}",
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(start = 10.dp)
+                    modifier = Modifier
+                        .padding(start = 10.dp)
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = { expanded = false },

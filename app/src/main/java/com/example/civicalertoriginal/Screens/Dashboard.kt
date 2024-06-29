@@ -126,14 +126,17 @@ fun Dashboard(navController: NavController) {
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
-                            // logic to take you to help page
-                        }
+                        CardButton(
+                            iconRes = R.drawable.headphones,
+                            label = "Help & Support",
+                            onClick =  { navController.navigate("") })
+
                         CardButton(
                             iconRes = R.drawable.emergency_contacts,
-                            label = "Emergency Contacts"
+                            label = "Emergency\n Contacts",
+                            onClick = { navController.navigate("emergencyContacts") }
                         )
-                        { navController.navigate("emergencyContact") }
+
                     }
                 }
 
