@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
@@ -475,73 +473,3 @@ fun ProfileText(description: String , value: String) {
 
 
 
-@Composable
-fun ContactUsContactButton(value: String){
-    Button(onClick = { /* contact logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
-        modifier = Modifier
-            .padding(8.dp)
-            .size(170.dp, 50.dp)
-    ) {
-        Icon(imageVector = Icons.Default.Call, contentDescription = "", modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.size(5.dp))
-        Text(text = value, fontSize = 15.sp)
-
-    }
-}
-@Composable
-fun ContactUSEmailButton(value: String){
-    Button(onClick = { /*email logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.LightGray), shape = RoundedCornerShape(15.dp),
-        modifier = Modifier
-            .padding(8.dp)
-            .size(170.dp, 50.dp)
-    ) {
-        Icon(imageVector = Icons.Default.Email, contentDescription = "", modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.size(5.dp))
-        Text(text = value, fontSize = 18.sp)
-
-    }
-
-}
-@Composable
-fun ContactUsWhatsApp(value: String){
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.whatsapp),
-                contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "083 3456 345", color = Color.Cyan)
-    }
-
-}
-@Composable
-fun ContactUsWMessanger(value: String){
-    Column (horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.messenger), contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "facebook", color = Color.Cyan)
-    }
-
-}
-@Composable
-fun ContactUsInsta(value: String){
-    Column (horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.instagram), contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "@civicAlert", color = Color.Cyan)
-    }
-
-}
-@Composable
-fun ContactUsTwitter(value: String){
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row {
-            Image(painter = painterResource(id = R.drawable.twitter), contentDescription ="" , modifier = Modifier.size(50.dp))
-            Text(text = value, fontSize = 25.sp, fontWeight = FontWeight.Bold) }
-        Text(text = "@civicAlert", color = Color.Cyan)
-    }
-
-}
