@@ -44,7 +44,7 @@ fun ContactUs(navController: NavController) {
                         BottomNavItem(
                             icon = Icons.Rounded.Edit,
                             label = "MAKE REPORTS",
-                            onClick = { /* Handle make reports click */ }
+                            onClick = { navController.navigate("makeReports") }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.List,
