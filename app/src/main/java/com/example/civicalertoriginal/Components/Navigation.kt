@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Screens.ContactUs
 import com.example.civicalertoriginal.Screens.Dashboard
 import com.example.civicalertoriginal.Screens.ForgotPassword
+import com.example.civicalertoriginal.Screens.HelpAndSupport
 import com.example.civicalertoriginal.Screens.LogIn
 import com.example.civicalertoriginal.Screens.Registration
 import com.example.civicalertoriginal.Screens.UpdateProfile
@@ -16,7 +17,7 @@ import com.example.civicalertoriginal.Screens.UpdateProfile
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "Login") {
+    NavHost(navController = navController, startDestination = "helpSupport") {
         composable("registration"){
             Registration(navController)
         }
@@ -37,6 +38,9 @@ fun Navigation (){
         }
         composable("emergencyContacts"){
             ContactUs(navController)
+        }
+        composable("helpSupport"){
+            HelpAndSupport(navController)
         }
 
     }
