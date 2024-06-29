@@ -71,7 +71,7 @@ fun UpdateProfile (navController: NavController){
                         Text(text = "VIEW REPORTS")
                     }
                     Spacer(modifier = Modifier.size(20.dp))
-                    Column (modifier = Modifier.clickable { navController.navigate("emergencyCall") }) {
+                    Column (modifier = Modifier.clickable { navController.navigate("emergencyContacts") }) {
                         Icon(imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier
                             .size(30.dp)
                             .align(Alignment.CenterHorizontally))
