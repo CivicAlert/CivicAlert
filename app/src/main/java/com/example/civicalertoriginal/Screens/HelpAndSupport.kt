@@ -56,38 +56,30 @@ fun HelpAndSupport(navController: NavController) {
 
         Scaffold (bottomBar = {
             BottomAppBar {
-
-                Row {
-
-                    Column ( modifier = Modifier.clickable { navController.navigate("Dashboard") }) {
-                        Icon(imageVector = Icons.Rounded.Home, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
-                        Text(text = "HOME")
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Column (modifier = Modifier.clickable { navController.navigate("makeReports") }){
-                        Icon(imageVector = Icons.Rounded.Edit, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .clickable { navController.navigate("makeReports") })
-                        Text(text = "MAKE REPORTS")
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Column ( modifier = Modifier.clickable { navController.navigate("") }) {
-                        Icon(imageVector = Icons.Rounded.List, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
-                        Text(text = "VIEW REPORTS")
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Column (modifier = Modifier.clickable { navController.navigate("emergencyContacts") }) {
-                        Icon(imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
-                        Text(text = "CALL")
-                    }
-
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    BottomNavItem(
+                        icon = Icons.Rounded.Home,
+                        label = "Home",
+                        onClick = { navController.navigate("Dashboard") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Rounded.Edit,
+                        label = "Make report",
+                        onClick = { navController.navigate("makeReports") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Rounded.List,
+                        label = "View reports",
+                        onClick = { navController.navigate("Viewreports") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Rounded.Call,
+                        label = "Emergency\nContact",
+                        onClick = { navController.navigate("emergencyContacts") }
+                    )
                 }
             }
         }){

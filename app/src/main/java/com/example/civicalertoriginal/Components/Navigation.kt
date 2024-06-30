@@ -3,6 +3,7 @@ package com.example.civicalertoriginal.Components
 
 import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.internal.composableLambda
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -36,6 +37,9 @@ fun Navigation (){
         }
         composable("Viewreports"){
             ViewReports(navController)
+        }
+        composable("helpSupport"){
+            HelpAndSupport(navController)
         }
     }
 }
