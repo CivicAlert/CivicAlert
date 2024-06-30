@@ -33,6 +33,7 @@ import com.example.civicalertoriginal.Components.CardButton
 import com.example.civicalertoriginal.Components.Logo
 import com.example.civicalertoriginal.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard(navController: NavController) {
     Surface(color = Color.White) {
@@ -49,14 +50,14 @@ fun Dashboard(navController: NavController) {
                     modifier = Modifier
                         .height(80.dp)
                         .fillMaxWidth()
-                ){
+                ) {
                     Logo()
                     Image(
                         painter = painterResource(id = R.drawable.profie),
                         contentDescription = "",
                         modifier = Modifier
                             .size(50.dp, 70.dp)
-                            .clickable {navController.navigate("userProfile") }
+                            .clickable { navController.navigate("userProfile") }
                     )
                 }
             }
@@ -106,44 +107,54 @@ fun Dashboard(navController: NavController) {
                         .padding(top = 20.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {
-                        navController.navigate("makeReports") // logic to take you to report incident page
-                    }
-                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
-                        navController.navigate("") // logic to take you to reported incidents page
-                    }
+                    CardButton(
+                        iconRes = R.drawable.info,
+                        label = "Report Incident",
+                        onClick = { navController.navigate("makeReports") }
+                    )
+                    CardButton(
+                        iconRes = R.drawable.clipboard,
+                        label = "View Reports",
+                        onClick = { navController.navigate("Viewreports") }
+                    )
                 }
             }
 
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
-                        navController.navigate("") // logic to take you to help page
-                    }
-                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
-                        navController.navigate("emergencyContacts") // logic to take you to emergency contacts page
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        CardButton(
+                            iconRes = R.drawable.headphones,
+                            label = "Help & Support",
+                            onClick =  { navController.navigate("") })
+
+                        CardButton(
+                            iconRes = R.drawable.emergency_contacts,
+                            label = "Emergency\n Contacts",
+                            onClick = { navController.navigate("emergencyContacts") }
+                        )
+
                     }
                 }
-            }
 
-            item {
-                Row(
-                    modifier = Modifier.height(20.dp)
-                ) {
-                    // Placeholder for spacing
+                item {
+                    Row(
+                        modifier = Modifier.height(20.dp)
+                    ) {
+                        // Placeholder for spacing
+                    }
                 }
             }
         }
     }
-}
 
-@Preview
-@Composable
-fun DashboardPreview() {
-    val navController = rememberNavController()
-    Dashboard(navController)
-}
+
+    @Preview
+    @Composable
+    fun DashboardPreview() {
+        val navController = rememberNavController()
+        Dashboard(navController)
+    }

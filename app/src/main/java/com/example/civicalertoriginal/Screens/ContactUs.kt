@@ -38,22 +38,22 @@ fun ContactUs(navController: NavController) {
                     ) {
                         BottomNavItem(
                             icon = Icons.Rounded.Home,
-                            label = "HOME",
+                            label = "Home",
                             onClick = { navController.navigate("Dashboard") }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.Edit,
-                            label = "MAKE REPORTS",
-                            onClick = { navController.navigate("makeReports") }
+                            label = "Make report",
+                            onClick = { /* Handle make reports click */ }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.List,
-                            label = "VIEW REPORTS",
+                            label = "View reports",
                             onClick = { /* Handle view reports click */ }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.Call,
-                            label = "CALL",
+                            label = "Emergency\nContact",
                             onClick = { navController.navigate("emergencyContacts") }
                         )
                     }
@@ -61,51 +61,76 @@ fun ContactUs(navController: NavController) {
             }
         ) { innerPadding ->
             Column(
-                modifier = Modifier.padding(innerPadding).padding(16.dp),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.contact),
                     contentDescription = "",
-                    modifier = Modifier.size(120.dp, 150.dp)
+                    modifier = Modifier
+                        .size(120.dp)
+                        .offset(x = -100.dp)
                 )
-                Spacer(modifier = Modifier.height(5.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Contact Us",
                     modifier = Modifier.fillMaxWidth(),
-                    fontSize = 50.sp,
+                    fontSize = 30.sp,
                     fontFamily = FontFamily.Default,
                     fontStyle = FontStyle.Normal,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
                 )
-                Text(text = "If you have inquiries, get in touch with us. We will be more than happy to help you.")
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "If you have inquiries, get in touch with us. We will be more than happy to help you.",
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily.Default,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.DarkGray
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    //ContactUsContactButton(value = "Call")
-                   // ContactUSEmailButton(value = "Email")
+                    ContactUsContactButton(value = "Call")
+                    ContactUSEmailButton(value = "Email")
                 }
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = "Social Media", fontSize = 25.sp)
+                Text(
+                    text = "Social Media",
+                    fontSize = 24.sp,
+                    fontFamily = FontFamily.Default,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceAround
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Row {
-                      //  ContactUsWhatsApp(value = "WhatsApp")
-                        Spacer(modifier = Modifier.width(35.dp))
-                      //  ContactUsInsta(value = "Instagram")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        ContactUsWhatsApp(value = "WhatsApp")
+                        ContactUsWMessanger(value = "Facebook")
                     }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row {
-                      //  ContactUsWMessanger(value = "Facebook")
-                        Spacer(modifier = Modifier.width(35.dp))
-                            // ContactUsTwitter(value = "Twitter")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        ContactUsInsta(value = "Instagram")
+                        ContactUsTwitter(value = "Twitter")
                     }
                 }
             }
