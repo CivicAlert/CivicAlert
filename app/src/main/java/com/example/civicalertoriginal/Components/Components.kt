@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,8 +21,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
@@ -52,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -477,157 +473,3 @@ fun ProfileText(description: String , value: String) {
 
 
 
-@Composable
-fun ContactUsContactButton(value: String){
-    Button(onClick = { /* contact logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),
-        modifier = Modifier
-            .padding(8.dp)
-            .size(170.dp, 50.dp)
-    ) {
-        Icon(imageVector = Icons.Default.Call, contentDescription = "", modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.size(5.dp))
-        Text(text = value, fontSize = 15.sp)
-
-    }
-}
-@Composable
-fun ContactUSEmailButton(value: String){
-    Button(onClick = { /*email logic*/ }, colors = ButtonDefaults.buttonColors(
-        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),
-        modifier = Modifier
-            .padding(8.dp)
-            .size(170.dp, 50.dp)
-    ) {
-        Icon(imageVector = Icons.Default.Email, contentDescription = "", modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.size(5.dp))
-        Text(text = value, fontSize = 18.sp)
-
-    }
-
-}
-
-
-
-@Composable
-fun ContactUsWhatsApp(value: String) {
-    val uriHandler = LocalUriHandler.current
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.offset(x = -20.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.whatsapp),
-                contentDescription = "",
-                modifier = Modifier.size(50.dp)
-            )
-            Column {
-                Text(
-                    text = value,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "083 3456 345",
-                    color = Color.Cyan,
-                    modifier = Modifier.clickable {
-                        uriHandler.openUri("https://wa.me/0833456345")
-                    }
-                )
-            }
-        }
-    }
-}
-@Composable
-fun ContactUsWMessanger(value: String) {
-    val uriHandler = LocalUriHandler.current
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.messenger),
-                contentDescription = "",
-                modifier = Modifier.size(50.dp)
-            )
-            Column {
-                Text(
-                    text = value,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Facebook",
-                    color = Color.Cyan,
-                    modifier = Modifier.clickable {
-                        uriHandler.openUri("https://www.messenger.com/t/facebook")
-                    }
-                )
-            }
-        }
-    }
-}
-
-
-
-
-@Composable
-fun ContactUsInsta(value: String) {
-    val uriHandler = LocalUriHandler.current
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.offset(x = -25.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.instagram),
-                contentDescription = "",
-                modifier = Modifier.size(50.dp)
-            )
-            Column {
-                Text(
-                    text = value,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "instagram",
-                    color = Color.Cyan,
-                    modifier = Modifier.clickable {
-                        uriHandler.openUri("https://www.instagram.com/")
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ContactUsTwitter(value: String) {
-    val uriHandler = LocalUriHandler.current
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.offset(x = -14.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.twitter),
-                contentDescription = "",
-                modifier = Modifier.size(50.dp)
-            )
-            Column {
-                Text(
-                    text = value,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "twitter",
-                    color = Color.Cyan,
-                    modifier = Modifier.clickable {
-                        uriHandler.openUri("https://twitter.com/")
-                    }
-                )
-            }
-        }
-    }
-}

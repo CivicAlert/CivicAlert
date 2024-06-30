@@ -33,7 +33,6 @@ import com.example.civicalertoriginal.Components.CardButton
 import com.example.civicalertoriginal.Components.Logo
 import com.example.civicalertoriginal.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard(navController: NavController) {
     Surface(color = Color.White) {
@@ -50,7 +49,7 @@ fun Dashboard(navController: NavController) {
                     modifier = Modifier
                         .height(80.dp)
                         .fillMaxWidth()
-                ) {
+                ){
                     Logo()
                     Image(
                         painter = painterResource(id = R.drawable.profie),
@@ -107,8 +106,12 @@ fun Dashboard(navController: NavController) {
                         .padding(top = 20.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {navController.navigate("makeReports")}
-                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {}
+                    CardButton(iconRes = R.drawable.info, label = "Report Incident") {
+                        navController.navigate("makeReports") // logic to take you to report incident page
+                    }
+                    CardButton(iconRes = R.drawable.clipboard, label = "View Reports") {
+                        navController.navigate("") // logic to take you to reported incidents page
+                    }
                 }
             }
 
@@ -119,9 +122,11 @@ fun Dashboard(navController: NavController) {
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
                     CardButton(iconRes = R.drawable.headphones, label = "Help & Support") {
-                        // logic to take you to help page
+                        navController.navigate("") // logic to take you to help page
                     }
-                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {navController.navigate("emergencyContact")}
+                    CardButton(iconRes = R.drawable.emergency_contacts, label = "Emergency Contacts") {
+                        navController.navigate("emergencyContacts") // logic to take you to emergency contacts page
+                    }
                 }
             }
 
