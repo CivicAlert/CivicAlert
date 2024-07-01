@@ -43,6 +43,7 @@ fun Registration(navController: NavController) {
     var hasUpperCase by remember { mutableStateOf(false) }
     var hasDigit by remember { mutableStateOf(false) }
     var hasSymbol by remember { mutableStateOf(false) }
+    var hasMinLength by remember { mutableStateOf(false) }
 
     // Character limit in text fields
     val maxName = 50
@@ -61,6 +62,8 @@ fun Registration(navController: NavController) {
         hasUpperCase = password.any { it.isUpperCase() }
         hasDigit = password.any { it.isDigit() }
         hasSymbol = password.any { !it.isLetterOrDigit() }
+        hasMinLength = password.length >= 8
+
         isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&
                 lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&
                 email.isNotEmpty() && email.length <= maxEmail && isEmailValid &&
@@ -113,7 +116,7 @@ fun Registration(navController: NavController) {
                 fieldLabel = "Email Address"
             )
 
-            if (!isEmailValid) {
+            if (!isEmailValid && email.isNotEmpty()) {
                 Text(
                     text = "Please enter a valid email address",
                     color = Color.Red
@@ -139,7 +142,7 @@ fun Registration(navController: NavController) {
                 }, fieldLabel = "Password"
             )
 
-            Column (
+            if (password.isNotEmpty())Column (
 
             ){
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -154,6 +157,10 @@ fun Registration(navController: NavController) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = hasSymbol, onCheckedChange = null)
                     Text(text = "Must have at least one symbol",fontSize = 12.sp)
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = hasMinLength, onCheckedChange = null)
+                    Text(text = "Must have at least 8 characters",fontSize = 12.sp)
                 }
             }
 
