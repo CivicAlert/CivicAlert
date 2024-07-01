@@ -407,9 +407,9 @@ fun SignUpBottomButtons( name:String , onClick : ()-> Unit ){
     }
 }
 @Composable
-fun ProfileText(description: String , value: String) {
+fun ProfileText(description: String , value: String, onSave:(String)-> Unit) {
     var textFieldVisible by remember { mutableStateOf(false) }
-    var textFieldValue by remember { mutableStateOf(TextFieldValue()) }
+    var textFieldValue by remember { mutableStateOf(value) }
 
     Column(
         modifier = Modifier
@@ -444,7 +444,8 @@ fun ProfileText(description: String , value: String) {
             Button(
                 onClick = {
                     textFieldVisible = false
-                    // Perform any actions with the text field value here
+                    onSave(textFieldValue)
+                    // logic to do when saving thee data
                 },
                 modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.End)
             ) {

@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.List
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -86,18 +87,31 @@ fun UpdateProfile (navController: NavController){
                 val cardColor by remember {
                     mutableStateOf(Color.Green)
                 }
+                var name by remember {
+                    mutableStateOf("")
+                }
+                var sirname by remember {
+                    mutableStateOf("")
+                }
+                var phoneNumber by remember {
+                    mutableStateOf("")
+                }
+                var email by remember {
+                    mutableStateOf("")
+                }
 
-                Card (  modifier = Modifier
-                    .fillMaxWidth()
-                    .background(cardColor) ){
+                Card (   modifier = Modifier
+                    .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp) ){
                     Column {
-                        ProfileText(description = "First Name", value = "User name")
+                        ProfileText(description = "First Name", value = "User name", onSave = {updateName -> name = updateName})
                         Spacer(modifier = Modifier.size(10.dp))
-                        ProfileText(description = "Last Name", value = "Sirname")
+                        ProfileText(description = "Last Name", value = "Sirname", onSave = {updateLastName -> sirname = updateLastName})
                         Spacer(modifier = Modifier.size(10.dp))
-                        ProfileText(description = "Email address", value = "emailInForm@gmail.com")
+                        ProfileText(description = "Email address", value = "emailInForm@gmail.com", onSave = {updatePhone -> email = updatePhone})
                         Spacer(modifier = Modifier.size(10.dp))
-                        ProfileText(description = "Phone number", value = "+27 68801025")
+                        ProfileText(description = "Phone number", value = "+27 68801025", onSave = {updatePhone -> phoneNumber = updatePhone})
 
                     } }
 

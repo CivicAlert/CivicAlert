@@ -113,11 +113,10 @@ fun HelpAndSupport(navController: NavController) {
                 val cardColor by remember {
                     mutableStateOf(Color.White)
                 }
-                Card (modifier = Modifier
-                        .fillMaxWidth()
-                    .background(cardColor)
-                    .border(5.dp, color = Color.White, shape = RectangleShape),
-                colors = CardDefaults.cardColors(Color.White)) {
+                Card ( modifier = Modifier
+                    .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)) {
                         Row (horizontalArrangement = Arrangement.spacedBy(50.dp), modifier = Modifier.border(0.dp, color = Color.Transparent)
                         ){
                             Text(text = "How does incident reporting system work?" )
@@ -135,11 +134,11 @@ fun HelpAndSupport(navController: NavController) {
                 Spacer(modifier =Modifier.size(45.dp))
                 Text(text ="Support", fontSize = 20.sp)
                 Spacer(modifier = Modifier.size(20.dp))
-                Card (modifier = Modifier
+                Card ( modifier = Modifier
                     .fillMaxWidth()
-                    .background(cardColor)
-                    .border(1.dp, color = Color.LightGray, shape = RectangleShape),
-                    colors = CardDefaults.cardColors(Color.White)){
+                    .fillMaxHeight(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)){
                     Text(text = "Get help with managing your Account", color = Color.Blue, textDecoration = TextDecoration.Underline)
                     Spacer(modifier = Modifier.size(15.dp))
                     Text(text ="Having Technical issues" , color = Color.Blue, textDecoration = TextDecoration.Underline)
