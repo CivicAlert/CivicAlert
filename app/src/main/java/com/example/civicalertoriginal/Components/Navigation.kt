@@ -37,5 +37,8 @@ fun Navigation (){
         composable("Viewreports"){
             ViewReports(navController)
         }
+        composable("help"){
+            HelpAndSupport(navController)
+        }
     }
 }
