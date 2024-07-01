@@ -174,7 +174,7 @@ fun Registration(navController: NavController) {
                 }, fieldLabel = "Confirm password"
             )
 
-            if (!isPasswordValid) {
+            if (!isPasswordValid && password.isNotEmpty()) {
                 Text(
                     text = "Enter a valid password",
                     color = Color.Red
