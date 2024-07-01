@@ -1,0 +1,214 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.util.Patterns\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.*\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\n\r\n@Composable\r\nfun Registration(navController: NavController) {\r\n\r\n    val database = Firebase.database\r\n    val myRef = database.getReference()\r\n    val context = LocalContext.current\r\n    val scrollable = rememberScrollState()\r\n\r\n    // Variables needed for user registration\r\n    var firstName by remember { mutableStateOf(\"\") }\r\n    var lastName by remember { mutableStateOf(\"\") }\r\n    var email by remember { mutableStateOf(\"\") }\r\n    var phoneNumber by remember { mutableStateOf(\"\") }\r\n    var password by remember { mutableStateOf(\"\") }\r\n    var confirmPassword by remember { mutableStateOf(\"\") }\r\n    var passwordsMatch by remember { mutableStateOf(true) }\r\n    var isFormValid by remember { mutableStateOf(false) }\r\n    var showDialog by remember { mutableStateOf(false) }\r\n    var registrationMessage by remember { mutableStateOf(\"\") }\r\n    var isEmailValid by remember { mutableStateOf(true) }\r\n    var isPasswordValid by remember { mutableStateOf(true) }\r\n    var hasUpperCase by remember { mutableStateOf(false) }\r\n    var hasDigit by remember { mutableStateOf(false) }\r\n    var hasSymbol by remember { mutableStateOf(false) }\r\n\r\n    // Character limit in text fields\r\n    val maxName = 50\r\n    val maxEmail = 100\r\n    val maxNumber = 10\r\n    val maxPassword = 100\r\n\r\n    // Regex patterns\r\n    val emailPattern = Patterns.EMAIL_ADDRESS.toRegex()\r\n    val passwordPattern = Regex(\"^(?=.*[A-Za-z])(?=.*\\\\d)(?=.*[@\\$!%*#?&])[A-Za-z\\\\d@\\$!%*#?&]{8,}$\")\r\n\r\n    // Validate entered details\r\n    fun validateForm() {\r\n        isEmailValid = emailPattern.matches(email)\r\n        isPasswordValid = passwordPattern.matches(password)\r\n        hasUpperCase = password.any { it.isUpperCase() }\r\n        hasDigit = password.any { it.isDigit() }\r\n        hasSymbol = password.any { !it.isLetterOrDigit() }\r\n        isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&\r\n                lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&\r\n                email.isNotEmpty() && email.length <= maxEmail && isEmailValid &&\r\n                phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&\r\n                password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&\r\n                confirmPassword.isNotEmpty() && confirmPassword == password\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(20.dp)\r\n                .verticalScroll(scrollable),\r\n            verticalArrangement = Arrangement.spacedBy(18.dp),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            InstructionText(value = \"Sign Up\")\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            TextFields(value = firstName,\r\n                onChange = {\r\n                    if (it.length <= maxName) {\r\n                        firstName = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"First name\"\r\n            )\r\n\r\n            TextFields(value = lastName,\r\n                onChange = {\r\n                    if (it.length <= maxName) {\r\n                        lastName = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Last name\"\r\n            )\r\n\r\n            EmailTextFields(value = email,\r\n                onChange = {\r\n                    if (it.length <= maxEmail) {\r\n                        email = it\r\n                        validateForm()\r\n                    }\r\n                },\r\n                fieldLabel = \"Email Address\"\r\n            )\r\n\r\n            if (!isEmailValid) {\r\n                Text(\r\n                    text = \"Please enter a valid email address\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            NumberTextFields(value = phoneNumber,\r\n                onChange = {\r\n                    if (it.length <= maxNumber) {\r\n                        phoneNumber = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Phone number\"\r\n            )\r\n\r\n            PasswordTextFields(value = password,\r\n                onChange = {\r\n                    if (it.length <= maxPassword) {\r\n                        password = it\r\n                        passwordsMatch = confirmPassword == password\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Password\"\r\n            )\r\n\r\n            Column (\r\n\r\n            ){\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasUpperCase, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one capital letter\"\r\n                    , fontSize = 12.sp)\r\n                }\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasDigit, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one digit\",fontSize = 12.sp)\r\n                }\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasSymbol, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one symbol\",fontSize = 12.sp)\r\n                }\r\n            }\r\n\r\n            PasswordTextFields(value = confirmPassword,\r\n                onChange = {\r\n                    if (it.length <= maxPassword) {\r\n                        confirmPassword = it\r\n                        passwordsMatch = confirmPassword == password\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Confirm password\"\r\n            )\r\n\r\n            if (!isPasswordValid) {\r\n                Text(\r\n                    text = \"Enter a valid password\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            if (!passwordsMatch) {\r\n                Text(\r\n                    text = \"Passwords do not match\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            Row {\r\n                SignUpText(value = \"Do you give us permission to use your details for marketing purposes\")\r\n            }\r\n            Row {\r\n                SignUpText(value = \"Do you agree to Terms & Conditions of the app\")\r\n            }\r\n\r\n            Spacer(modifier = Modifier.size(16.dp))\r\n\r\n            LogBottomButtons(\r\n                name = \"Register\",\r\n                onClick = { showDialog = true },\r\n                enabled = isFormValid\r\n            )\r\n\r\n        }\r\n        if (showDialog) {\r\n            AlertDialog(\r\n                onDismissRequest = { showDialog = false },\r\n                title = { Text(\"Confirm Registration\") },\r\n                text = { Text(\"Are you sure you want to register with these details?\") },\r\n                confirmButton = {\r\n                    Button(modifier = Modifier\r\n                        .padding(start = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            // method to save data to database\r\n                            registrationMessage = \"Successfully registered!\"\r\n                            showDialog = false\r\n                        }\r\n                    ) {\r\n                        Text(\"Confirm\",\r\n                            color = Color.Black)\r\n                    }\r\n                },\r\n                dismissButton = {\r\n                    Button(modifier = Modifier\r\n                        .padding(end = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = { showDialog = false }) {\r\n                        Text(\"Cancel\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n\r\n        if (registrationMessage.isNotEmpty()) {\r\n            AlertDialog(\r\n                onDismissRequest = { registrationMessage = \"\" },\r\n                title = { Text(\"Registration\") },\r\n                text = { Text(registrationMessage) },\r\n                confirmButton = {\r\n                    Button(colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            registrationMessage = \"\"\r\n                            // Navigate to login page\r\n                        }\r\n                    ) {\r\n                        Text(\"OK\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n    }\r\n}\r\n\r\n@Preview\r\n@Composable\r\nfun RegistrationPreview() {\r\n    val navController = rememberNavController()\r\n    Registration(navController)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(revision 39b51ab4e038993ea9dbe4017947c92a3c1ba983)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(date 1719866296375)
+@@ -22,8 +22,6 @@
+ @Composable
+ fun Registration(navController: NavController) {
+ 
+-    val database = Firebase.database
+-    val myRef = database.getReference()
+     val context = LocalContext.current
+     val scrollable = rememberScrollState()
+ 
+@@ -69,6 +67,7 @@
+                 confirmPassword.isNotEmpty() && confirmPassword == password
+     }
+ 
++
+     Surface(color = Color.White) {
+         Column(
+             modifier = Modifier
+@@ -85,25 +84,30 @@
+ 
+             Spacer(modifier = Modifier.size(12.dp))
+ 
+-            TextFields(value = firstName,
++            TextFields(
++                value = firstName,
+                 onChange = {
+                     if (it.length <= maxName) {
+                         firstName = it
+                         validateForm()
+                     }
+-                }, fieldLabel = "First name"
++                },
++                fieldLabel = "First name"
+             )
+ 
+-            TextFields(value = lastName,
++            TextFields(
++                value = lastName,
+                 onChange = {
+                     if (it.length <= maxName) {
+                         lastName = it
+                         validateForm()
+                     }
+-                }, fieldLabel = "Last name"
++                },
++                fieldLabel = "Last name"
+             )
+ 
+-            EmailTextFields(value = email,
++            EmailTextFields(
++                value = email,
+                 onChange = {
+                     if (it.length <= maxEmail) {
+                         email = it
+@@ -120,51 +124,57 @@
+                 )
+             }
+ 
+-            NumberTextFields(value = phoneNumber,
++            NumberTextFields(
++                value = phoneNumber,
+                 onChange = {
+                     if (it.length <= maxNumber) {
+                         phoneNumber = it
+                         validateForm()
+                     }
+-                }, fieldLabel = "Phone number"
++                },
++                fieldLabel = "Phone number"
+             )
+ 
+-            PasswordTextFields(value = password,
++            PasswordTextFields(
++                value = password,
+                 onChange = {
+                     if (it.length <= maxPassword) {
+                         password = it
+-                        passwordsMatch = confirmPassword == password
+-                        validateForm()
++                        //passwordsMatch = confirmPassword == password
++                     //   validateForm()
+                     }
+-                }, fieldLabel = "Password"
++                },
++                fieldLabel = "Password"
+             )
+ 
+-            Column (
+-
+-            ){
++            Column {
+                 Row(verticalAlignment = Alignment.CenterVertically) {
+                     Checkbox(checked = hasUpperCase, onCheckedChange = null)
+-                    Text(text = "Must have at least one capital letter"
+-                    , fontSize = 12.sp)
++                    Text(
++                        text = "Must have at least one capital letter",
++                        fontSize = 12.sp
++                    )
+                 }
+                 Row(verticalAlignment = Alignment.CenterVertically) {
+                     Checkbox(checked = hasDigit, onCheckedChange = null)
+-                    Text(text = "Must have at least one digit",fontSize = 12.sp)
++                    Text(text = "Must have at least one digit", fontSize = 12.sp)
+                 }
+                 Row(verticalAlignment = Alignment.CenterVertically) {
+                     Checkbox(checked = hasSymbol, onCheckedChange = null)
+-                    Text(text = "Must have at least one symbol",fontSize = 12.sp)
++                    Text(text = "Must have at least one symbol", fontSize = 12.sp)
+                 }
+             }
+ 
+-            PasswordTextFields(value = confirmPassword,
++            PasswordTextFields(
++                value = confirmPassword,
+                 onChange = {
+                     if (it.length <= maxPassword) {
+                         confirmPassword = it
+                         passwordsMatch = confirmPassword == password
+-                        validateForm()
++                      //  validateForm()
+                     }
+-                }, fieldLabel = "Confirm password"
++                },
++                fieldLabel = "Confirm password"
+             )
+ 
+             if (!isPasswordValid) {
+@@ -195,7 +205,6 @@
+                 onClick = { showDialog = true },
+                 enabled = isFormValid
+             )
+-
+         }
+         if (showDialog) {
+             AlertDialog(
+@@ -203,28 +212,36 @@
+                 title = { Text("Confirm Registration") },
+                 text = { Text("Are you sure you want to register with these details?") },
+                 confirmButton = {
+-                    Button(modifier = Modifier
+-                        .padding(start = 20.dp)
+-                        .width(100.dp),
++                    Button(
++                        modifier = Modifier
++                            .padding(start = 20.dp)
++                            .width(100.dp),
+                         colors = ButtonDefaults.buttonColors(Color.Green),
+                         onClick = {
++                           // saveUser()
+                             // method to save data to database
+                             registrationMessage = "Successfully registered!"
+                             showDialog = false
+                         }
+                     ) {
+-                        Text("Confirm",
+-                            color = Color.Black)
++                        Text(
++                            "Confirm",
++                            color = Color.Black
++                        )
+                     }
+                 },
+                 dismissButton = {
+-                    Button(modifier = Modifier
+-                        .padding(end = 20.dp)
+-                        .width(100.dp),
++                    Button(
++                        modifier = Modifier
++                            .padding(end = 20.dp)
++                            .width(100.dp),
+                         colors = ButtonDefaults.buttonColors(Color.Green),
+-                        onClick = { showDialog = false }) {
+-                        Text("Cancel",
+-                            color = Color.Black)
++                        onClick = { showDialog = false }
++                    ) {
++                        Text(
++                            "Cancel",
++                            color = Color.Black
++                        )
+                     }
+                 }
+             )
+@@ -236,14 +253,17 @@
+                 title = { Text("Registration") },
+                 text = { Text(registrationMessage) },
+                 confirmButton = {
+-                    Button(colors = ButtonDefaults.buttonColors(Color.Green),
++                    Button(
++                        colors = ButtonDefaults.buttonColors(Color.Green),
+                         onClick = {
+                             registrationMessage = ""
+                             // Navigate to login page
+                         }
+                     ) {
+-                        Text("OK",
+-                            color = Color.Black)
++                        Text(
++                            "OK",
++                            color = Color.Black
++                        )
+                     }
+                 }
+             )

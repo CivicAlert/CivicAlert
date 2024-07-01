@@ -16,14 +16,26 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+
+
+data class User(
+    val firstName: String = "",
+    val lastName: String = "",
+    val email: String ="",
+    val phoneNumber: String="",
+    val password: String=""
+)
 
 @Composable
 fun Registration(navController: NavController) {
 
     val database = Firebase.database
-    val myRef = database.getReference()
+    val myRef = database.getReference("Community members")
+    val auth = FirebaseAuth.getInstance();
     val context = LocalContext.current
     val scrollable = rememberScrollState()
 
@@ -71,9 +83,21 @@ fun Registration(navController: NavController) {
                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
-    fun saveUser(){
-        DatabaseConnection().getUserDetail(firstName,lastName,email,password,phoneNumber);
-        DatabaseConnection().saveUserByEmail(context)
+    fun saveUser(user: User) {
+        val userId = myRef.push().key ?: return
+        myRef.child(userId).setValue(user).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Handle success
+                registrationMessage = "Successfully registered!"
+                println("User saved successfully")
+            } else {
+                // Handle failure
+                task.exception?.let {
+                    registrationMessage = "Error saving user: ${it.message}"
+                    println("Error saving user: ${it.message}")
+                }
+            }
+        }
     }
 
     Surface(color = Color.White) {
@@ -219,10 +243,17 @@ fun Registration(navController: NavController) {
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
-                            saveUser()
+                                val user = User(firstName = firstName,
+                                    lastName = lastName,
+                                    email = email,
+                                    phoneNumber = phoneNumber,
+                                    password = password)
+                                    saveUser(user)
+                                showDialog = false
+
+
                             // method to save data to database
-                            registrationMessage = "Successfully registered!"
-                            showDialog = false
+
                         }
                     ) {
                         Text("Confirm",
