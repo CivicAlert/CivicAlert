@@ -68,6 +68,10 @@ fun Registration(navController: NavController) {
                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
+    fun saveUser(){
+        DatabaseConnection().getUserDetail(firstName,lastName,email,password,phoneNumber);
+        DatabaseConnection().saveUserByEmail(context)
+    }
 
     Surface(color = Color.White) {
         Column(
@@ -208,6 +212,7 @@ fun Registration(navController: NavController) {
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
+                            saveUser()
                             // method to save data to database
                             registrationMessage = "Successfully registered!"
                             showDialog = false
@@ -248,8 +253,13 @@ fun Registration(navController: NavController) {
                 }
             )
         }
+
     }
+
+
 }
+
+
 
 @Preview
 @Composable
