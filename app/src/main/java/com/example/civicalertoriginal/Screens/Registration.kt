@@ -282,7 +282,7 @@ fun Registration(navController: NavController) {
                     Button(colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
                             registrationMessage = ""
-                            // Navigate to login page
+                            navController.navigate("Dashboard")
                         }
                     ) {
                         Text("OK",
