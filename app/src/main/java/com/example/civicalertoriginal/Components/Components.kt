@@ -2,7 +2,9 @@
 
 package com.example.civicalertoriginal.Components
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -68,8 +70,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.civicalertoriginal.R
-
-
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -260,11 +262,11 @@ fun InstructionText(value: String){
     )
 }
 @Composable
-fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
+fun LocationTextFields(value: String, onChange: (String) -> Unit){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+          //  placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -300,11 +302,11 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun PictureTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
+fun PictureTextFields(value: String, onChange: (String) -> Unit){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+           // placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -322,11 +324,11 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, fieldLabel: Str
     }
 }
 @Composable
-fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
+fun DescriptionTextFields(value: String, onChange: (String) -> Unit){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+           // placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -345,11 +347,14 @@ fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel:
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExposedDropdownMenuBox() {
+fun ExposedDropdownMenuBox(
+    selectedIncident: String,
+    onIncidentSelected: (String) -> Unit
+) {
     val context = LocalContext.current
     val Incidents= arrayOf("Water", "Electricity", "Pothole", "Other")
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf(Incidents[0]) }
+   // var selectedText by remember { mutableStateOf(Incidents[0]) }
 
     Box(
         modifier = Modifier
@@ -363,7 +368,7 @@ fun ExposedDropdownMenuBox() {
             }
         ) {
             TextField(
-                value = selectedText,
+                value = selectedIncident,
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -380,7 +385,7 @@ fun ExposedDropdownMenuBox() {
                     DropdownMenuItem(
                         text = { Text(text = item) },
                         onClick = {
-                            selectedText = item
+                           onIncidentSelected(item)
                             expanded = false
                             Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
                         }
@@ -455,7 +460,6 @@ fun ProfileText(description: String , value: String, onSave:(String)-> Unit) {
     }
 }
 
-
 @Composable
 fun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {
     Button(
@@ -474,9 +478,6 @@ fun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {
         )
     }
 }
-
-
-
 
 @Composable
 fun ContactUsContactButton(value: String){
@@ -509,9 +510,6 @@ fun ContactUSEmailButton(value: String){
     }
 
 }
-
-
-
 @Composable
 fun ContactUsWhatsApp(value: String) {
     val uriHandler = LocalUriHandler.current
@@ -569,10 +567,6 @@ fun ContactUsWMessanger(value: String) {
         }
     }
 }
-
-
-
-
 @Composable
 fun ContactUsInsta(value: String) {
     val uriHandler = LocalUriHandler.current
@@ -602,7 +596,6 @@ fun ContactUsInsta(value: String) {
         }
     }
 }
-
 @Composable
 fun ContactUsTwitter(value: String) {
     val uriHandler = LocalUriHandler.current
