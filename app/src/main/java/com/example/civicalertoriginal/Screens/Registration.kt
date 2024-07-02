@@ -1,6 +1,7 @@
 package com.example.civicalertoriginal.Screens
 
 import android.util.Patterns
+import androidx.annotation.NonNull
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,6 +17,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ktx.database
@@ -99,6 +103,10 @@ fun Registration(navController: NavController) {
             }
         }
     }
+    fun saveByEmail(){
+        auth.createUserWithEmailAndPassword(email, password);
+    }
+
 
     Surface(color = Color.White) {
         Column(
@@ -249,6 +257,7 @@ fun Registration(navController: NavController) {
                                     phoneNumber = phoneNumber,
                                     password = password)
                                     saveUser(user)
+                            saveByEmail()
                                 showDialog = false
 
 
