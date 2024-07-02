@@ -27,22 +27,52 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.R
 
-data class Report(
-    val title: String,
-    val location: String,
-    val date: String,
-    val description: String,
-    val imageRes: Int
-)
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.draw.alpha
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
+data class Report(
+    val incidentType: String = "",
+    val location: String = "",
+    val dateTime: String = "",
+    val description: String = "",
+    val imageRes: Int = R.drawable.photo // Replace with actual drawable resource ID
+)
 enum class FilterOption {
     Recent, // Sorting by recent
     Old // Sorting from oldest to latest
 }
+fun fetchReportsFromFirebase(reports: SnapshotStateList<Report>) {
+    val database = Firebase.database
+    val reportsRef = database.getReference("Make Report Instance")
 
+    reportsRef.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            reports.clear()
+            for (reportSnapshot in snapshot.children) {
+                val report = reportSnapshot.getValue(Report::class.java)
+                if (report != null) {
+                    reports.add(report)
+                }
+            }
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+            // Handle database error
+        }
+    })
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ViewReports(navController: NavController) {
+    val reports = remember { mutableStateListOf<Report>() }
+    fetchReportsFromFirebase(reports)
+
     Surface(color = Color.White) {
         Column(
             modifier = Modifier
@@ -61,18 +91,17 @@ fun ViewReports(navController: NavController) {
             var searchText by remember { mutableStateOf("") }
             var filterOption by remember { mutableStateOf(FilterOption.Recent) }
 
-            val reports = remember { generateDummyReports() }
             val filteredReports = when (filterOption) {
-                FilterOption.Recent -> reports.sortedByDescending { it.date }
-                FilterOption.Old -> reports.sortedBy { it.date }
+                FilterOption.Recent -> reports.sortedByDescending { it.dateTime }
+                FilterOption.Old -> reports.sortedBy { it.dateTime }
             }.filter {
-                it.title.contains(searchText, ignoreCase = true) || it.location.contains(searchText, ignoreCase = true)
+                it.incidentType.contains(searchText, ignoreCase = true) || it.location.contains(searchText, ignoreCase = true)
             }
 
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .padding(start = 12.dp, end = 12.dp)
+                    .padding(start = 16.dp, end = 12.dp)
                     .fillMaxSize()
             ) {
                 item {
@@ -95,7 +124,7 @@ fun ViewReports(navController: NavController) {
                                     contentDescription = "Search icon"
                                 )
                             },
-                            placeholder = { Text("Search") },
+                            placeholder = { Text("Search", color = Color.Black) },
                             shape = RoundedCornerShape(50),
                             singleLine = true,
                             trailingIcon = {
@@ -118,7 +147,6 @@ fun ViewReports(navController: NavController) {
         }
     }
 }
-
 @Composable
 fun <T> ExposedDropdownMenu(
     items: List<T>,
@@ -143,7 +171,7 @@ fun <T> ExposedDropdownMenu(
             value = selectedItem.toString(),
             onValueChange = {},
             readOnly = true,
-            label = { Text(label) },
+            label = { Text(label, color = Color.Black) },
             trailingIcon = {
                 IconButton(onClick = { expanded = !expanded }) {
                     Icon(
@@ -178,8 +206,6 @@ fun <T> ExposedDropdownMenu(
         }
     }
 }
-
-
 @Composable
 fun ExpandableReportItem(report: Report) {
     var expanded by remember { mutableStateOf(false) }
@@ -212,8 +238,8 @@ fun ExpandableReportItem(report: Report) {
                         .width(50.dp)
                 ) {
                     Text(
-                        text = report.title,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        text = report.incidentType,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold,color = Color.DarkGray)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -223,17 +249,19 @@ fun ExpandableReportItem(report: Report) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Row {
                         Text(
-                            text = report.date,
-                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Black)
+                            text = report.dateTime,
+                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
                         )
                         Spacer(modifier = Modifier.width(40.dp))
-                        Text(
+                      if (!expanded)  Text(
                             text = report.description,
                             modifier = Modifier
-                                .height(25.dp)
+                                .height(24.dp)
                                 .clipToBounds(),// Show only the first 10 letters
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
                         )
+                        else Text(
+                          text = report.description, modifier = Modifier.alpha(0f) )
                     }
                 }
                 IconButton(
@@ -250,7 +278,7 @@ fun ExpandableReportItem(report: Report) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "${report.description}",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
                     modifier = Modifier
                         .padding(start = 10.dp)
                 )
@@ -265,22 +293,8 @@ fun ExpandableReportItem(report: Report) {
             }
         }
     }
-}
+    }
 
-fun generateDummyReports(): List<Report> {
-    return listOf(
-        Report("Pothole in Main Street", "Main Street", "2024-06-27", "There's a large pothole on Main Street that needs to be fixed.", R.drawable.photo),
-        Report("Streetlight not working", "Elm Street", "2024-06-26", "The streetlight on Elm Street has been out for a week.", R.drawable.photo),
-        Report("Graffiti on wall", "Community Center", "2024-06-25", "Someone spray-painted graffiti on the community center wall.", R.drawable.photo),
-        Report("Water leakage", "Pine Avenue", "2024-06-24", "Water leakage from a broken pipe on Pine Avenue.", R.drawable.photo),
-        Report("Overflowing trash bin", "Park Lane", "2024-06-23", "The trash bin on Park Lane is overflowing and needs to be emptied.", R.drawable.photo),
-        Report("Damaged Swing", "Central Park", "2024-06-22", "Broken swing in Central Park playground.", R.drawable.photo),
-        Report("Blocked drain", "Oak Street", "2024-06-21", "Blocked drain causing water to pool on Oak Street.", R.drawable.photo),
-        Report("Uncollected garbage", "Maple Street", "2024-06-20", "Garbage has not been collected on Maple Street for over a week.", R.drawable.photo),
-        Report("Fallen tree branch", "Birch Road", "2024-06-19", "A large tree branch has fallen on Birch Road and is blocking traffic.", R.drawable.photo),
-        Report("Broken bench", "Riverwalk", "2024-06-18", "A bench along the Riverwalk is broken and needs repair.", R.drawable.photo)
-    )
-}
 
 @Preview(showBackground = true)
 @Composable
