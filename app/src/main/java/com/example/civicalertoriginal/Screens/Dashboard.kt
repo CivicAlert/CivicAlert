@@ -129,7 +129,7 @@ fun Dashboard(navController: NavController) {
                         CardButton(
                             iconRes = R.drawable.headphones,
                             label = "Help & Support",
-                            onClick =  { navController.navigate("help") })
+                            onClick =  { navController.navigate("helpSupport") })
 
                         CardButton(
                             iconRes = R.drawable.emergency_contacts,

@@ -1,6 +1,8 @@
 package com.example.civicalertoriginal.Screens
 
+import android.annotation.SuppressLint
 import android.util.Patterns
+import androidx.annotation.NonNull
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,14 +18,30 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
+
+data class User(
+    val firstName: String = "",
+    val lastName: String = "",
+    val email: String ="",
+    val phoneNumber: String="",
+    val password: String=""
+)
+
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun Registration(navController: NavController) {
 
     val database = Firebase.database
-    val myRef = database.getReference()
+    val myRef = database.getReference("Community members")
+    val auth = FirebaseAuth.getInstance();
     val context = LocalContext.current
     val scrollable = rememberScrollState()
 
@@ -43,6 +61,7 @@ fun Registration(navController: NavController) {
     var hasUpperCase by remember { mutableStateOf(false) }
     var hasDigit by remember { mutableStateOf(false) }
     var hasSymbol by remember { mutableStateOf(false) }
+    var hasMinLength by remember { mutableStateOf(false) }
 
     // Character limit in text fields
     val maxName = 50
@@ -61,6 +80,8 @@ fun Registration(navController: NavController) {
         hasUpperCase = password.any { it.isUpperCase() }
         hasDigit = password.any { it.isDigit() }
         hasSymbol = password.any { !it.isLetterOrDigit() }
+        hasMinLength = password.length >= 8
+
         isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&
                 lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&
                 email.isNotEmpty() && email.length <= maxEmail && isEmailValid &&
@@ -68,6 +89,26 @@ fun Registration(navController: NavController) {
                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
+    fun saveUser(user: User) {
+        val userId = myRef.push().key ?: return
+        myRef.child(userId).setValue(user).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Handle success
+                registrationMessage = "Successfully registered!"
+                println("User saved successfully")
+            } else {
+                // Handle failure
+                task.exception?.let {
+                    registrationMessage = "Error saving user: ${it.message}"
+                    println("Error saving user: ${it.message}")
+                }
+            }
+        }
+    }
+    fun saveByEmail(){
+        auth.createUserWithEmailAndPassword(email, password);
+    }
+
 
     Surface(color = Color.White) {
         Column(
@@ -113,7 +154,7 @@ fun Registration(navController: NavController) {
                 fieldLabel = "Email Address"
             )
 
-            if (!isEmailValid) {
+            if (!isEmailValid && email.isNotEmpty()) {
                 Text(
                     text = "Please enter a valid email address",
                     color = Color.Red
@@ -139,7 +180,7 @@ fun Registration(navController: NavController) {
                 }, fieldLabel = "Password"
             )
 
-            Column (
+            if (password.isNotEmpty())Column (
 
             ){
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -155,6 +196,10 @@ fun Registration(navController: NavController) {
                     Checkbox(checked = hasSymbol, onCheckedChange = null)
                     Text(text = "Must have at least one symbol",fontSize = 12.sp)
                 }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(checked = hasMinLength, onCheckedChange = null)
+                    Text(text = "Must have at least 8 characters",fontSize = 12.sp)
+                }
             }
 
             PasswordTextFields(value = confirmPassword,
@@ -167,7 +212,7 @@ fun Registration(navController: NavController) {
                 }, fieldLabel = "Confirm password"
             )
 
-            if (!isPasswordValid) {
+            if (!isPasswordValid && password.isNotEmpty()) {
                 Text(
                     text = "Enter a valid password",
                     color = Color.Red
@@ -208,9 +253,18 @@ fun Registration(navController: NavController) {
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
+                                val user = User(firstName = firstName,
+                                    lastName = lastName,
+                                    email = email,
+                                    phoneNumber = phoneNumber,
+                                    password = password)
+                                    saveUser(user)
+                            saveByEmail()
+                                showDialog = false
+
+
                             // method to save data to database
-                            registrationMessage = "Successfully registered!"
-                            showDialog = false
+
                         }
                     ) {
                         Text("Confirm",
@@ -239,7 +293,7 @@ fun Registration(navController: NavController) {
                     Button(colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
                             registrationMessage = ""
-                            // Navigate to login page
+                            navController.navigate("Login")
                         }
                     ) {
                         Text("OK",
@@ -248,8 +302,13 @@ fun Registration(navController: NavController) {
                 }
             )
         }
+
     }
+
+
 }
+
+
 
 @Preview
 @Composable

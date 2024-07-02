@@ -48,7 +48,8 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController){isVisible = false}
+            AnimatedMakeReports(navController){isVisible = false
+            navController.navigate("Dashboard")}
         }
     }
 }

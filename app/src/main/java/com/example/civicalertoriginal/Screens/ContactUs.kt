@@ -44,12 +44,12 @@ fun ContactUs(navController: NavController) {
                         BottomNavItem(
                             icon = Icons.Rounded.Edit,
                             label = "Make report",
-                            onClick = { /* Handle make reports click */ }
+                            onClick = { navController.navigate("makeReports") }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.List,
                             label = "View reports",
-                            onClick = { /* Handle view reports click */ }
+                            onClick = { navController.navigate("Viewreports") }
                         )
                         BottomNavItem(
                             icon = Icons.Rounded.Call,

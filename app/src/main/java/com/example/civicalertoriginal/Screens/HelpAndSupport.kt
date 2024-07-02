@@ -57,38 +57,30 @@ fun HelpAndSupport(navController: NavController) {
 
         Scaffold (bottomBar = {
             BottomAppBar {
-
-                Row {
-
-                    Column ( modifier = Modifier.clickable { navController.navigate("Dashboard") }) {
-                        Icon(imageVector = Icons.Rounded.Home, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
-                        Text(text = "HOME")
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Column (modifier = Modifier.clickable { navController.navigate("makeReports") }){
-                        Icon(imageVector = Icons.Rounded.Edit, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .clickable { navController.navigate("makeReports") })
-                        Text(text = "MAKE REPORTS")
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Column ( modifier = Modifier.clickable { navController.navigate("") }) {
-                        Icon(imageVector = Icons.Rounded.List, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
-                        Text(text = "VIEW REPORTS")
-                    }
-                    Spacer(modifier = Modifier.size(20.dp))
-                    Column (modifier = Modifier.clickable { navController.navigate("emergencyContacts") }) {
-                        Icon(imageVector = Icons.Rounded.Call, contentDescription = "", modifier = Modifier
-                            .size(30.dp)
-                            .align(Alignment.CenterHorizontally))
-                        Text(text = "CALL")
-                    }
-
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    BottomNavItem(
+                        icon = Icons.Rounded.Home,
+                        label = "Home",
+                        onClick = { navController.navigate("Dashboard") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Rounded.Edit,
+                        label = "Make report",
+                        onClick = { navController.navigate("makeReports") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Rounded.List,
+                        label = "View reports",
+                        onClick = { navController.navigate("Viewreports") }
+                    )
+                    BottomNavItem(
+                        icon = Icons.Rounded.Call,
+                        label = "Emergency\nContact",
+                        onClick = { navController.navigate("emergencyContacts") }
+                    )
                 }
             }
         }){
@@ -122,11 +114,10 @@ fun HelpAndSupport(navController: NavController) {
                 val cardColor by remember {
                     mutableStateOf(Color.White)
                 }
-                Card (modifier = Modifier
-                        .fillMaxWidth()
-                    .background(cardColor)
-                    .border(5.dp, color = Color.White, shape = RectangleShape),
-                colors = CardDefaults.cardColors(Color.White)) {
+                Card ( modifier = Modifier
+                    .fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)) {
                         Row (horizontalArrangement = Arrangement.spacedBy(50.dp), modifier = Modifier.border(0.dp, color = Color.Transparent)
                         ){
                             Text(text = "How does incident reporting system work?" )
@@ -144,11 +135,11 @@ fun HelpAndSupport(navController: NavController) {
                 Spacer(modifier =Modifier.size(45.dp))
                 Text(text ="Support", fontSize = 20.sp)
                 Spacer(modifier = Modifier.size(20.dp))
-                Card (modifier = Modifier
+                Card ( modifier = Modifier
                     .fillMaxWidth()
-                    .background(cardColor)
-                    .border(1.dp, color = Color.LightGray, shape = RectangleShape),
-                    colors = CardDefaults.cardColors(Color.White)){
+                    .fillMaxHeight(),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)){
                     Text(text = "Get help with managing your Account", color = Color.Blue, textDecoration = TextDecoration.Underline)
                     Spacer(modifier = Modifier.size(15.dp))
                     Text(text ="Having Technical issues" , color = Color.Blue, textDecoration = TextDecoration.Underline)
