@@ -1,0 +1,194 @@
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.CivicAlertOriginal\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\"\r\n            android:label=\"@string/app_name\"\r\n            android:theme=\"@style/Theme.CivicAlertOriginal\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	(revision a01c3a8915c920319fb0139cb37a2206c21ea90b)
++++ b/app/src/main/AndroidManifest.xml	(date 1719931243181)
+@@ -2,6 +2,11 @@
+ <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:tools="http://schemas.android.com/tools">
+ 
++    <uses-feature android:name="android.hardware.camera.any" />
++    <uses-permission android:name="android.permission.CAMERA" />
++    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
++        android:maxSdkVersion="28" />
++
+     <application
+         android:allowBackup="true"
+         android:dataExtractionRules="@xml/data_extraction_rules"
+@@ -12,6 +17,16 @@
+         android:supportsRtl="true"
+         android:theme="@style/Theme.CivicAlertOriginal"
+         tools:targetApi="31">
++        <activity
++            android:name=".MainActivity2"
++            android:exported="true"
++            android:theme="@style/Theme.CivicAlertOriginal">
++            <intent-filter>
++                <action android:name="android.intent.action.MAIN" />
++
++                <category android:name="android.intent.category.LAUNCHER" />
++            </intent-filter>
++        </activity>
+         <activity
+             android:name=".MainActivity"
+             android:exported="true"
+Index: app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport com.example.civicalertoriginal.Components.Navigation\r\nimport com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme\r\nimport com.google.firebase.FirebaseApp\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        FirebaseApp.initializeApp(this)\r\n        setContent {\r\n            CivicAlertOriginalTheme {\r\n                Navigation()\r\n\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	(revision a01c3a8915c920319fb0139cb37a2206c21ea90b)
++++ b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	(date 1719932899521)
+@@ -13,7 +13,8 @@
+         FirebaseApp.initializeApp(this)
+         setContent {
+             CivicAlertOriginalTheme {
+-                Navigation()
++               // Navigation()
++                MainActivity2
+ 
+             }
+         }
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">CivicAlertOriginal</string>\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision a01c3a8915c920319fb0139cb37a2206c21ea90b)
++++ b/app/src/main/res/values/strings.xml	(date 1719933033219)
+@@ -1,3 +1,11 @@
+ <resources>
+     <string name="app_name">CivicAlertOriginal</string>
++    <string name="lorem_ipsum">Lorem Ipsum</string>
++    <string name="first_fragment_label">First Fragment</string>
++    <string name="second_fragment_label">Second Fragment</string>
++    <string name="next">Next</string>
++    <string name="previous">Previous</string>
++
++    <string name="take_photo">Take Picture</string>
++    <string name="uplaod_picture">UPLOAD PICTURE</string>
+ </resources>
+\ No newline at end of file
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.4.1\"\r\nkotlin = \"1.9.0\"\r\ncoreKtx = \"1.13.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.1.5\"\r\nespressoCore = \"3.5.1\"\r\nlifecycleRuntimeKtx = \"2.8.1\"\r\nactivityCompose = \"1.9.0\"\r\ncomposeBom = \"2023.08.00\"\r\nfirebaseCommonKtx = \"21.0.0\"\r\nnavigationCompose = \"2.7.7\"\r\ngoogleGmsGoogleServices = \"4.4.2\"\r\nfirebaseDatabase = \"21.0.0\"\r\nfirebaseAuth = \"23.0.0\"\r\n\r\n[libraries]\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\nfirebase-common-ktx = { group = \"com.google.firebase\", name = \"firebase-common-ktx\", version.ref = \"firebaseCommonKtx\" }\r\nandroidx-navigation-compose = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"navigationCompose\" }\r\nfirebase-database = { group = \"com.google.firebase\", name = \"firebase-database\", version.ref = \"firebaseDatabase\" }\r\nfirebase-auth = { group = \"com.google.firebase\", name = \"firebase-auth\", version.ref = \"firebaseAuth\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\njetbrains-kotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\ngoogle-gms-google-services = { id = \"com.google.gms.google-services\", version.ref = \"googleGmsGoogleServices\" }\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision a01c3a8915c920319fb0139cb37a2206c21ea90b)
++++ b/gradle/libs.versions.toml	(date 1719929416308)
+@@ -1,5 +1,7 @@
+ [versions]
+ agp = "8.4.1"
++cameraCamera2 = "1.2.2"
++cameraCore = "1.2.2"
+ kotlin = "1.9.0"
+ coreKtx = "1.13.1"
+ junit = "4.13.2"
+@@ -13,9 +15,21 @@
+ googleGmsGoogleServices = "4.4.2"
+ firebaseDatabase = "21.0.0"
+ firebaseAuth = "23.0.0"
++material = "1.12.0"
++appcompat = "1.7.0"
++constraintlayout = "2.1.4"
++navigationFragmentKtx = "2.7.7"
++navigationUiKtx = "2.7.7"
++activity = "1.9.0"
+ 
+ [libraries]
++androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
++androidx-camera-extensions = { module = "androidx.camera:camera-extensions", version.ref = "cameraCamera2" }
++androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCamera2" }
++androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCamera2" }
++androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCamera2" }
+ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
++camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+ junit = { group = "junit", name = "junit", version.ref = "junit" }
+ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+@@ -33,6 +47,12 @@
+ androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+ firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+ firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
++material = { group = "com.google.android.material", name = "material", version.ref = "material" }
++androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
++androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
++androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
++androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
++androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+ 
+ [plugins]
+ android-application = { id = "com.android.application", version.ref = "agp" }
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.jetbrains.kotlin.android)\r\n    alias(libs.plugins.google.gms.google.services)\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.example.civicalertoriginal\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.example.civicalertoriginal\"\r\n        minSdk = 24\r\n        targetSdk = 34\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n        vectorDrawables {\r\n            useSupportLibrary = true\r\n        }\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n    composeOptions {\r\n        kotlinCompilerExtensionVersion = \"1.5.1\"\r\n    }\r\n    packaging {\r\n        resources {\r\n            excludes += \"/META-INF/{AL2.0,LGPL2.1}\"\r\n        }\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    implementation(libs.firebase.common.ktx)\r\n    implementation(libs.androidx.navigation.compose)\r\n    implementation(libs.firebase.database)\r\n    implementation(libs.firebase.auth)\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision a01c3a8915c920319fb0139cb37a2206c21ea90b)
++++ b/app/build.gradle.kts	(date 1719929695984)
+@@ -39,6 +39,7 @@
+     }
+     buildFeatures {
+         compose = true
++        viewBinding = true
+     }
+     composeOptions {
+         kotlinCompilerExtensionVersion = "1.5.1"
+@@ -63,6 +64,19 @@
+     implementation(libs.androidx.navigation.compose)
+     implementation(libs.firebase.database)
+     implementation(libs.firebase.auth)
++        val camerax_version = "1.2.2"
++        implementation (libs.androidx.camera.core)
++        implementation (libs.camera.camera2)
++        implementation (libs.androidx.camera.lifecycle)
++        implementation (libs.androidx.camera.video)
++        implementation (libs.androidx.camera.view)
++        implementation (libs.androidx.camera.extensions)
++    implementation(libs.material)
++    implementation(libs.androidx.appcompat)
++    implementation(libs.androidx.constraintlayout)
++    implementation(libs.androidx.navigation.fragment.ktx)
++    implementation(libs.androidx.navigation.ui.ktx)
++    implementation(libs.androidx.activity)
+     testImplementation(libs.junit)
+     androidTestImplementation(libs.androidx.junit)
+     androidTestImplementation(libs.androidx.espresso.core)
+Index: app/src/main/res/values/themes.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<resources>\r\n\r\n    <style name=\"Theme.CivicAlertOriginal\" parent=\"android:Theme.Material.Light.NoActionBar\" />\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/themes.xml b/app/src/main/res/values/themes.xml
+--- a/app/src/main/res/values/themes.xml	(revision a01c3a8915c920319fb0139cb37a2206c21ea90b)
++++ b/app/src/main/res/values/themes.xml	(date 1719927913902)
+@@ -2,4 +2,9 @@
+ <resources>
+ 
+     <style name="Theme.CivicAlertOriginal" parent="android:Theme.Material.Light.NoActionBar" />
++    <!-- Base application theme. -->
++    <style name="Base.Theme.CivicAlertOriginal" parent="Theme.Material3.DayNight.NoActionBar">
++        <!-- Customize your light theme here. -->
++        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
++    </style>
+ </resources>
+\ No newline at end of file

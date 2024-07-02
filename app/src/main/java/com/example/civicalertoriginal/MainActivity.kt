@@ -13,7 +13,8 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         setContent {
             CivicAlertOriginalTheme {
-                Navigation()
+               // Navigation()
+                MainActivity2
 
             }
         }
