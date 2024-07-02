@@ -1,5 +1,6 @@
 package com.example.civicalertoriginal.Screens
 
+import android.annotation.SuppressLint
 import android.util.Patterns
 import androidx.annotation.NonNull
 import androidx.compose.foundation.layout.*
@@ -34,6 +35,7 @@ data class User(
     val password: String=""
 )
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun Registration(navController: NavController) {
 
@@ -291,7 +293,7 @@ fun Registration(navController: NavController) {
                     Button(colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
                             registrationMessage = ""
-                            navController.navigate("Dashboard")
+                            navController.navigate("Login")
                         }
                     ) {
                         Text("OK",
