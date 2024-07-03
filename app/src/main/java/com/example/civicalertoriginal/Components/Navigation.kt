@@ -2,6 +2,8 @@ package com.example.civicalertoriginal.Components
 
 
 import LogIn
+import android.os.Build
+import androidx.annotation.RequiresApi
 import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.internal.composableLambda
@@ -11,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Screens.*
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation (){
     val navController = rememberNavController()

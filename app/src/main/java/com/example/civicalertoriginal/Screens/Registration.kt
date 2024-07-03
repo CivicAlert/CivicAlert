@@ -71,7 +71,7 @@ fun Registration(navController: NavController) {
 
     // Regex patterns
     val emailPattern = Patterns.EMAIL_ADDRESS.toRegex()
-    val passwordPattern = Regex("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@\$!%*#?&])[A-Za-z\\d@\$!%*#?&]{8,}$")
+    val passwordPattern = Regex("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@\$!%*#@?&])[A-Za-z\\d@\$!%*#?@&]{8,}$")
 
     // Validate entered details
     fun validateForm() {

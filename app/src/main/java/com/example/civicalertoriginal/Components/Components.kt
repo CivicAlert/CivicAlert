@@ -193,6 +193,20 @@ fun BottomButtons(name: String, onClick: () -> Unit,){
     }
 }
 @Composable
+fun SubmitButton(name: String, onClick: () -> Unit,){
+    Button(onClick = onClick, shape = ButtonDefaults.shape,
+        colors = ButtonDefaults.buttonColors(Color.Green),
+        modifier = Modifier
+            .width(260.dp)
+            .padding(start = 100.dp)) {
+        Text(text = name, modifier = Modifier
+            .size(80.dp, 30.dp)
+            .padding(start = 17.dp, top = 4.dp)
+            .align(Alignment.CenterVertically),
+            color = Color.Black)
+    }
+}
+@Composable
 fun Logo(){
     Image(painter = painterResource(id = R.drawable.logo), contentDescription ="" )
 }
@@ -262,11 +276,11 @@ fun InstructionText(value: String){
     )
 }
 @Composable
-fun LocationTextFields(value: String, onChange: (String) -> Unit){
+fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String ){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-          //  placeholder = { Text(text = fieldLabel, color = Color.Green)},
+           placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -302,7 +316,7 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun PictureTextFields(value: String, onChange: (String) -> Unit){
+fun PictureTextFields(value: String, onChange: (String) -> Unit, ){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -324,11 +338,11 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit){
     }
 }
 @Composable
-fun DescriptionTextFields(value: String, onChange: (String) -> Unit){
+fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-           // placeholder = { Text(text = fieldLabel, color = Color.Green)},
+           placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier

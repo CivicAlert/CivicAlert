@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
@@ -91,7 +92,9 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
     ) {
         Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
 
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier.size(30.dp) .clickable { onClose() },
+            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier
+                .size(30.dp)
+                .clickable { onClose() },
                 tint = Color.Red)
             Spacer(modifier = Modifier.size(25.dp))
             Text(
@@ -113,19 +116,19 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it } )
+        LocationTextFields(value = "", onChange = { location = it }, fieldLabel = " Enter location" )
 
         ReportDescriptionText(
             value1 = "Photos*",
             value = "Take photos of the incident you are reporting"
         )
-        PictureTextFields(value = picture, onChange = { picture = it })
+        PictureTextFields(value = "", onChange = { picture = it }, )
 
         ReportDescriptionText(
             value1 = "Report Description*",
             value = "Short Description of the incident"
         )
-        DescriptionTextFields(value = description, onChange = { description = it })
+        DescriptionTextFields(value = "", onChange = { description = it }, fieldLabel = "describe the incident" )
 
         val userReport = Reports(
             incidentType = selectedIncident,
@@ -153,10 +156,14 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
                 }
             }
         }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            SubmitButton(name = "Submit") {
+                saveReport(userReport)
+                navController.navigate("Dashboard")}
+        }
+        Spacer(modifier = Modifier.size(8.dp))
 
-        BottomButtons(name = "SUBMIT REPORT") {
-            saveReport(userReport)
-            navController.navigate("Dashboard")}
     }
 }
 
