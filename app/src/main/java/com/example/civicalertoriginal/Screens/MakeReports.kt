@@ -116,19 +116,19 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = "", onChange = { location = it }, fieldLabel = " Enter location" )
+        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location" )
 
         ReportDescriptionText(
             value1 = "Photos*",
             value = "Take photos of the incident you are reporting"
         )
-        PictureTextFields(value = "", onChange = { picture = it }, )
+        PictureTextFields(value = picture, onChange = { picture = it }, )
 
         ReportDescriptionText(
             value1 = "Report Description*",
             value = "Short Description of the incident"
         )
-        DescriptionTextFields(value = "", onChange = { description = it }, fieldLabel = "describe the incident" )
+        DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = "describe the incident" )
 
         val userReport = Reports(
             incidentType = selectedIncident,
