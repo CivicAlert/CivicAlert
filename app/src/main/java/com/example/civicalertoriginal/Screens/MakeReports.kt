@@ -76,8 +76,8 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance();
-    var location by remember { mutableStateOf("Enter Location") }
-    var description by remember { mutableStateOf("Brief details of the incident") }
+    var location by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
     val context = LocalContext.current
     val currentDateTime = LocalDateTime.now()
@@ -116,7 +116,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = "", onChange = { location = it }, fieldLabel = " Enter location" )
+        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location" )
 
         ReportDescriptionText(
             value1 = "Photos*",
@@ -128,7 +128,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Report Description*",
             value = "Short Description of the incident"
         )
-        DescriptionTextFields(value = "", onChange = { description = it }, fieldLabel = "describe the incident" )
+        DescriptionTextFields(value = description, onChange = { description = it }, placeholderText = "describe the incident" )
 
         val userReport = Reports(
             incidentType = selectedIncident,

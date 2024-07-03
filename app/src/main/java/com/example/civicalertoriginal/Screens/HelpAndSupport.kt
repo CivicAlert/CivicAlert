@@ -52,8 +52,7 @@ import androidx.navigation.NavController
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HelpAndSupport(navController: NavController) {
-    Surface(color = Color.White,
-        modifier = Modifier.fillMaxWidth()) {
+    Surface(color = Color.White){
 
         Scaffold (bottomBar = {
             BottomAppBar {

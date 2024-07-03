@@ -338,11 +338,15 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, ){
     }
 }
 @Composable
-fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
-    Column (verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally){
-        OutlinedTextField(value = value , onValueChange = onChange,
-           placeholder = { Text(text = fieldLabel, color = Color.Green)},
+fun DescriptionTextFields(value: String, onChange: (String) -> Unit, placeholderText: String) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onChange,
+            placeholder = { Text(text = placeholderText, color = Color.Green) },
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -350,15 +354,18 @@ fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel:
                         .clickable { },
                     imageVector = Icons.Default.Info,
                     contentDescription = "Location Icon"
-                ) },
+                )
+            },
             keyboardOptions = KeyboardOptions.Default,
-            textStyle = TextStyle(color = Color.Black ), modifier = Modifier
+            textStyle = TextStyle(color = Color.Black),
+            modifier = Modifier
                 .height(50.dp)
                 .fillMaxWidth()
                 .background(Color.White)
         )
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposedDropdownMenuBox(
