@@ -85,19 +85,10 @@ fun UpdateProfile (navController: NavController){
             }
         }){innerPadding ->
         }
-        var name by remember {
-            mutableStateOf("")
-        }
-        var sirname by remember {
-            mutableStateOf("")
-        }
-        var phoneNumber by remember {
-            mutableStateOf("")
-        }
-        var email by remember {
-            mutableStateOf("")
-        }
-
+        var name by remember { mutableStateOf("") }
+        var sirname by remember { mutableStateOf("") }
+        var phoneNumber by remember { mutableStateOf("") }
+        var email by remember { mutableStateOf("") }
             Column {
                 Spacer(modifier = Modifier.size(10.dp))
                 Column ( modifier = Modifier.fillMaxWidth() ,
@@ -115,7 +106,7 @@ fun UpdateProfile (navController: NavController){
                         val myRef = database.getReference("Community members")
                         myRef.addValueEventListener(object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {
-                               // user.clear()
+                               //user.clear()
                                 for (userSnapshot in snapshot.children) {
                                     val users = userSnapshot.getValue(getUser::class.java)
                                     if (users != null) {
@@ -127,25 +118,28 @@ fun UpdateProfile (navController: NavController){
                                     }
                                 }
                             }
-                            fun updateDetails() {
-                                val userId = myRef.push().key
-                                val updateUser = User(
-                                    firstName = name,
-                                    lastName = sirname,
-                                    email = email,
-                                    phoneNumber = phoneNumber
-                                )
-                                if (userId != null) {
-                                    myRef.child(userId).setValue(updateUser)
-                                }
-
-                            }
 
                             override fun onCancelled(error: DatabaseError) {
                                 TODO("Not yet implemented")
                             }
                         })
                     }
+                    fun updateDetails() {
+                        val database = FirebaseDatabase.getInstance()
+                        val myRef = database.getReference("Community members")
+                        val userId = myRef.push().key
+                        val updateUser = User(
+                            firstName = name,
+                            lastName = sirname,
+                            email = email,
+                            phoneNumber = phoneNumber
+                        )
+                        if (userId != null) {
+                            myRef.child(userId).setValue(updateUser)
+                        }
+
+                    }
+
                     LaunchedEffect(Unit) {
                         getUserDetails()
                     }
