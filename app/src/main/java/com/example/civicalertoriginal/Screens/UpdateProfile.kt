@@ -112,6 +112,7 @@ fun UpdateProfile (navController: NavController){
                         val database = FirebaseDatabase.getInstance()
                         val myRef = database.getReference("Community members").child(modifiedEmail)
                         myRef.addValueEventListener(object : ValueEventListener {
+                            @SuppressLint("SuspiciousIndentation")
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                             val user = dataSnapshot.getValue(User::class.java)
                                 user?.let {
