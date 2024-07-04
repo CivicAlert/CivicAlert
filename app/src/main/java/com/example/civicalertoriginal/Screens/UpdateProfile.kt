@@ -23,9 +23,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,10 +44,10 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
 data class getUser(
-    val email: String = "",
-    val firstName: String = "",
-    val lastName: String = "",
-    val phoneNumber: String = ""
+    var email: String = "",
+    var firstName: String = "",
+    var lastName: String = "",
+    var phoneNumber: String = ""
 )
 
 
@@ -95,15 +97,7 @@ fun UpdateProfile (navController: NavController){
         var email by remember {
             mutableStateOf("")
         }
-            LaunchedEffect(Unit) {
-                getUserDetails (onUserFetched = { user ->
-                    name = user.firstName
-                    sirname  = user.lastName
-                    email= user.email
-                    phoneNumber = user.phoneNumber
 
-                })
-            }
             Column {
                 Spacer(modifier = Modifier.size(10.dp))
                 Column ( modifier = Modifier.fillMaxWidth() ,
@@ -116,8 +110,53 @@ fun UpdateProfile (navController: NavController){
                     .fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 12.dp) ){
+                    fun getUserDetails() {
+                        val database = FirebaseDatabase.getInstance()
+                        val myRef = database.getReference("Community members")
+                        myRef.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                               // user.clear()
+                                for (userSnapshot in snapshot.children) {
+                                    val users = userSnapshot.getValue(getUser::class.java)
+                                    if (users != null) {
+                                       // user.add(users)
+                                        name = users.firstName
+                                        sirname = users.firstName
+                                        email = users.email
+                                        phoneNumber = users.phoneNumber
+                                    }
+                                }
+                            }
+                            fun updateDetails() {
+                                val userId = myRef.push().key
+                                val updateUser = User(
+                                    firstName = name,
+                                    lastName = sirname,
+                                    email = email,
+                                    phoneNumber = phoneNumber
+                                )
+                                if (userId != null) {
+                                    myRef.child(userId).setValue(updateUser)
+                                }
+
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                TODO("Not yet implemented")
+                            }
+                        })
+                    }
+                    LaunchedEffect(Unit) {
+                        getUserDetails()
+                    }
                     Column {
-                        ProfileText(description = "First Name", value = name, onSave = {updateName -> name = updateName})
+                        var user by remember {
+                            mutableStateOf(User())
+                        }
+
+                       // getUserDetails(user)
+                        ProfileText(description = "First Name", value = name, onSave = {
+                        })
                         //Text(text = "Halo $name")
                         Spacer(modifier = Modifier.size(10.dp))
                         ProfileText(description = "Last Name", value = sirname, onSave = {updateLastName -> sirname = updateLastName})
@@ -139,27 +178,4 @@ fun UpdateProfile (navController: NavController){
 
     }
 }
-fun getUserDetails(onUserFetched:(getUser)-> Unit){
-    val database = FirebaseDatabase.getInstance()
-    val myRef = database.getReference("Community members")
-    val postListener = object : ValueEventListener{
-        override fun onDataChange(snapshot: DataSnapshot) {
-            val user = snapshot.getValue(getUser::class.java)
-            if (user != null){
-                onUserFetched(user)
-            } else{
-                println("User null")
-            }
-        }
 
-
-        override fun onCancelled(error: DatabaseError) {
-            println("Failed to read value: ${error.toException()}")
-        } }
-    myRef.addValueEventListener(postListener)}
-
-@Preview
-@Composable
-fun SignUpPreview(){
-
-}

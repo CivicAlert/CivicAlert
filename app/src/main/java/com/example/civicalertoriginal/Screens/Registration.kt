@@ -39,11 +39,11 @@ data class User(
 @Composable
 fun Registration(navController: NavController) {
 
+    val context = LocalContext.current
+    val scrollable = rememberScrollState()
     val database = Firebase.database
     val myRef = database.getReference("Community members")
     val auth = FirebaseAuth.getInstance();
-    val context = LocalContext.current
-    val scrollable = rememberScrollState()
 
     // Variables needed for user registration
     var firstName by remember { mutableStateOf("") }
@@ -89,8 +89,14 @@ fun Registration(navController: NavController) {
                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
+   fun encodeEmail(email: String): String {
+        return email.replace(".", "_dot_") // Replace '.' with '_dot_' or use any suitable encoding method
+    }
+
     fun saveUser(user: User) {
-        val userId = myRef.push().key ?: return
+       //val userId = user.email
+        val userId = encodeEmail(user.email)
+       // val userId = user.firstName
         myRef.child(userId).setValue(user).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Handle success
@@ -105,7 +111,7 @@ fun Registration(navController: NavController) {
             }
         }
     }
-    fun saveByEmail(){
+    fun saveByEmail(user : User){
         auth.createUserWithEmailAndPassword(email, password);
     }
 
@@ -253,13 +259,14 @@ fun Registration(navController: NavController) {
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = {
-                                val user = User(firstName = firstName,
-                                    lastName = lastName,
+                                val user = User(
                                     email = email,
+                                    firstName = firstName,
+                                    lastName = lastName,
                                     phoneNumber = phoneNumber,
                                     password = password)
                                     saveUser(user)
-                            saveByEmail()
+                            saveByEmail(user)
                                 showDialog = false
 
 
