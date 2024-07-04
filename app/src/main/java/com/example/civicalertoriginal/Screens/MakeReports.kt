@@ -116,7 +116,8 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location" )
+
+        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = "Enter location" )
 
         ReportDescriptionText(
             value1 = "Photos*",

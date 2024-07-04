@@ -45,5 +45,8 @@ fun Navigation (){
         composable("helpSupport"){
             HelpAndSupport(navController)
         }
+        composable("map_screen") { MapScreen(navController = navController, onLocationSelected = { location ->
+            navController.previousBackStackEntry?.savedStateHandle?.set("selectedLocation", location)
+        }) }
     }
 }

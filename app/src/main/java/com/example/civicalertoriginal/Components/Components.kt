@@ -2,9 +2,7 @@
 
 package com.example.civicalertoriginal.Components
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -63,15 +60,12 @@ import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.example.civicalertoriginal.R
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -276,7 +270,7 @@ fun InstructionText(value: String){
     )
 }
 @Composable
-fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String ){
+fun LocationTextFields(navController: NavController, value: String, onChange: (String) -> Unit, fieldLabel: String ){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -285,7 +279,7 @@ fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: St
                 Icon(
                     modifier = Modifier
                         .size(35.dp, 35.dp)
-                        .clickable { },
+                        .clickable { navController.navigate("map_screen")},
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Location Icon"
                 ) },
@@ -297,6 +291,8 @@ fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: St
         )
     }
 }
+
+
 @Composable
 fun ReportDescriptionText(value1: String, value:String){
     Column {
@@ -373,7 +369,7 @@ fun ExposedDropdownMenuBox(
     onIncidentSelected: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val Incidents= arrayOf("Water", "Electricity", "Pothole", "Other")
+    val Incidents = arrayOf("Water", "Electricity", "Pothole", "Other")
     var expanded by remember { mutableStateOf(false) }
    // var selectedText by remember { mutableStateOf(Incidents[0]) }
 
