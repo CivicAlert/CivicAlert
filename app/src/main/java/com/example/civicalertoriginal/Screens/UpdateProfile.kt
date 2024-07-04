@@ -1,6 +1,7 @@
 package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.List
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,6 +35,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,7 +56,7 @@ data class getUser(
 )
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
 fun UpdateProfile (navController: NavController){
     Surface( color = Color.White) {
@@ -90,6 +94,8 @@ fun UpdateProfile (navController: NavController){
         var sirname by remember { mutableStateOf("") }
         var phoneNumber by remember { mutableStateOf("") }
         var email by remember { mutableStateOf("") }
+        val showDialog = mutableStateOf(false)
+        val context = LocalContext.current
             Column {
                 Spacer(modifier = Modifier.size(10.dp))
                 Column ( modifier = Modifier.fillMaxWidth() ,
@@ -129,22 +135,6 @@ fun UpdateProfile (navController: NavController){
                         })
 
                     }
-                    fun updateDetails() {
-                        val database = FirebaseDatabase.getInstance()
-                        val myRef = database.getReference("Community members")
-                        val userId = myRef.push().key
-                        val updateUser = User(
-                            firstName = name,
-                            lastName = sirname,
-                            email = email,
-                            phoneNumber = phoneNumber
-                        )
-                        if (userId != null) {
-                            myRef.child(userId).setValue(updateUser)
-                        }
-
-                    }
-
                     LaunchedEffect(Unit) {
                         val currentUser = FirebaseAuth.getInstance().currentUser
                         val currentUserEmail = currentUser?.email
@@ -154,14 +144,68 @@ fun UpdateProfile (navController: NavController){
                             getUserDetails(currentUserEmail)
                         }
                     }
+                    fun showToast(message: String) {
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                    fun updateDetails() {
+                        val database = FirebaseDatabase.getInstance()
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        val currentUserEmail = currentUser?.email
+
+                        if (currentUserEmail != null) {
+                            val sanitizedEmail = sanitizeEmail(currentUserEmail)
+                            val myRef = database.getReference("Community members").child(sanitizedEmail)
+                            val updateUser = User(
+                                firstName = name,
+                                lastName = sirname,
+                                email = currentUserEmail,
+                                phoneNumber = phoneNumber
+                            )
+                            myRef.setValue(updateUser).addOnSuccessListener {
+                                showToast("Details have been updated")
+                            }
+                                .addOnFailureListener{e ->
+                                    showToast("Failed to update")
+                                }
+                        }
+                    }
+
+                    if (showDialog.value) {
+                        AlertDialog(
+                            onDismissRequest = {
+                                showDialog.value = false
+                            },
+                            title = { Text("Confirm Update") },
+                            text = { Text("Are you sure you want to update your details?") },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        showDialog.value = false
+                                        updateDetails()
+
+                                    }
+                                ) {
+                                    Text("Update")
+                                }
+                            },
+                            dismissButton = {
+                                Button(
+                                    onClick = {
+                                        showDialog.value = false
+                                    }
+                                ) {
+                                    Text("Cancel")
+                                }
+                            }
+                        )
+                    }
                     Column {
                         var user by remember {
                             mutableStateOf(User())
                         }
 
                        // getUserDetails(user)
-                        ProfileText(description = "First Name", value = name, onSave = {
-                        })
+                        ProfileText(description = "First Name", value = name, onSave = {updateLastName -> name = updateLastName})
                         //Text(text = "Halo $name")
                         Spacer(modifier = Modifier.size(10.dp))
                         ProfileText(description = "Last Name", value = sirname, onSave = {updateLastName -> sirname = updateLastName})
@@ -172,8 +216,9 @@ fun UpdateProfile (navController: NavController){
 
                     } }
 
+
                 Spacer(modifier = Modifier.size(20.dp))
-                BottomButtonsMyProfile(name = "UPDATE") {}
+                BottomButtonsMyProfile(name = "UPDATE") {/*showDialog.value=  true*/}
                 Spacer(modifier = Modifier.size(20.dp))
                 BottomButtonsMyProfile(name = "Log Out") {}
             }

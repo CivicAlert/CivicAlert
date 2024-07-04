@@ -464,7 +464,6 @@ fun ProfileText(description: String , value: String, onSave:(String)-> Unit) {
                 onClick = {
                     textFieldVisible = false
                     onSave(textFieldValue)
-                    // logic to do when saving thee data
                 },
                 modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.End)
             ) {
