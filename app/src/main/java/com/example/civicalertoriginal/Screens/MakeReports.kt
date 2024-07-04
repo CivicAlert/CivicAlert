@@ -128,7 +128,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Report Description*",
             value = "Short Description of the incident"
         )
-        DescriptionTextFields(value = description, onChange = { description = it } )
+        DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = "brief discription of the incident" )
 
         val userReport = Reports(
             incidentType = selectedIncident,
