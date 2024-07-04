@@ -85,6 +85,7 @@ fun UpdateProfile (navController: NavController){
             }
         }){innerPadding ->
         }
+
         var name by remember { mutableStateOf("") }
         var sirname by remember { mutableStateOf("") }
         var phoneNumber by remember { mutableStateOf("") }
