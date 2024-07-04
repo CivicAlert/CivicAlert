@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.civicalertoriginal.Components.BottomButtonsMyProfile
 import com.example.civicalertoriginal.Components.ProfileText
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -102,28 +103,31 @@ fun UpdateProfile (navController: NavController){
                     .fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 12.dp) ){
-                    fun getUserDetails() {
-                        val database = FirebaseDatabase.getInstance()
-                        val myRef = database.getReference("Community members")
-                        myRef.addValueEventListener(object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                               //user.clear()
-                                for (userSnapshot in snapshot.children) {
-                                    val users = userSnapshot.getValue(getUser::class.java)
-                                    if (users != null) {
-                                       // user.add(users)
-                                        name = users.firstName
-                                        sirname = users.firstName
-                                        email = users.email
-                                        phoneNumber = users.phoneNumber
-                                    }
-                                }
-                            }
 
-                            override fun onCancelled(error: DatabaseError) {
-                                TODO("Not yet implemented")
+                    fun sanitizeEmail(email: String): String {
+                        return email.replace(".", "_dot_")
+                    }
+
+                    fun getUserDetails(email:String) {
+                        val modifiedEmail = sanitizeEmail(email)
+                        val database = FirebaseDatabase.getInstance()
+                        val myRef = database.getReference("Community members").child(modifiedEmail)
+                        myRef.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val user = dataSnapshot.getValue(User::class.java)
+                                user?.let {
+                                    name = it.firstName
+                                    sirname = it.lastName
+                                    phoneNumber = it.phoneNumber
+                                }
+                        }
+
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                // Handle possible errors
+                              //  callback(null)
                             }
                         })
+
                     }
                     fun updateDetails() {
                         val database = FirebaseDatabase.getInstance()
@@ -142,7 +146,13 @@ fun UpdateProfile (navController: NavController){
                     }
 
                     LaunchedEffect(Unit) {
-                        getUserDetails()
+                        val currentUser = FirebaseAuth.getInstance().currentUser
+                        val currentUserEmail = currentUser?.email
+
+                        if (currentUserEmail != null) {
+                            email = currentUserEmail
+                            getUserDetails(currentUserEmail)
+                        }
                     }
                     Column {
                         var user by remember {
