@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
@@ -30,14 +31,19 @@ import com.example.civicalertoriginal.R
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import com.example.civicalertoriginal.Components.ReportDescriptionText
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 data class Report(
     val incidentType: String = "",
+    var reportId: String = "",
     val location: String = "",
     val dateTime: String = "",
     val description: String = "",
@@ -57,6 +63,7 @@ fun fetchReportsFromFirebase(reports: SnapshotStateList<Report>) {
             for (reportSnapshot in snapshot.children) {
                 val report = reportSnapshot.getValue(Report::class.java)
                 if (report != null) {
+                    report.reportId = reportSnapshot.key?: ""
                     reports.add(report)
                 }
             }
@@ -127,19 +134,18 @@ fun ViewReports(navController: NavController) {
                             placeholder = { Text("Search", color = Color.Black) },
                             shape = RoundedCornerShape(50),
                             singleLine = true,
-                            trailingIcon = {
-                                ExposedDropdownMenu(
+                            trailingIcon = { /*ExposedDropdownMenu(
                                     items = FilterOption.values().toList(),
                                     selectedItem = filterOption,
                                     onItemSelected = { filterOption = it },
-                                )
+                                )*/
                             }
                         )
                     }
                 }
                 items(filteredReports) { report ->
                     Column {
-                        ExpandableReportItem(report = report)
+                        ExpandableReportItem(report = report, navController = navController)
                         Divider(color = Color.Black, thickness = 2.dp)
                     }
                 }
@@ -147,68 +153,11 @@ fun ViewReports(navController: NavController) {
         }
     }
 }
-@Composable
-fun <T> ExposedDropdownMenu(
-    items: List<T>,
-    selectedItem: T,
-    onItemSelected: (T) -> Unit,
-    label: String = ""
 
-) {
+@Composable
+fun ExpandableReportItem(report: Report, navController: NavController) {
     var expanded by remember { mutableStateOf(false) }
 
-
-    Box(
-    ) {
-        val shape = RoundedCornerShape(
-            topStart = 0.dp,
-            topEnd = 25.dp,
-            bottomStart = 0.dp,
-            bottomEnd = 25.dp
-        )
-
-        OutlinedTextField(
-            value = selectedItem.toString(),
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label, color = Color.Black) },
-            trailingIcon = {
-                IconButton(onClick = { expanded = !expanded }) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Dropdown icon"
-                    )
-                }
-            },
-            shape = shape, // Apply the custom shape
-            modifier = Modifier
-                .size(150.dp, 64.dp)
-                .clip(shape) // Clip content to the shape
-                .clipToBounds() // Clip the bounds of the TextField
-                .offset(y = -4.dp)
-                .fillMaxHeight()
-                .padding(end = 4.dp)
-        )
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            items.forEach { item ->
-                DropdownMenuItem(
-                    text = { Text(text = item.toString()) },
-                    onClick = {
-                        onItemSelected(item)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-@Composable
-fun ExpandableReportItem(report: Report) {
-    var expanded by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
@@ -239,7 +188,7 @@ fun ExpandableReportItem(report: Report) {
                 ) {
                     Text(
                         text = report.incidentType,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold,color = Color.DarkGray)
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
@@ -253,19 +202,21 @@ fun ExpandableReportItem(report: Report) {
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
                         )
                         Spacer(modifier = Modifier.width(40.dp))
-                      if (!expanded)  Text(
+                        if (!expanded) Text(
                             text = report.description,
                             modifier = Modifier
                                 .height(24.dp)
-                                .clipToBounds(),// Show only the first 10 letters
+                                .clipToBounds(), // Show only the first 10 letters
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
                         )
                         else Text(
-                          text = report.description, modifier = Modifier.alpha(0f) )
+                            text = report.description, modifier = Modifier.alpha(0f))
                     }
                 }
                 IconButton(
-                    onClick = { expanded = !expanded },
+                    onClick = {
+                        navController.navigate("viewReport/${report.reportId}")
+                    },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -277,7 +228,7 @@ fun ExpandableReportItem(report: Report) {
             if (expanded) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "${report.description}",
+                    text = report.description,
                     style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
                     modifier = Modifier
                         .padding(start = 10.dp)
@@ -293,7 +244,8 @@ fun ExpandableReportItem(report: Report) {
             }
         }
     }
-    }
+}
+
 
 
 @Preview(showBackground = true)
