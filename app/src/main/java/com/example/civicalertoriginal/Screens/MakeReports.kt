@@ -211,8 +211,7 @@ fun SuccessDialog(onDismiss: () -> Unit) {
         text = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.background(Color.White)
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Box(
                     modifier = Modifier
@@ -222,22 +221,22 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.check), // Replace with your check icon
+                        painter = painterResource(id = R.drawable.check),
                         contentDescription = null,
                         tint = Color(0xFF00C853),
                         modifier = Modifier.size(60.dp)
                     )
                 }
                 Text(
-                    text = "Report Successfully Submitted",
+                    text = "Report Successful Submitted",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
                 Text(
-                    text = "Thank you for reporting to us.\n We will take a look at the incident."
+                    text = "Thank you for reporting to us. We\n  will take a look at the incident."
                 )
                 Text(
-                    text = "Your Reference ID:\n $referenceNumber",
+                    text = "Your Reference ID:\n  $referenceNumber",
                     fontWeight = FontWeight.Bold
                 )
 
@@ -245,10 +244,9 @@ fun SuccessDialog(onDismiss: () -> Unit) {
         }
     )
 }
-
 fun generateReferenceNumber(): String {
     val currentDateTime = LocalDateTime.now()
-    val dateFormatter = DateTimeFormatter.ofPattern("yyDD")
+    val dateFormatter = DateTimeFormatter.ofPattern("yyMM")
     val timeFormatter = DateTimeFormatter.ofPattern("HH")
 
     val datePart = currentDateTime.format(dateFormatter)
