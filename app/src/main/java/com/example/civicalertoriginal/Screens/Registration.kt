@@ -23,9 +23,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -42,11 +39,11 @@ data class User(
 @Composable
 fun Registration(navController: NavController) {
 
-    val context = LocalContext.current
-    val scrollable = rememberScrollState()
     val database = Firebase.database
     val myRef = database.getReference("Community members")
     val auth = FirebaseAuth.getInstance();
+    val context = LocalContext.current
+    val scrollable = rememberScrollState()
 
     // Variables needed for user registration
     var firstName by remember { mutableStateOf("") }
@@ -92,33 +89,8 @@ fun Registration(navController: NavController) {
                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
-   fun encodeEmail(email: String): String {
-        return email.replace(".", "_dot_") // Replace '.' with '_dot_' or use any suitable encoding method
-    }
-    fun checkEmailExists(email:String, onResult:(Boolean)-> Unit){
-        val formattedEmail = encodeEmail(email)
-        val myRef = Firebase.database.getReference("Community members").child(formattedEmail)
-
-        myRef.addListenerForSingleValueEvent(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()){
-                    onResult(true)
-                }else{
-                    onResult(false)
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                onResult(false)
-                println("Failed to check user")
-            }
-        })
-    }
-
     fun saveUser(user: User) {
-       //val userId = user.email
-        val userId = encodeEmail(user.email)
-       // val userId = user.firstName
+        val userId = myRef.push().key ?: return
         myRef.child(userId).setValue(user).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 // Handle success
@@ -133,25 +105,8 @@ fun Registration(navController: NavController) {
             }
         }
     }
-    fun saveByEmail(user : User){
+    fun saveByEmail(){
         auth.createUserWithEmailAndPassword(email, password);
-    }
-    fun registerUser() {
-        checkEmailExists(email) { exists ->
-            if (exists) {
-                registrationMessage = "Email already exists in the system"
-            } else {
-                val user = User(
-                    email = email,
-                    firstName = firstName,
-                    lastName = lastName,
-                    phoneNumber = phoneNumber,
-                    password = password
-                )
-                saveUser(user)
-                saveByEmail(user)
-            }
-        }
     }
 
 
@@ -297,8 +252,20 @@ fun Registration(navController: NavController) {
                         .padding(start = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
-                        onClick = { showDialog = false
-                        registerUser()}
+                        onClick = {
+                                val user = User(firstName = firstName,
+                                    lastName = lastName,
+                                    email = email,
+                                    phoneNumber = phoneNumber,
+                                    password = password)
+                                    saveUser(user)
+                            saveByEmail()
+                                showDialog = false
+
+
+                            // method to save data to database
+
+                        }
                     ) {
                         Text("Confirm",
                             color = Color.Black)
