@@ -76,8 +76,8 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance();
-    var location by remember { mutableStateOf("Enter Location") }
-    var description by remember { mutableStateOf("Brief details of the incident") }
+    var location by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
     val context = LocalContext.current
     val currentDateTime = LocalDateTime.now()
