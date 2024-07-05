@@ -282,7 +282,8 @@ fun Registration(navController: NavController) {
 
             LogBottomButtons(
                 name = "Register",
-                onClick = { showDialog = true },
+                onClick = { showDialog = true
+                          registerUser()},
                 enabled = isFormValid
             )
 
