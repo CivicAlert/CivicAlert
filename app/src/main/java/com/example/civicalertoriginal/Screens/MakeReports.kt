@@ -41,7 +41,7 @@ data class Reports(
     val location: String = "",
     val description: String ="",
     val dateTime: String ="",
-
+    val email: String = "",
 )
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -64,15 +64,23 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController){isVisible = false
-            navController.navigate("Dashboard")}
+            val auth = FirebaseAuth.getInstance()
+            val currentUser = auth.currentUser
+            currentUser?.let {
+                AnimatedMakeReports(navController , it.uid){isVisible = false
+                navController.navigate("Dashboard")}}
+
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
+fun AnimatedMakeReports(
+    navController: NavController,
+    userId: String,
+    onClose: () -> Unit
+) {
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance();
@@ -82,6 +90,8 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
     val context = LocalContext.current
     val currentDateTime = LocalDateTime.now()
     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+    val reportId = formattedDateTime
+
 
     Column(
         verticalArrangement = Arrangement.spacedBy(30.dp),
@@ -116,7 +126,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location" )
+        LocationTextFields(value = location, onChange = { location = it } )
 
         ReportDescriptionText(
             value1 = "Photos*",
@@ -128,9 +138,11 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Report Description*",
             value = "Short Description of the incident"
         )
-        DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = "brief discription of the incident" )
+        DescriptionTextFields(value = description, onChange = { description = it } )
 
         val userReport = Reports(
+
+            email =  userId,
             incidentType = selectedIncident,
             location = location,
             description = description,
@@ -138,8 +150,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
            )
 
         fun saveReport(report:Reports) {
-            val userId = myRef.push().key ?: return
-            myRef.child(userId).setValue(report).addOnCompleteListener { task ->
+            myRef.child(reportId).setValue(report).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Handle success
                     println("Report saved")

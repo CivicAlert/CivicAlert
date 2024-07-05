@@ -38,7 +38,7 @@ import com.google.firebase.database.database
 data class getReport(
     var incidentType: String = "",
     var description: String = "",
-    var reference_number: String = "",
+    var dateTime: String = "",
     var location: String = ""
 
 )
@@ -85,7 +85,7 @@ fun ViewFullReport (navController: NavController, reportId:String){
                     Spacer(modifier = Modifier.size(10.dp))
                     ReportDescriptionText(value1 = "Status", value = report.value.location)
                     Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "ReferenceId", value = report.value.reference_number)
+                    ReportDescriptionText(value1 = "ReferenceId", value = report.value.dateTime)
 
 
         }
