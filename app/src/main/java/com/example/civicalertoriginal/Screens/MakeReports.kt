@@ -49,7 +49,8 @@ data class Reports(
     val location: String = "",
     val description: String ="",
     val dateTime: String ="",
-    val refNumber: String =""
+    val refNumber: String ="",
+    val status: String =""
 
 )
 @RequiresApi(Build.VERSION_CODES.O)
@@ -158,7 +159,9 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             location = location,
             description = description,
             dateTime = formattedDateTime,
-            refNumber = referenceNumber
+            refNumber = referenceNumber,
+            status = "Agent looking at it"
+
         )
 
         fun saveReport(report: Reports) {

@@ -39,7 +39,9 @@ data class getReport(
     var incidentType: String = "",
     var description: String = "",
     var dateTime: String = "",
-    var location: String = ""
+    var location: String = "",
+    var refNumber: String = "",
+    var status: String = ""
 
 )
 @Composable
@@ -81,11 +83,11 @@ fun ViewFullReport (navController: NavController, reportId:String){
                     Spacer(modifier = Modifier.size(10.dp))
                     ReportDescriptionText(value1 = "Report Description", value = report.value.description )
                     Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "Status", value = "Agent looking At it")
+                    ReportDescriptionText(value1 = "Status", value = report.value.status)
                     Spacer(modifier = Modifier.size(10.dp))
                     ReportDescriptionText(value1 = "Status", value = report.value.location)
                     Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "ReferenceId", value = report.value.dateTime)
+                    ReportDescriptionText(value1 = "Reference Number", value = report.value.refNumber)
 
 
         }

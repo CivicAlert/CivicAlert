@@ -187,7 +187,7 @@ fun ExpandableReportItem(report: Report, navController: NavController) {
                         .width(50.dp)
                 ) {
                     Text(
-                        text = report.incidentType,
+                        text = report.description.take(20),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -202,15 +202,10 @@ fun ExpandableReportItem(report: Report, navController: NavController) {
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
                         )
                         Spacer(modifier = Modifier.width(40.dp))
-                        if (!expanded) Text(
-                            text = report.description,
-                            modifier = Modifier
-                                .height(24.dp)
-                                .clipToBounds(), // Show only the first 10 letters
-                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
+                        Text(
+                            text = report.incidentType,
+                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue)
                         )
-                        else Text(
-                            text = report.description, modifier = Modifier.alpha(0f))
                     }
                 }
                 IconButton(
@@ -225,23 +220,7 @@ fun ExpandableReportItem(report: Report, navController: NavController) {
                     )
                 }
             }
-            if (expanded) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = report.description,
-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
-                    modifier = Modifier
-                        .padding(start = 10.dp)
-                )
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = { expanded = false },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text("Close")
-                }
-            }
         }
     }
 }
