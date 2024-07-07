@@ -244,6 +244,7 @@ fun SuccessDialog(onDismiss: () -> Unit) {
         }
     )
 }
+@RequiresApi(Build.VERSION_CODES.O)
 fun generateReferenceNumber(): String {
     val currentDateTime = LocalDateTime.now()
     val dateFormatter = DateTimeFormatter.ofPattern("yyMM")
@@ -262,6 +263,7 @@ fun generateReferenceNumber(): String {
 
     return "$datePart/$timePart-$randomPart"
 }
+@RequiresApi(Build.VERSION_CODES.O)
 val referenceNumber = generateReferenceNumber()
 
 @RequiresApi(Build.VERSION_CODES.O)
