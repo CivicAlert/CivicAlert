@@ -133,7 +133,9 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location")
+        LocationTextFields(value = location,
+            onChange = { location = it },
+            fieldLabel = " Enter location")
 
         ReportDescriptionText(
             value1 = "Photos*",
@@ -194,6 +196,7 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SuccessDialog(onDismiss: () -> Unit) {
     AlertDialog(
@@ -261,7 +264,7 @@ fun generateReferenceNumber(): String {
         .take(4)
         .joinToString("")
 
-    return "$datePart/$timePart-$randomPart"
+    return "$datePart/$timePart/$randomPart"
 }
 @RequiresApi(Build.VERSION_CODES.O)
 val referenceNumber = generateReferenceNumber()

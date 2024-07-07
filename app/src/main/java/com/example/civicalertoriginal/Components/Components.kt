@@ -276,11 +276,11 @@ fun InstructionText(value: String){
     )
 }
 @Composable
-fun LocationTextFields(value: String, onChange: (String) -> Unit){
+fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-            //placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -298,7 +298,7 @@ fun LocationTextFields(value: String, onChange: (String) -> Unit){
     }
 }
 @Composable
-fun ReportDescriptionText(value1: String, value:String){
+fun ReportDescriptionText(value1: String, value:String,){
     Column {
 
         Text(text = value1, style = TextStyle(
@@ -338,11 +338,11 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, ){
     }
 }
 @Composable
-fun DescriptionTextFields(value: String, onChange: (String) -> Unit){
+fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-           //placeholder = { Text(text = fieldLabel, color = Color.Green)},
+           placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
