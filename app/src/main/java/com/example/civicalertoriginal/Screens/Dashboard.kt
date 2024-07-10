@@ -2,23 +2,10 @@ package com.example.civicalertoriginal.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,10 +19,18 @@ import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.CardButton
 import com.example.civicalertoriginal.Components.Logo
 import com.example.civicalertoriginal.R
+import com.google.firebase.database.*
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard(navController: NavController) {
+    var recentReport by remember { mutableStateOf<Report?>(null) }
+
+    LaunchedEffect(Unit) {
+        recentReport = fetchRecentReport()
+    }
+
     Surface(color = Color.White) {
         LazyColumn(
             modifier = Modifier
@@ -62,39 +57,37 @@ fun Dashboard(navController: NavController) {
                 }
             }
 
-            item {
-                Column(
-                    modifier = Modifier.height(300.dp)
-                ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
+            recentReport?.let { report ->
+                item {
+                    Column(
+                        modifier = Modifier.height(300.dp)
                     ) {
-                        Column(
+                        Card(
                             modifier = Modifier
-                                .padding(16.dp)
+                                .fillMaxWidth()
+                                .fillMaxHeight(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
                         ) {
-                            Text(
-                                text = "Recent report",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.photo),
-                                contentDescription = "Picture of reported incident",
-                                modifier = Modifier.height(150.dp)
-                            )
-                            Text(
-                                text = "Broken Street Light",
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp
-                            )
-                            Text(text = "3 Webb St, Sonheuwal Central, Mbombela")
-                            Text(text = "14 March")
-                            Text(text = "Streetlight")
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
+                                Text(
+                                    text = "Recent report",
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 20.sp
+                                )
+                                // Replace with actual image resource if available
+                                Image(
+                                    painter = painterResource(id = R.drawable.photo),
+                                    contentDescription = "Picture of reported incident",
+                                    modifier = Modifier.height(150.dp)
+                                )
+                                Text(text = report.description, fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                                Text(text = report.location)
+                                Text(text = report.dateTime)
+                                Text(text = report.incidentType)
+                            }
                         }
                     }
                 }
@@ -120,41 +113,60 @@ fun Dashboard(navController: NavController) {
                 }
             }
 
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        CardButton(
-                            iconRes = R.drawable.headphones,
-                            label = "Help & Support",
-                            onClick =  { navController.navigate("helpSupport") })
-
-                        CardButton(
-                            iconRes = R.drawable.emergency_contacts,
-                            label = "Emergency\n Contacts",
-                            onClick = { navController.navigate("emergencyContacts") }
-                        )
-
-                    }
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    CardButton(
+                        iconRes = R.drawable.headphones,
+                        label = "Help & Support",
+                        onClick = { navController.navigate("helpSupport") }
+                    )
+                    CardButton(
+                        iconRes = R.drawable.emergency_contacts,
+                        label = "Emergency\n Contacts",
+                        onClick = { navController.navigate("emergencyContacts") }
+                    )
                 }
+            }
 
-                item {
-                    Row(
-                        modifier = Modifier.height(20.dp)
-                    ) {
-                        // Placeholder for spacing
-                    }
+            item {
+                Row(
+                    modifier = Modifier.height(20.dp)
+                ) {
+                    // Placeholder for spacing
                 }
             }
         }
     }
+}
 
 
-    @Preview
-    @Composable
-    fun DashboardPreview() {
-        val navController = rememberNavController()
-        Dashboard(navController)
+suspend fun fetchRecentReport(): Report? {
+    val database = FirebaseDatabase.getInstance()
+    val reportsRef = database.getReference("Make Report Instance")
+
+    return try {
+        val dataSnapshot = reportsRef.limitToLast(1).get().await()
+        dataSnapshot.children.firstOrNull()?.let { snapshot ->
+            val description = snapshot.child("description").getValue(String::class.java) ?: ""
+            val location = snapshot.child("location").getValue(String::class.java) ?: ""
+            val dateTime = snapshot.child("dateTime").getValue(String::class.java) ?: ""
+            val incidentType = snapshot.child("incidentType").getValue(String::class.java) ?: ""
+
+            Report(description, location, dateTime, incidentType)
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
+}
+
+@Preview
+@Composable
+fun DashboardPreview() {
+    val navController = rememberNavController()
+    Dashboard(navController)
+}
