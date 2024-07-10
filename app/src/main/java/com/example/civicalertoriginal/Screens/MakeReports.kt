@@ -1,7 +1,7 @@
 package civicalertoriginal.Screen
 
+import android.content.Context
 import android.os.Build
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -18,7 +17,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -43,8 +41,35 @@ data class Reports(
     val description: String = "",
     val dateTime: String = "",
     val refNumber: String = "",
-    val status: String = ""
+    val status: String = "",
+    val userID: String = ""
 )
+
+class SharedPrefs(context: Context) {
+    private val prefs = context.getSharedPreferences("reference_number_prefs", Context.MODE_PRIVATE)
+
+    var increment: Int
+        get() = prefs.getInt("increment", 0)
+        set(value) {
+            prefs.edit().putInt("increment", value).apply()
+        }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun generateReferenceNumber(context: Context): String {
+    val sharedPrefs = SharedPrefs(context)
+    val currentDateTime = LocalDateTime.now()
+    val dateFormatter = DateTimeFormatter.ofPattern("yyMMdd")
+    val timeFormatter = DateTimeFormatter.ofPattern("HHmmss")
+    val datePart = currentDateTime.format(dateFormatter)
+    val timePart = currentDateTime.format(timeFormatter)
+
+    // Retrieve and increment the stored increment value
+    val incrementedPart = String.format("%04d", sharedPrefs.increment++)
+    sharedPrefs.increment = sharedPrefs.increment // Save the updated increment value
+
+    return "$datePart-$timePart-$incrementedPart"
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -58,15 +83,9 @@ fun MakeReports(navController: NavController) {
     }
 
     Surface(color = Color.White) {
-        // Fetch the current user's UID
+        // Fetch the current user's UID and email
         val currentUser = auth.currentUser
-        val uid = currentUser?.uid
-
-        if (uid == null) {
-            Toast.makeText(context, "User not authenticated", Toast.LENGTH_SHORT).show()
-            // Navigate back or handle the case where the user is not authenticated
-            navController.navigate("Login")
-        }
+        val email = currentUser?.email ?: ""
 
         AnimatedVisibility(
             visible = isVisible,
@@ -79,7 +98,7 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController, uid ?: "") {
+            AnimatedMakeReports(navController, email) {
                 isVisible = false
                 navController.navigate("Dashboard")
             }
@@ -89,9 +108,10 @@ fun MakeReports(navController: NavController) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -> Unit) {
+fun AnimatedMakeReports(navController: NavController, userEmail: String, onClose: () -> Unit) {
     val database = Firebase.database
-    val myRef = database.getReference("Make Reports Instance").child(uid)
+    val myRef = database.getReference("Make Report Instance") // Reference to "Make Report Instance"
+    val auth = FirebaseAuth.getInstance()
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
@@ -99,6 +119,9 @@ fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -
     val currentDateTime = LocalDateTime.now()
     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
     var showDialog by remember { mutableStateOf(false) }
+
+    // Generate the reference number with the context
+    val referenceNumber = generateReferenceNumber(context)
 
     Column(
         verticalArrangement = Arrangement.spacedBy(30.dp),
@@ -137,7 +160,9 @@ fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location")
+        LocationTextFields(value = location,
+            onChange = { location = it },
+            fieldLabel = " Enter location")
 
         ReportDescriptionText(
             value1 = "Photos*",
@@ -161,19 +186,31 @@ fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -
             description = description,
             dateTime = formattedDateTime,
             refNumber = referenceNumber,
-            status = "Agent looking at it"
+            status = "Agent looking at it",
+            userID = userEmail // Set userID to current user's email
         )
 
         fun saveReport(report: Reports) {
-            val reportId = myRef.push().key ?: return
-            myRef.child(reportId).setValue(report).addOnCompleteListener { task ->
+            // Associate the report with the user using UID
+            val reportWithUser = mapOf(
+                "incidentType" to report.incidentType,
+                "location" to report.location,
+                "description" to report.description,
+                "dateTime" to report.dateTime,
+                "refNumber" to report.refNumber,
+                "status" to report.status,
+                "userID" to report.userID
+            )
+
+            // Use the reference number as the key
+            myRef.child(report.refNumber).setValue(reportWithUser).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Handle success
                     showDialog = true // Show the dialog upon successful submission
                 } else {
                     // Handle failure
                     task.exception?.let {
-                        println("Error saving report: ${it.message}")
+                        println("Error saving user: ${it.message}")
                     }
                 }
             }
@@ -190,7 +227,7 @@ fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -
 
         // Display the success dialog if showDialog is true
         if (showDialog) {
-            SuccessDialog(onDismiss = {
+            SuccessDialog(referenceNumber = referenceNumber, onDismiss = {
                 showDialog = false
                 onClose() // Close the current screen or perform other actions on dismiss
             })
@@ -200,7 +237,7 @@ fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SuccessDialog(onDismiss: () -> Unit) {
+fun SuccessDialog(referenceNumber: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnClickOutside = false),
@@ -221,7 +258,6 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                 Box(
                     modifier = Modifier
                         .size(80.dp)
-                        .clip(CircleShape)
                         .background(Color(0xFFE0F7EA)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -233,7 +269,7 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     )
                 }
                 Text(
-                    text = "Report Successfully Submitted",
+                    text = "Report Successfully\n    Submitted",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
@@ -241,31 +277,13 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     text = "Thank you for reporting to us. We\n  will take a look at the incident."
                 )
                 Text(
-                    text = "Your Reference ID:\n$referenceNumber",
+                    text = "  Your Reference ID:\n$referenceNumber",
                     fontWeight = FontWeight.Bold
                 )
             }
         }
     )
 }
-
-@RequiresApi(Build.VERSION_CODES.O)
-fun generateReferenceNumber(): String {
-    val currentDateTime = LocalDateTime.now()
-    val dateFormatter = DateTimeFormatter.ofPattern("yyMMdd")
-    val timeFormatter = DateTimeFormatter.ofPattern("HHmmss")
-    val datePart = currentDateTime.format(dateFormatter)
-    val timePart = currentDateTime.format(timeFormatter)
-
-    var increment = 0
-
-    val incrementedPart = String.format("%04d", increment++)
-
-    return "$datePart/$timePart/$incrementedPart"
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-val referenceNumber = generateReferenceNumber()
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
