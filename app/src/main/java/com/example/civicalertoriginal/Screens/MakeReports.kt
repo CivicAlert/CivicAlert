@@ -1,8 +1,6 @@
 package civicalertoriginal.Screen
 
-import android.health.connect.datatypes.ExerciseRoute.Location
 import android.os.Build
-import android.widget.Space
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -21,13 +19,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -35,35 +31,43 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
 import com.example.civicalertoriginal.R
-import com.example.civicalertoriginal.Screens.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.random.Random
-
 
 data class Reports(
     val incidentType: String = "",
     val location: String = "",
-    val description: String ="",
-    val dateTime: String ="",
-    val refNumber: String ="",
-    val status: String =""
-
+    val description: String = "",
+    val dateTime: String = "",
+    val refNumber: String = "",
+    val status: String = ""
 )
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MakeReports(navController: NavController) {
     var isVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val auth = FirebaseAuth.getInstance()
 
     LaunchedEffect(Unit) {
         isVisible = true
     }
 
     Surface(color = Color.White) {
+        // Fetch the current user's UID
+        val currentUser = auth.currentUser
+        val uid = currentUser?.uid
+
+        if (uid == null) {
+            Toast.makeText(context, "User not authenticated", Toast.LENGTH_SHORT).show()
+            // Navigate back or handle the case where the user is not authenticated
+            navController.navigate("Login")
+        }
+
         AnimatedVisibility(
             visible = isVisible,
             enter = slideInVertically(
@@ -75,19 +79,19 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController){isVisible = false
-            navController.navigate("Dashboard")}
-
+            AnimatedMakeReports(navController, uid ?: "") {
+                isVisible = false
+                navController.navigate("Dashboard")
+            }
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
+fun AnimatedMakeReports(navController: NavController, uid: String, onClose: () -> Unit) {
     val database = Firebase.database
-    val myRef = database.getReference("Make Report Instance")
-    val auth = FirebaseAuth.getInstance()
+    val myRef = database.getReference("Make Reports Instance").child(uid)
     var location by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
@@ -104,7 +108,6 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             .verticalScroll(rememberScrollState())
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "",
@@ -134,9 +137,7 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location,
-            onChange = { location = it },
-            fieldLabel = " Enter location")
+        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location")
 
         ReportDescriptionText(
             value1 = "Photos*",
@@ -161,19 +162,18 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             dateTime = formattedDateTime,
             refNumber = referenceNumber,
             status = "Agent looking at it"
-
         )
 
         fun saveReport(report: Reports) {
-            val userId = myRef.push().key ?: return
-            myRef.child(userId).setValue(report).addOnCompleteListener { task ->
+            val reportId = myRef.push().key ?: return
+            myRef.child(reportId).setValue(report).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Handle success
                     showDialog = true // Show the dialog upon successful submission
                 } else {
                     // Handle failure
                     task.exception?.let {
-                        println("Error saving user: ${it.message}")
+                        println("Error saving report: ${it.message}")
                     }
                 }
             }
@@ -195,7 +195,6 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
                 onClose() // Close the current screen or perform other actions on dismiss
             })
         }
-
     }
 }
 
@@ -234,7 +233,7 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     )
                 }
                 Text(
-                    text = "Report Successful Submitted",
+                    text = "Report Successfully Submitted",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
@@ -242,33 +241,29 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     text = "Thank you for reporting to us. We\n  will take a look at the incident."
                 )
                 Text(
-                    text = "Your Reference ID:\n  $referenceNumber",
+                    text = "Your Reference ID:\n$referenceNumber",
                     fontWeight = FontWeight.Bold
                 )
-
             }
         }
     )
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun generateReferenceNumber(): String {
     val currentDateTime = LocalDateTime.now()
-    val dateFormatter = DateTimeFormatter.ofPattern("yyMM")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH")
-
+    val dateFormatter = DateTimeFormatter.ofPattern("yyMMdd")
+    val timeFormatter = DateTimeFormatter.ofPattern("HHmmss")
     val datePart = currentDateTime.format(dateFormatter)
     val timePart = currentDateTime.format(timeFormatter)
 
-    // Generate a random alphanumeric string of length 4
-    val randomPart = (1..4)
-        .map { ('A'..'Z') + ('0'..'9') }
-        .flatten()
-        .shuffled()
-        .take(4)
-        .joinToString("")
+    var increment = 0
 
-    return "$datePart/$timePart/$randomPart"
+    val incrementedPart = String.format("%04d", increment++)
+
+    return "$datePart/$timePart/$incrementedPart"
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 val referenceNumber = generateReferenceNumber()
 

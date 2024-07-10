@@ -72,7 +72,8 @@ fun ViewFullReport (navController: NavController, reportId:String){
 
             //Spacer(modifier = Modifier.size(25.dp))
             Row {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier.clickable { navController.navigate("Viewreports") })
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "",
+                    modifier = Modifier.clickable { navController.navigate("Viewreports") })
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(text = "Back")
                     }
@@ -80,13 +81,13 @@ fun ViewFullReport (navController: NavController, reportId:String){
                     Image(painter = painterResource(id = R.drawable.photo), contentDescription ="", modifier = Modifier.fillMaxWidth() )
                     Spacer(modifier = Modifier.size(25.dp))
                     ReportDescriptionText(value1 = "Details", value = report.value.incidentType)
-                    Spacer(modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.size(8.dp))
                     ReportDescriptionText(value1 = "Report Description", value = report.value.description )
-                    Spacer(modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.size(8.dp))
                     ReportDescriptionText(value1 = "Status", value = report.value.status)
-                    Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "Status", value = report.value.location)
-                    Spacer(modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.size(8.dp))
+                    ReportDescriptionText(value1 = "Location", value = report.value.location)
+                    Spacer(modifier = Modifier.size(8.dp))
                     ReportDescriptionText(value1 = "Reference Number", value = report.value.refNumber)
 
 
