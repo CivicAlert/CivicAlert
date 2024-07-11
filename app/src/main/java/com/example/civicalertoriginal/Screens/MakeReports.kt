@@ -47,7 +47,6 @@ data class Reports(
 
 class SharedPrefs(context: Context) {
     private val prefs = context.getSharedPreferences("reference_number_prefs", Context.MODE_PRIVATE)
-
     var increment: Int
         get() = prefs.getInt("increment", 0)
         set(value) {

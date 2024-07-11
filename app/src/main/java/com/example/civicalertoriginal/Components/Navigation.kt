@@ -6,12 +6,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambda
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.example.civicalertoriginal.Screens.*
 
 

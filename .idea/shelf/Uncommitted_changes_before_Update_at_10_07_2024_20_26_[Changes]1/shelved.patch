@@ -1,0 +1,1445 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/ViewReports.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.foundation.lazy.items\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material.icons.filled.KeyboardArrowDown\r\nimport androidx.compose.material.icons.filled.KeyboardArrowRight\r\nimport androidx.compose.material.icons.filled.Search\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.draw.clipToBounds\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.R\r\n\r\nimport androidx.compose.runtime.mutableStateListOf\r\nimport androidx.compose.runtime.snapshots.SnapshotStateList\r\nimport androidx.compose.ui.draw.alpha\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport com.example.civicalertoriginal.Components.ReportDescriptionText\r\nimport com.google.firebase.database.DataSnapshot\r\nimport com.google.firebase.database.DatabaseError\r\nimport com.google.firebase.database.FirebaseDatabase\r\nimport com.google.firebase.database.ValueEventListener\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\n\r\ndata class Report(\r\n    val incidentType: String = \"\",\r\n    var reportId: String = \"\",\r\n    val location: String = \"\",\r\n    val dateTime: String = \"\",\r\n    val description: String = \"\",\r\n    val imageRes: Int = R.drawable.photo // Replace with actual drawable resource ID\r\n)\r\nenum class FilterOption {\r\n    Recent, // Sorting by recent\r\n    Old // Sorting from oldest to latest\r\n}\r\nfun fetchReportsFromFirebase(reports: SnapshotStateList<Report>) {\r\n    val database = Firebase.database\r\n    val reportsRef = database.getReference(\"Make Report Instance\")\r\n\r\n    reportsRef.addValueEventListener(object : ValueEventListener {\r\n        override fun onDataChange(snapshot: DataSnapshot) {\r\n            reports.clear()\r\n            for (reportSnapshot in snapshot.children) {\r\n                val report = reportSnapshot.getValue(Report::class.java)\r\n                if (report != null) {\r\n                    report.reportId = reportSnapshot.key?: \"\"\r\n                    reports.add(report)\r\n                }\r\n            }\r\n        }\r\n\r\n        override fun onCancelled(error: DatabaseError) {\r\n            // Handle database error\r\n        }\r\n    })\r\n}\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun ViewReports(navController: NavController) {\r\n    val reports = remember { mutableStateListOf<Report>() }\r\n    fetchReportsFromFirebase(reports)\r\n\r\n    Surface(color = Color.White) {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .background(Color.White)\r\n                .padding(horizontal = 0.dp, vertical = 16.dp)\r\n        ) {\r\n            Text(\r\n                text = \"Reports\",\r\n                fontSize = 25.sp,\r\n                fontWeight = FontWeight.Bold,\r\n                modifier = Modifier\r\n                    .padding(bottom = 4.dp, start = 12.dp)\r\n            )\r\n\r\n            var searchText by remember { mutableStateOf(\"\") }\r\n            var filterOption by remember { mutableStateOf(FilterOption.Recent) }\r\n\r\n            val filteredReports = when (filterOption) {\r\n                FilterOption.Recent -> reports.sortedByDescending { it.dateTime }\r\n                FilterOption.Old -> reports.sortedBy { it.dateTime }\r\n            }.filter {\r\n                it.incidentType.contains(searchText, ignoreCase = true) || it.location.contains(searchText, ignoreCase = true)\r\n            }\r\n\r\n            LazyColumn(\r\n                horizontalAlignment = Alignment.CenterHorizontally,\r\n                modifier = Modifier\r\n                    .padding(start = 16.dp, end = 12.dp)\r\n                    .fillMaxSize()\r\n            ) {\r\n                item {\r\n                    Row(\r\n                        modifier = Modifier\r\n                            .fillMaxWidth()\r\n                            .background(color = Color.White),\r\n                        verticalAlignment = Alignment.CenterVertically\r\n                    ) {\r\n                        OutlinedTextField(\r\n                            modifier = Modifier\r\n                                .weight(2f)\r\n                                .width(25.dp)\r\n                                .height(60.dp),\r\n                            value = searchText,\r\n                            onValueChange = { searchText = it },\r\n                            leadingIcon = {\r\n                                Icon(\r\n                                    imageVector = Icons.Default.Search,\r\n                                    contentDescription = \"Search icon\"\r\n                                )\r\n                            },\r\n                            placeholder = { Text(\"Search\", color = Color.Black) },\r\n                            shape = RoundedCornerShape(50),\r\n                            singleLine = true,\r\n                            trailingIcon = { /*ExposedDropdownMenu(\r\n                                    items = FilterOption.values().toList(),\r\n                                    selectedItem = filterOption,\r\n                                    onItemSelected = { filterOption = it },\r\n                                )*/\r\n                            }\r\n                        )\r\n                    }\r\n                }\r\n                items(filteredReports) { report ->\r\n                    Column {\r\n                        ExpandableReportItem(report = report, navController = navController)\r\n                        Divider(color = Color.Black, thickness = 2.dp)\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun ExpandableReportItem(report: Report, navController: NavController) {\r\n    var expanded by remember { mutableStateOf(false) }\r\n\r\n\r\n    Card(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n            .padding(vertical = 8.dp)\r\n            .clickable { expanded = !expanded },\r\n        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)\r\n    ) {\r\n        Column(\r\n            modifier = Modifier\r\n                .background(Color.White)\r\n                .padding(10.dp)\r\n        ) {\r\n            Row(\r\n                verticalAlignment = Alignment.CenterVertically\r\n            ) {\r\n                Image(\r\n                    painter = painterResource(id = report.imageRes),\r\n                    contentDescription = \"Report Image\",\r\n                    modifier = Modifier\r\n                        .size(64.dp)\r\n                        .padding(end = 8.dp)\r\n                )\r\n                Column(\r\n                    modifier = Modifier\r\n                        .weight(1f)\r\n                        .width(50.dp)\r\n                ) {\r\n                    Text(\r\n                        text = report.incidentType,\r\n                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.DarkGray)\r\n                    )\r\n                    Spacer(modifier = Modifier.height(4.dp))\r\n                    Text(\r\n                        text = report.location,\r\n                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black)\r\n                    )\r\n                    Spacer(modifier = Modifier.height(4.dp))\r\n                    Row {\r\n                        Text(\r\n                            text = report.dateTime,\r\n                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)\r\n                        )\r\n                        Spacer(modifier = Modifier.width(40.dp))\r\n                        if (!expanded) Text(\r\n                            text = report.description,\r\n                            modifier = Modifier\r\n                                .height(24.dp)\r\n                                .clipToBounds(), // Show only the first 10 letters\r\n                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)\r\n                        )\r\n                        else Text(\r\n                            text = report.description, modifier = Modifier.alpha(0f))\r\n                    }\r\n                }\r\n                IconButton(\r\n                    onClick = {\r\n                        navController.navigate(\"viewReport/${report.reportId}\")\r\n                    },\r\n                    modifier = Modifier.size(24.dp)\r\n                ) {\r\n                    Icon(\r\n                        imageVector = Icons.Default.KeyboardArrowRight,\r\n                        contentDescription = \"Expand icon\",\r\n                    )\r\n                }\r\n            }\r\n            if (expanded) {\r\n                Spacer(modifier = Modifier.height(8.dp))\r\n                Text(\r\n                    text = report.description,\r\n                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),\r\n                    modifier = Modifier\r\n                        .padding(start = 10.dp)\r\n                )\r\n\r\n                Spacer(modifier = Modifier.height(8.dp))\r\n                Button(\r\n                    onClick = { expanded = false },\r\n                    modifier = Modifier.align(Alignment.End)\r\n                ) {\r\n                    Text(\"Close\")\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n\r\n@Preview(showBackground = true)\r\n@Composable\r\nfun ViewReportsPreview() {\r\n    val navController = rememberNavController()\r\n    ViewReports(navController)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/ViewReports.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/ViewReports.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/ViewReports.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/ViewReports.kt	
+@@ -187,7 +187,7 @@
+                         .width(50.dp)
+                 ) {
+                     Text(
+-                        text = report.incidentType,
++                        text = report.description.take(20),
+                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.DarkGray)
+                     )
+                     Spacer(modifier = Modifier.height(4.dp))
+@@ -202,15 +202,10 @@
+                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
+                         )
+                         Spacer(modifier = Modifier.width(40.dp))
+-                        if (!expanded) Text(
+-                            text = report.description,
+-                            modifier = Modifier
+-                                .height(24.dp)
+-                                .clipToBounds(), // Show only the first 10 letters
+-                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
++                        Text(
++                            text = report.incidentType,
++                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue)
+                         )
+-                        else Text(
+-                            text = report.description, modifier = Modifier.alpha(0f))
+                     }
+                 }
+                 IconButton(
+@@ -225,23 +220,7 @@
+                     )
+                 }
+             }
+-            if (expanded) {
+-                Spacer(modifier = Modifier.height(8.dp))
+-                Text(
+-                    text = report.description,
+-                    style = MaterialTheme.typography.bodyLarge.copy(color = Color.Black),
+-                    modifier = Modifier
+-                        .padding(start = 10.dp)
+-                )
+ 
+-                Spacer(modifier = Modifier.height(8.dp))
+-                Button(
+-                    onClick = { expanded = false },
+-                    modifier = Modifier.align(Alignment.End)
+-                ) {
+-                    Text("Close")
+-                }
+-            }
+         }
+     }
+ }
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/ViewFullReport.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport com.example.civicalertoriginal.Components.ReportDescriptionText\r\nimport com.example.civicalertoriginal.R\r\nimport com.google.firebase.Firebase\r\nimport com.google.firebase.database.DataSnapshot\r\nimport com.google.firebase.database.DatabaseError\r\nimport com.google.firebase.database.ValueEventListener\r\nimport com.google.firebase.database.database\r\n\r\ndata class getReport(\r\n    var incidentType: String = \"\",\r\n    var description: String = \"\",\r\n    var dateTime: String = \"\",\r\n    var location: String = \"\"\r\n\r\n)\r\n@Composable\r\nfun ViewFullReport (navController: NavController, reportId:String){\r\n\r\n    val report = remember { mutableStateOf(getReport()) }\r\n    LaunchedEffect(reportId) {\r\n        val databse = Firebase.database\r\n        val myRef = databse.getReference(\"Make Report Instance\").child(reportId)\r\n        myRef.addListenerForSingleValueEvent(object :ValueEventListener{\r\n            override fun onDataChange(snapshot: DataSnapshot) {\r\n                val fetchReport = snapshot.getValue(getReport::class.java)\r\n                fetchReport?.let { report.value =it }\r\n            }\r\n\r\n            override fun onCancelled(error: DatabaseError) {\r\n                TODO(\"Not yet implemented\")\r\n            }\r\n        })\r\n\r\n    }\r\n    Surface(color = Color.White, modifier = Modifier.fillMaxSize() .padding(10.dp)) {\r\n        Column ( modifier = Modifier.fillMaxWidth() .padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)){\r\n            Text(text = \"View Report\", modifier = Modifier.fillMaxWidth(),\r\n                fontSize = 50.sp, fontFamily = FontFamily.Default,\r\n                fontStyle = FontStyle.Normal\r\n            )\r\n\r\n            //Spacer(modifier = Modifier.size(25.dp))\r\n            Row {\r\n                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = \"\", modifier = Modifier.clickable { navController.navigate(\"Viewreports\") })\r\n                Spacer(modifier = Modifier.size(20.dp))\r\n                Text(text = \"Back\")\r\n                    }\r\n                    Spacer(modifier = Modifier.size(25.dp))\r\n                    Image(painter = painterResource(id = R.drawable.photo), contentDescription =\"\", modifier = Modifier.fillMaxWidth() )\r\n                    Spacer(modifier = Modifier.size(25.dp))\r\n                    ReportDescriptionText(value1 = \"Details\", value = report.value.incidentType)\r\n                    Spacer(modifier = Modifier.size(10.dp))\r\n                    ReportDescriptionText(value1 = \"Report Description\", value = report.value.description )\r\n                    Spacer(modifier = Modifier.size(10.dp))\r\n                    ReportDescriptionText(value1 = \"Status\", value = \"Agent looking At it\")\r\n                    Spacer(modifier = Modifier.size(10.dp))\r\n                    ReportDescriptionText(value1 = \"Status\", value = report.value.location)\r\n                    Spacer(modifier = Modifier.size(10.dp))\r\n                    ReportDescriptionText(value1 = \"ReferenceId\", value = report.value.dateTime)\r\n\r\n\r\n        }\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/ViewFullReport.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/ViewFullReport.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/ViewFullReport.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/ViewFullReport.kt	
+@@ -39,7 +39,9 @@
+     var incidentType: String = "",
+     var description: String = "",
+     var dateTime: String = "",
+-    var location: String = ""
++    var location: String = "",
++    var refNumber: String = "",
++    var status: String = ""
+ 
+ )
+ @Composable
+@@ -70,7 +72,8 @@
+ 
+             //Spacer(modifier = Modifier.size(25.dp))
+             Row {
+-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier.clickable { navController.navigate("Viewreports") })
++                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "",
++                    modifier = Modifier.clickable { navController.navigate("Viewreports") })
+                 Spacer(modifier = Modifier.size(20.dp))
+                 Text(text = "Back")
+                     }
+@@ -78,14 +81,14 @@
+                     Image(painter = painterResource(id = R.drawable.photo), contentDescription ="", modifier = Modifier.fillMaxWidth() )
+                     Spacer(modifier = Modifier.size(25.dp))
+                     ReportDescriptionText(value1 = "Details", value = report.value.incidentType)
+-                    Spacer(modifier = Modifier.size(10.dp))
++                    Spacer(modifier = Modifier.size(8.dp))
+                     ReportDescriptionText(value1 = "Report Description", value = report.value.description )
+-                    Spacer(modifier = Modifier.size(10.dp))
+-                    ReportDescriptionText(value1 = "Status", value = "Agent looking At it")
+-                    Spacer(modifier = Modifier.size(10.dp))
+-                    ReportDescriptionText(value1 = "Status", value = report.value.location)
+-                    Spacer(modifier = Modifier.size(10.dp))
+-                    ReportDescriptionText(value1 = "ReferenceId", value = report.value.dateTime)
++                    Spacer(modifier = Modifier.size(8.dp))
++                    ReportDescriptionText(value1 = "Status", value = report.value.status)
++                    Spacer(modifier = Modifier.size(8.dp))
++                    ReportDescriptionText(value1 = "Location", value = report.value.location)
++                    Spacer(modifier = Modifier.size(8.dp))
++                    ReportDescriptionText(value1 = "Reference Number", value = report.value.refNumber)
+ 
+ 
+         }
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package civicalertoriginal.Screen\r\n\r\nimport android.health.connect.datatypes.ExerciseRoute.Location\r\nimport android.os.Build\r\nimport android.widget.Space\r\nimport android.widget.Toast\r\nimport androidx.annotation.RequiresApi\r\nimport androidx.compose.animation.*\r\nimport androidx.compose.animation.core.LinearEasing\r\nimport androidx.compose.animation.core.tween\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.focus.focusModifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.IntOffset\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.*\r\nimport com.example.civicalertoriginal.Screens.User\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\nimport java.time.LocalDateTime\r\nimport java.time.format.DateTimeFormatter\r\n\r\ndata class Reports(\r\n    val incidentType: String = \"\",\r\n    val location: String = \"\",\r\n    val description: String =\"\",\r\n    val dateTime: String =\"\",\r\n    val email: String = \"\",\r\n)\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun MakeReports(navController: NavController) {\r\n    var isVisible by remember { mutableStateOf(false) }\r\n\r\n    LaunchedEffect(Unit) {\r\n        isVisible = true\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        AnimatedVisibility(\r\n            visible = isVisible,\r\n            enter = slideInVertically(\r\n                initialOffsetY = { it },\r\n                animationSpec = tween(1000, easing = LinearEasing)\r\n            ),\r\n            exit = slideOutVertically(\r\n                targetOffsetY = { it },\r\n                animationSpec = tween(1000, easing = LinearEasing)\r\n            )\r\n        ) {\r\n            val auth = FirebaseAuth.getInstance()\r\n            val currentUser = auth.currentUser\r\n            currentUser?.let {\r\n                AnimatedMakeReports(navController , it.uid){isVisible = false\r\n                navController.navigate(\"Dashboard\")}}\r\n\r\n        }\r\n    }\r\n}\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun AnimatedMakeReports(\r\n    navController: NavController,\r\n    userId: String,\r\n    onClose: () -> Unit\r\n) {\r\n    val database = Firebase.database\r\n    val myRef = database.getReference(\"Make Report Instance\")\r\n    val auth = FirebaseAuth.getInstance();\r\n    var location by remember { mutableStateOf(\"Enter Location\") }\r\n    var description by remember { mutableStateOf(\"Brief details of the incident\") }\r\n    var picture by remember { mutableStateOf(\"\") }\r\n    val context = LocalContext.current\r\n    val currentDateTime = LocalDateTime.now()\r\n    val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\"))\r\n    val reportId = formattedDateTime\r\n\r\n\r\n    Column(\r\n        verticalArrangement = Arrangement.spacedBy(30.dp),\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .padding(start = 16.dp, end = 16.dp, top = 50.dp)\r\n            .verticalScroll(rememberScrollState())\r\n    ) {\r\n        Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {\r\n\r\n            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = \"\", modifier = Modifier\r\n                .size(30.dp)\r\n                .clickable { onClose() },\r\n                tint = Color.Red)\r\n            Spacer(modifier = Modifier.size(25.dp))\r\n            Text(\r\n                text = \"Make A Report\",\r\n                fontSize = 35.sp,\r\n                fontWeight = FontWeight.Bold,\r\n                color = Color.Black\r\n            )\r\n        }\r\n        ReportDescriptionText(\r\n            value1 = \"Incident\",\r\n            value = \"Choose Incident type\"\r\n        )\r\n        var selectedIncident by remember { mutableStateOf(\"Water\") }\r\n        ExposedDropdownMenuBox( selectedIncident = selectedIncident,\r\n            onIncidentSelected = {newIncident -> selectedIncident = newIncident})\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Location(Optional)\",\r\n            value = \"Share the location of the incident\"\r\n        )\r\n        LocationTextFields(value = location, onChange = { location = it } )\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Photos*\",\r\n            value = \"Take photos of the incident you are reporting\"\r\n        )\r\n        PictureTextFields(value = picture, onChange = { picture = it }, )\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Report Description*\",\r\n            value = \"Short Description of the incident\"\r\n        )\r\n        DescriptionTextFields(value = description, onChange = { description = it } )\r\n\r\n        val userReport = Reports(\r\n\r\n            email =  userId,\r\n            incidentType = selectedIncident,\r\n            location = location,\r\n            description = description,\r\n            dateTime =  formattedDateTime\r\n           )\r\n\r\n        fun saveReport(report:Reports) {\r\n            myRef.child(reportId).setValue(report).addOnCompleteListener { task ->\r\n                if (task.isSuccessful) {\r\n                    // Handle success\r\n                    println(\"Report saved\")\r\n                    Toast.makeText(\r\n                        context,\r\n                        \"Your report has been submitted.\",\r\n                        Toast.LENGTH_SHORT\r\n                    ).show()\r\n                } else {\r\n                    // Handle failure\r\n                    task.exception?.let {\r\n                        println(\"Error saving user: ${it.message}\")\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        Column(\r\n            horizontalAlignment = Alignment.CenterHorizontally) {\r\n            SubmitButton(name = \"Submit\") {\r\n                saveReport(userReport)\r\n                navController.navigate(\"Dashboard\")}\r\n        }\r\n        Spacer(modifier = Modifier.size(8.dp))\r\n\r\n    }\r\n}\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Preview\r\n@Composable\r\nfun MakeReportsPreview() {\r\n    val navController = rememberNavController()\r\n    MakeReports(navController = navController)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	
+@@ -1,13 +1,12 @@
+ package civicalertoriginal.Screen
+ 
+-import android.health.connect.datatypes.ExerciseRoute.Location
++import android.content.Context
+ import android.os.Build
+-import android.widget.Space
+-import android.widget.Toast
+ import androidx.annotation.RequiresApi
+ import androidx.compose.animation.*
+ import androidx.compose.animation.core.LinearEasing
+ import androidx.compose.animation.core.tween
++import androidx.compose.foundation.background
+ import androidx.compose.foundation.clickable
+ import androidx.compose.foundation.layout.*
+ import androidx.compose.foundation.rememberScrollState
+@@ -18,18 +17,18 @@
+ import androidx.compose.runtime.*
+ import androidx.compose.ui.Alignment
+ import androidx.compose.ui.Modifier
+-import androidx.compose.ui.focus.focusModifier
+ import androidx.compose.ui.graphics.Color
+ import androidx.compose.ui.platform.LocalContext
++import androidx.compose.ui.res.painterResource
+ import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.tooling.preview.Preview
+-import androidx.compose.ui.unit.IntOffset
+ import androidx.compose.ui.unit.dp
+ import androidx.compose.ui.unit.sp
++import androidx.compose.ui.window.DialogProperties
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+ import com.example.civicalertoriginal.Components.*
+-import com.example.civicalertoriginal.Screens.User
++import com.example.civicalertoriginal.R
+ import com.google.firebase.auth.FirebaseAuth
+ import com.google.firebase.database.ktx.database
+ import com.google.firebase.ktx.Firebase
+@@ -39,20 +38,55 @@
+ data class Reports(
+     val incidentType: String = "",
+     val location: String = "",
+-    val description: String ="",
+-    val dateTime: String ="",
+-    val email: String = "",
++    val description: String = "",
++    val dateTime: String = "",
++    val refNumber: String = "",
++    val status: String = "",
++    val userID: String = ""
+ )
++
++class SharedPrefs(context: Context) {
++    private val prefs = context.getSharedPreferences("reference_number_prefs", Context.MODE_PRIVATE)
++
++    var increment: Int
++        get() = prefs.getInt("increment", 0)
++        set(value) {
++            prefs.edit().putInt("increment", value).apply()
++        }
++}
++
++@RequiresApi(Build.VERSION_CODES.O)
++fun generateReferenceNumber(context: Context): String {
++    val sharedPrefs = SharedPrefs(context)
++    val currentDateTime = LocalDateTime.now()
++    val dateFormatter = DateTimeFormatter.ofPattern("yyMMdd")
++    val timeFormatter = DateTimeFormatter.ofPattern("HHmmss")
++    val datePart = currentDateTime.format(dateFormatter)
++    val timePart = currentDateTime.format(timeFormatter)
++
++    // Retrieve and increment the stored increment value
++    val incrementedPart = String.format("%04d", sharedPrefs.increment++)
++    sharedPrefs.increment = sharedPrefs.increment // Save the updated increment value
++
++    return "$datePart-$timePart-$incrementedPart"
++}
++
+ @RequiresApi(Build.VERSION_CODES.O)
+ @Composable
+ fun MakeReports(navController: NavController) {
+     var isVisible by remember { mutableStateOf(false) }
++    val context = LocalContext.current
++    val auth = FirebaseAuth.getInstance()
+ 
+     LaunchedEffect(Unit) {
+         isVisible = true
+     }
+ 
+     Surface(color = Color.White) {
++        // Fetch the current user's UID and email
++        val currentUser = auth.currentUser
++        val email = currentUser?.email ?: ""
++
+         AnimatedVisibility(
+             visible = isVisible,
+             enter = slideInVertically(
+@@ -64,34 +98,30 @@
+                 animationSpec = tween(1000, easing = LinearEasing)
+             )
+         ) {
+-            val auth = FirebaseAuth.getInstance()
+-            val currentUser = auth.currentUser
+-            currentUser?.let {
+-                AnimatedMakeReports(navController , it.uid){isVisible = false
+-                navController.navigate("Dashboard")}}
+-
++            AnimatedMakeReports(navController, email) {
++                isVisible = false
++                navController.navigate("Dashboard")
++            }
+         }
+     }
+ }
+ 
+ @RequiresApi(Build.VERSION_CODES.O)
+ @Composable
+-fun AnimatedMakeReports(
+-    navController: NavController,
+-    userId: String,
+-    onClose: () -> Unit
+-) {
++fun AnimatedMakeReports(navController: NavController, userEmail: String, onClose: () -> Unit) {
+     val database = Firebase.database
+-    val myRef = database.getReference("Make Report Instance")
+-    val auth = FirebaseAuth.getInstance();
+-    var location by remember { mutableStateOf("Enter Location") }
+-    var description by remember { mutableStateOf("Brief details of the incident") }
++    val myRef = database.getReference("Make Report Instance") // Reference to "Make Report Instance"
++    val auth = FirebaseAuth.getInstance()
++    var location by remember { mutableStateOf("") }
++    var description by remember { mutableStateOf("") }
+     var picture by remember { mutableStateOf("") }
+     val context = LocalContext.current
+     val currentDateTime = LocalDateTime.now()
+     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+-    val reportId = formattedDateTime
++    var showDialog by remember { mutableStateOf(false) }
+ 
++    // Generate the reference number with the context
++    val referenceNumber = generateReferenceNumber(context)
+ 
+     Column(
+         verticalArrangement = Arrangement.spacedBy(30.dp),
+@@ -100,12 +130,15 @@
+             .padding(start = 16.dp, end = 16.dp, top = 50.dp)
+             .verticalScroll(rememberScrollState())
+     ) {
+-        Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+-
+-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier
+-                .size(30.dp)
+-                .clickable { onClose() },
+-                tint = Color.Red)
++        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
++            Icon(
++                imageVector = Icons.Default.ArrowBack,
++                contentDescription = "",
++                modifier = Modifier
++                    .size(30.dp)
++                    .clickable { onClose() },
++                tint = Color.Red
++            )
+             Spacer(modifier = Modifier.size(25.dp))
+             Text(
+                 text = "Make A Report",
+@@ -119,46 +152,61 @@
+             value = "Choose Incident type"
+         )
+         var selectedIncident by remember { mutableStateOf("Water") }
+-        ExposedDropdownMenuBox( selectedIncident = selectedIncident,
+-            onIncidentSelected = {newIncident -> selectedIncident = newIncident})
++        ExposedDropdownMenuBox(
++            selectedIncident = selectedIncident,
++            onIncidentSelected = { newIncident -> selectedIncident = newIncident })
+ 
+         ReportDescriptionText(
+             value1 = "Location(Optional)",
+             value = "Share the location of the incident"
+         )
+-        LocationTextFields(value = location, onChange = { location = it } )
++        LocationTextFields(value = location,
++            onChange = { location = it },
++            fieldLabel = " Enter location")
+ 
+         ReportDescriptionText(
+             value1 = "Photos*",
+             value = "Take photos of the incident you are reporting"
+         )
+-        PictureTextFields(value = picture, onChange = { picture = it }, )
++        PictureTextFields(value = picture, onChange = { picture = it })
+ 
+         ReportDescriptionText(
+             value1 = "Report Description*",
+             value = "Short Description of the incident"
+         )
+-        DescriptionTextFields(value = description, onChange = { description = it } )
++        DescriptionTextFields(
++            value = description,
++            onChange = { description = it },
++            fieldLabel = "brief description of the incident"
++        )
+ 
+         val userReport = Reports(
+-
+-            email =  userId,
+             incidentType = selectedIncident,
+             location = location,
+             description = description,
+-            dateTime =  formattedDateTime
+-           )
++            dateTime = formattedDateTime,
++            refNumber = referenceNumber,
++            status = "Agent looking at it",
++            userID = userEmail // Set userID to current user's email
++        )
+ 
+-        fun saveReport(report:Reports) {
+-            myRef.child(reportId).setValue(report).addOnCompleteListener { task ->
++        fun saveReport(report: Reports) {
++            // Associate the report with the user using UID
++            val reportWithUser = mapOf(
++                "incidentType" to report.incidentType,
++                "location" to report.location,
++                "description" to report.description,
++                "dateTime" to report.dateTime,
++                "refNumber" to report.refNumber,
++                "status" to report.status,
++                "userID" to report.userID
++            )
++
++            // Use the reference number as the key
++            myRef.child(report.refNumber).setValue(reportWithUser).addOnCompleteListener { task ->
+                 if (task.isSuccessful) {
+                     // Handle success
+-                    println("Report saved")
+-                    Toast.makeText(
+-                        context,
+-                        "Your report has been submitted.",
+-                        Toast.LENGTH_SHORT
+-                    ).show()
++                    showDialog = true // Show the dialog upon successful submission
+                 } else {
+                     // Handle failure
+                     task.exception?.let {
+@@ -167,16 +215,75 @@
+                 }
+             }
+         }
++
+         Column(
+-            horizontalAlignment = Alignment.CenterHorizontally) {
++            horizontalAlignment = Alignment.CenterHorizontally
++        ) {
+             SubmitButton(name = "Submit") {
+                 saveReport(userReport)
+-                navController.navigate("Dashboard")}
++            }
+         }
+         Spacer(modifier = Modifier.size(8.dp))
+ 
++        // Display the success dialog if showDialog is true
++        if (showDialog) {
++            SuccessDialog(referenceNumber = referenceNumber, onDismiss = {
++                showDialog = false
++                onClose() // Close the current screen or perform other actions on dismiss
++            })
++        }
+     }
+ }
++
++@RequiresApi(Build.VERSION_CODES.O)
++@Composable
++fun SuccessDialog(referenceNumber: String, onDismiss: () -> Unit) {
++    AlertDialog(
++        onDismissRequest = onDismiss,
++        properties = DialogProperties(dismissOnClickOutside = false),
++        confirmButton = {
++            Button(
++                onClick = onDismiss,
++                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB2F4B8))
++            ) {
++                Text("DONE", color = Color.Black)
++            }
++        },
++        title = null,
++        text = {
++            Column(
++                horizontalAlignment = Alignment.CenterHorizontally,
++                verticalArrangement = Arrangement.spacedBy(16.dp)
++            ) {
++                Box(
++                    modifier = Modifier
++                        .size(80.dp)
++                        .background(Color(0xFFE0F7EA)),
++                    contentAlignment = Alignment.Center
++                ) {
++                    Icon(
++                        painter = painterResource(id = R.drawable.check),
++                        contentDescription = null,
++                        tint = Color(0xFF00C853),
++                        modifier = Modifier.size(60.dp)
++                    )
++                }
++                Text(
++                    text = "Report Successfully\n    Submitted",
++                    fontWeight = FontWeight.Bold,
++                    fontSize = 20.sp
++                )
++                Text(
++                    text = "Thank you for reporting to us. We\n  will take a look at the incident."
++                )
++                Text(
++                    text = "  Your Reference ID:\n$referenceNumber",
++                    fontWeight = FontWeight.Bold
++                )
++            }
++        }
++    )
++}
+ 
+ @RequiresApi(Build.VERSION_CODES.O)
+ @Preview
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Components.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>@file:Suppress(\"UNUSED_EXPRESSION\")\r\n\r\npackage com.example.civicalertoriginal.Components\r\n\r\nimport android.os.Build\r\nimport android.widget.Toast\r\nimport androidx.annotation.RequiresApi\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Box\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.offset\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.layout.width\r\nimport androidx.compose.foundation.layout.wrapContentSize\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.foundation.text.KeyboardOptions\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.Call\r\nimport androidx.compose.material.icons.filled.Email\r\nimport androidx.compose.material.icons.filled.Info\r\nimport androidx.compose.material.icons.filled.LocationOn\r\nimport androidx.compose.material.icons.filled.Person\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ButtonDefaults\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.CardDefaults\r\nimport androidx.compose.material3.Checkbox\r\nimport androidx.compose.material3.DropdownMenuItem\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.ExposedDropdownMenuDefaults\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.OutlinedTextField\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextField\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.platform.LocalUriHandler\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.TextStyle\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.text.font.FontStyle\r\nimport androidx.compose.ui.text.font.FontSynthesis\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.text.input.KeyboardType\r\nimport androidx.compose.ui.text.input.PasswordVisualTransformation\r\nimport androidx.compose.ui.text.input.TextFieldValue\r\nimport androidx.compose.ui.text.input.VisualTransformation\r\nimport androidx.compose.ui.text.style.TextDecoration\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.compose.ui.window.Dialog\r\nimport com.example.civicalertoriginal.R\r\nimport java.time.LocalDateTime\r\nimport java.time.format.DateTimeFormatter\r\n\r\n\r\n@Composable\r\nfun LogAndForgotHeader(screenLabel:String) {\r\n    Column ( modifier = Modifier.fillMaxWidth(),\r\n        horizontalAlignment = Alignment.CenterHorizontally)\r\n    {\r\n        Image(painter = painterResource(id = R.drawable.logo),\r\n            contentDescription = \"Picture Logo\", modifier = Modifier.size(150.dp, 150.dp))\r\n        Spacer(modifier = Modifier.size(5.dp))\r\n        Text(text = screenLabel , modifier = Modifier\r\n            .align(Alignment.CenterHorizontally)\r\n            .wrapContentSize(),\r\n            style = TextStyle( color = Color.Black,\r\n                fontStyle = FontStyle.Normal,\r\n                fontSize = 20.sp)\r\n        )\r\n\r\n    }\r\n}\r\n\r\n//Text fields that accept text only\r\n@Composable\r\nfun TextFields(value:String,onChange:(String)->Unit,fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n//Text fields that accept Numbers only\r\n@Composable\r\nfun NumberTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n//Text fields that accept email only\r\n@Composable\r\nfun EmailTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n@Composable\r\nfun PasswordTextFields(value:String,onChange:(String)->Unit,fieldLabel:String){\r\n\r\n    var passwordVisibility by remember { mutableStateOf(false) }\r\n    val icon = if(passwordVisibility )\r\n        painterResource(id = R.drawable.eye)\r\n    else\r\n        painterResource(id = R.drawable.hidden)\r\n\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value ,\r\n            onValueChange = onChange,\r\n            supportingText = {\r\n                Text(text = \"Passwords must match\")},\r\n            placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n\r\n\r\n            trailingIcon = {\r\n                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {\r\n                    Icon(painter = icon, contentDescription =\"\",\r\n                        modifier = Modifier.size(20.dp,20.dp))\r\n\r\n                }\r\n\r\n            }, visualTransformation = if (passwordVisibility) VisualTransformation.None\r\n            else PasswordVisualTransformation(),\r\n\r\n            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n\r\n\r\n@Composable\r\nfun BottomButtons(name: String, onClick: () -> Unit,){\r\n    Button(onClick = onClick, shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(200.dp)) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n@Composable\r\nfun SubmitButton(name: String, onClick: () -> Unit,){\r\n    Button(onClick = onClick, shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(260.dp)\r\n            .padding(start = 100.dp)) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n@Composable\r\nfun Logo(){\r\n    Image(painter = painterResource(id = R.drawable.logo), contentDescription =\"\" )\r\n}\r\n@Composable\r\nfun CardButton(iconRes: Int, label: String, onClick: () -> Unit) {\r\n    Card(\r\n        modifier = Modifier\r\n            .size(160.dp)\r\n            .clickable(onClick = onClick),\r\n        colors = CardDefaults.cardColors(containerColor = Color.White), // Set the background color to white\r\n        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp) // Set elevation to add shadow\r\n    ) {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(8.dp),\r\n            verticalArrangement = Arrangement.Center,\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            Image(\r\n                painter = painterResource(id = iconRes),\r\n                contentDescription = \"\",\r\n                modifier = Modifier.size(40.dp)\r\n            )\r\n            Text(text = label)\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){\r\n    Button(onClick = onClick, enabled = enabled, shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(200.dp)) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n@Composable\r\nfun SignUpText(value: String){\r\n    Row ( modifier = Modifier.padding(2.dp)){\r\n        var state by remember { mutableStateOf(\"\") }\r\n        Text(text = value, modifier = Modifier\r\n        )\r\n\r\n        Checkbox(checked = false, onCheckedChange = { }, enabled = true, modifier = Modifier\r\n            .size(20.dp)\r\n            .padding(end = 16.dp, start = 12.dp)\r\n\r\n            .clip(RoundedCornerShape(50.dp))\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun InstructionText(value: String){\r\n    Text(\r\n        text = value,\r\n        style = TextStyle(\r\n            fontStyle = FontStyle.Normal,\r\n            fontSize = 15.sp,\r\n            color = Color.Black\r\n        )\r\n    )\r\n}\r\n@Composable\r\nfun LocationTextFields(value: String, onChange: (String) -> Unit){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n            //placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            trailingIcon = {\r\n                Icon(\r\n                    modifier = Modifier\r\n                        .size(35.dp, 35.dp)\r\n                        .clickable { },\r\n                    imageVector = Icons.Default.LocationOn,\r\n                    contentDescription = \"Location Icon\"\r\n                ) },\r\n            keyboardOptions = KeyboardOptions.Default,\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun ReportDescriptionText(value1: String, value:String){\r\n    Column {\r\n\r\n        Text(text = value1, style = TextStyle(\r\n            fontFamily = FontFamily.SansSerif,\r\n            fontSize = 20.sp, fontWeight = FontWeight.Bold,\r\n            fontSynthesis = FontSynthesis.All\r\n        )\r\n        )\r\n        Text(text = value, style = TextStyle(\r\n            fontFamily = FontFamily.Default,\r\n            fontSize = 16.sp,\r\n            fontWeight = FontWeight.Light,\r\n        )\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun PictureTextFields(value: String, onChange: (String) -> Unit, ){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n           // placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            trailingIcon = {\r\n                Icon(\r\n                    modifier = Modifier\r\n                        .size(35.dp, 35.dp)\r\n                        .clickable { },\r\n                    imageVector = Icons.Default.Person,\r\n                    contentDescription = \"Location Icon\"\r\n                ) },\r\n            keyboardOptions = KeyboardOptions.Default,\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n@Composable\r\nfun DescriptionTextFields(value: String, onChange: (String) -> Unit){\r\n    Column (verticalArrangement = Arrangement.Center,\r\n        horizontalAlignment = Alignment.CenterHorizontally){\r\n        OutlinedTextField(value = value , onValueChange = onChange,\r\n           //placeholder = { Text(text = fieldLabel, color = Color.Green)},\r\n            trailingIcon = {\r\n                Icon(\r\n                    modifier = Modifier\r\n                        .size(35.dp, 35.dp)\r\n                        .clickable { },\r\n                    imageVector = Icons.Default.Info,\r\n                    contentDescription = \"Location Icon\"\r\n                ) },\r\n            keyboardOptions = KeyboardOptions.Default,\r\n            textStyle = TextStyle(color = Color.Black ), modifier = Modifier\r\n                .height(50.dp)\r\n                .fillMaxWidth()\r\n                .background(Color.White)\r\n        )\r\n    }\r\n}\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun ExposedDropdownMenuBox(\r\n    selectedIncident: String,\r\n    onIncidentSelected: (String) -> Unit\r\n) {\r\n    val context = LocalContext.current\r\n    val Incidents= arrayOf(\"Water\", \"Electricity\", \"Pothole\", \"Other\")\r\n    var expanded by remember { mutableStateOf(false) }\r\n   // var selectedText by remember { mutableStateOf(Incidents[0]) }\r\n\r\n    Box(\r\n        modifier = Modifier\r\n            .fillMaxWidth()\r\n\r\n    ) {\r\n        androidx.compose.material3.ExposedDropdownMenuBox(\r\n            expanded = expanded,\r\n            onExpandedChange = {\r\n                expanded = !expanded\r\n            }\r\n        ) {\r\n            TextField(\r\n                value = selectedIncident,\r\n                onValueChange = {},\r\n                readOnly = true,\r\n                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },\r\n                modifier = Modifier\r\n                    .menuAnchor()\r\n                    .fillMaxWidth()\r\n            )\r\n\r\n            ExposedDropdownMenu(\r\n                expanded = expanded,\r\n                onDismissRequest = { expanded = false }\r\n            ) {\r\n                Incidents.forEach { item ->\r\n                    DropdownMenuItem(\r\n                        text = { Text(text = item) },\r\n                        onClick = {\r\n                           onIncidentSelected(item)\r\n                            expanded = false\r\n                            Toast.makeText(context, item, Toast.LENGTH_SHORT).show()\r\n                        }\r\n                    )\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun SignUpBottomButtons( name:String , onClick : ()-> Unit ){\r\n    Button(\r\n        onClick = onClick,\r\n        shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Green),\r\n        modifier = Modifier\r\n            .width(200.dp)\r\n    ) {\r\n        Text(text = name, modifier = Modifier\r\n            .size(80.dp, 30.dp)\r\n            .padding(start = 17.dp, top = 4.dp)\r\n            .align(Alignment.CenterVertically),\r\n            color = Color.Black)\r\n    }\r\n}\r\n@Composable\r\nfun ProfileText(description: String , value: String, onSave:(String)-> Unit) {\r\n    var textFieldVisible by remember { mutableStateOf(false) }\r\n    var textFieldValue by remember { mutableStateOf(value) }\r\n\r\n    Column(\r\n        modifier = Modifier\r\n            .padding(10.dp)\r\n            .fillMaxWidth()\r\n    ) {\r\n        // Clickable Text\r\n        Text(text = description, fontFamily = FontFamily.SansSerif, fontSize = 17.sp)\r\n        Spacer(modifier = Modifier.size(10.dp))\r\n        Text(\r\n            text = value,\r\n            modifier = Modifier.clickable {\r\n                textFieldVisible = true\r\n            },\r\n            fontSize = 25.sp,\r\n            fontFamily = FontFamily.Default,\r\n            style = MaterialTheme.typography.bodyMedium.copy(\r\n                textDecoration = TextDecoration.Underline\r\n            )\r\n        )\r\n\r\n        // Conditional Text Field\r\n        if (textFieldVisible) {\r\n            Spacer(modifier = Modifier.height(10.dp))\r\n            TextField(\r\n                value = textFieldValue,\r\n                onValueChange = { textFieldValue = it },\r\n                modifier = Modifier.fillMaxWidth()\r\n            )\r\n\r\n            Spacer(modifier = Modifier.height(16.dp))\r\n            Button(\r\n                onClick = {\r\n                    textFieldVisible = false\r\n                    onSave(textFieldValue)\r\n                    // logic to do when saving thee data\r\n                },\r\n                modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.End)\r\n            ) {\r\n                Text(\"Save\")\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n@Composable\r\nfun BottomButtonsMyProfile(name: String, onClick: () -> Unit) {\r\n    Button(\r\n        onClick = onClick, shape = ButtonDefaults.shape,\r\n        colors = ButtonDefaults.buttonColors(Color.Red),\r\n        modifier = Modifier\r\n            .width(400.dp)\r\n    ) {\r\n        Text(\r\n            text = name, modifier = Modifier\r\n                .size(80.dp, 30.dp)\r\n                .padding(start = 17.dp, top = 4.dp)\r\n                .align(Alignment.CenterVertically)\r\n                .fillMaxWidth(),\r\n            color = Color.Black\r\n        )\r\n    }\r\n}\r\n\r\n@Composable\r\nfun ContactUsContactButton(value: String){\r\n    Button(onClick = { /* contact logic*/ }, colors = ButtonDefaults.buttonColors(\r\n        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),\r\n        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),\r\n        modifier = Modifier\r\n            .padding(8.dp)\r\n            .size(170.dp, 50.dp)\r\n    ) {\r\n        Icon(imageVector = Icons.Default.Call, contentDescription = \"\", modifier = Modifier.size(20.dp))\r\n        Spacer(modifier = Modifier.size(5.dp))\r\n        Text(text = value, fontSize = 15.sp)\r\n\r\n    }\r\n}\r\n@Composable\r\nfun ContactUSEmailButton(value: String){\r\n    Button(onClick = { /*email logic*/ }, colors = ButtonDefaults.buttonColors(\r\n        contentColor = Color.Black, containerColor = Color.White), shape = RoundedCornerShape(15.dp),\r\n        elevation = ButtonDefaults.buttonElevation(defaultElevation = 16.dp),\r\n        modifier = Modifier\r\n            .padding(8.dp)\r\n            .size(170.dp, 50.dp)\r\n    ) {\r\n        Icon(imageVector = Icons.Default.Email, contentDescription = \"\", modifier = Modifier.size(20.dp))\r\n        Spacer(modifier = Modifier.size(5.dp))\r\n        Text(text = value, fontSize = 18.sp)\r\n\r\n    }\r\n\r\n}\r\n@Composable\r\nfun ContactUsWhatsApp(value: String) {\r\n    val uriHandler = LocalUriHandler.current\r\n\r\n    Column(horizontalAlignment = Alignment.CenterHorizontally,\r\n        modifier = Modifier.offset(x = -20.dp)) {\r\n        Row(verticalAlignment = Alignment.CenterVertically) {\r\n            Image(\r\n                painter = painterResource(id = R.drawable.whatsapp),\r\n                contentDescription = \"\",\r\n                modifier = Modifier.size(50.dp)\r\n            )\r\n            Column {\r\n                Text(\r\n                    text = value,\r\n                    fontSize = 20.sp,\r\n                    fontWeight = FontWeight.Bold\r\n                )\r\n                Text(\r\n                    text = \"083 3456 345\",\r\n                    color = Color.Cyan,\r\n                    modifier = Modifier.clickable {\r\n                        uriHandler.openUri(\"https://wa.me/0833456345\")\r\n                    }\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun ContactUsWMessanger(value: String) {\r\n    val uriHandler = LocalUriHandler.current\r\n\r\n    Column(horizontalAlignment = Alignment.CenterHorizontally) {\r\n        Row(verticalAlignment = Alignment.CenterVertically) {\r\n            Image(\r\n                painter = painterResource(id = R.drawable.messenger),\r\n                contentDescription = \"\",\r\n                modifier = Modifier.size(50.dp)\r\n            )\r\n            Column {\r\n                Text(\r\n                    text = value,\r\n                    fontSize = 20.sp,\r\n                    fontWeight = FontWeight.Bold\r\n                )\r\n                Text(\r\n                    text = \"Facebook\",\r\n                    color = Color.Cyan,\r\n                    modifier = Modifier.clickable {\r\n                        uriHandler.openUri(\"https://www.messenger.com/t/facebook\")\r\n                    }\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun ContactUsInsta(value: String) {\r\n    val uriHandler = LocalUriHandler.current\r\n\r\n    Column(horizontalAlignment = Alignment.CenterHorizontally,\r\n        modifier = Modifier.offset(x = -25.dp)) {\r\n        Row(verticalAlignment = Alignment.CenterVertically) {\r\n            Image(\r\n                painter = painterResource(id = R.drawable.instagram),\r\n                contentDescription = \"\",\r\n                modifier = Modifier.size(50.dp)\r\n            )\r\n            Column {\r\n                Text(\r\n                    text = value,\r\n                    fontSize = 20.sp,\r\n                    fontWeight = FontWeight.Bold\r\n                )\r\n                Text(\r\n                    text = \"instagram\",\r\n                    color = Color.Cyan,\r\n                    modifier = Modifier.clickable {\r\n                        uriHandler.openUri(\"https://www.instagram.com/\")\r\n                    }\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun ContactUsTwitter(value: String) {\r\n    val uriHandler = LocalUriHandler.current\r\n\r\n    Column(horizontalAlignment = Alignment.CenterHorizontally,\r\n        modifier = Modifier.offset(x = -14.dp)) {\r\n        Row(verticalAlignment = Alignment.CenterVertically) {\r\n            Image(\r\n                painter = painterResource(id = R.drawable.twitter),\r\n                contentDescription = \"\",\r\n                modifier = Modifier.size(50.dp)\r\n            )\r\n            Column {\r\n                Text(\r\n                    text = value,\r\n                    fontSize = 20.sp,\r\n                    fontWeight = FontWeight.Bold\r\n                )\r\n                Text(\r\n                    text = \"twitter\",\r\n                    color = Color.Cyan,\r\n                    modifier = Modifier.clickable {\r\n                        uriHandler.openUri(\"https://twitter.com/\")\r\n                    }\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Components.kt	
+@@ -276,11 +276,11 @@
+     )
+ }
+ @Composable
+-fun LocationTextFields(value: String, onChange: (String) -> Unit){
++fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
+     Column (verticalArrangement = Arrangement.Center,
+         horizontalAlignment = Alignment.CenterHorizontally){
+         OutlinedTextField(value = value , onValueChange = onChange,
+-            //placeholder = { Text(text = fieldLabel, color = Color.Green)},
++            placeholder = { Text(text = fieldLabel, color = Color.Green)},
+             trailingIcon = {
+                 Icon(
+                     modifier = Modifier
+@@ -298,7 +298,7 @@
+     }
+ }
+ @Composable
+-fun ReportDescriptionText(value1: String, value:String){
++fun ReportDescriptionText(value1: String, value:String,){
+     Column {
+ 
+         Text(text = value1, style = TextStyle(
+@@ -338,11 +338,11 @@
+     }
+ }
+ @Composable
+-fun DescriptionTextFields(value: String, onChange: (String) -> Unit){
++fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
+     Column (verticalArrangement = Arrangement.Center,
+         horizontalAlignment = Alignment.CenterHorizontally){
+         OutlinedTextField(value = value , onValueChange = onChange,
+-           //placeholder = { Text(text = fieldLabel, color = Color.Green)},
++           placeholder = { Text(text = fieldLabel, color = Color.Green)},
+             trailingIcon = {
+                 Icon(
+                     modifier = Modifier
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_6_30_2024_10_42_AM__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_6_30_2024_10_42_AM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_6_30_2024_10_42_AM__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_6_30_2024_10_42_AM__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_6_30_2024_10_42_AM_[Changes]" date="1719736985737" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_6_30_2024_10_42_AM_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 6/30/2024 10:42 AM [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_02_07_2024_18_18_[Changes]" date="1719937091893" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 02/07/2024 18:18 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_02_07_2024_20_31_[Changes]" date="1719945124689" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 02/07/2024 20:31 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_03_07_2024_09_27_[Changes]" date="1719991648596" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 03/07/2024 09:27 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36__Changes_.xml	
++++ /dev/null	
+@@ -1,29 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]" date="1719682684810" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 29/06/2024 19:36 [Changes]" />
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/messenger.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]/messenger.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/twitter.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]/twitter.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/contact.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]/contact.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/whatsapp.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]/whatsapp.png" />
+-  </binary>
+-  <binary>
+-    <option name="BEFORE_PATH" />
+-    <option name="AFTER_PATH" value="app/src/main/res/drawable/instagram.png" />
+-    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_36_[Changes]/instagram.png" />
+-  </binary>
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Update_at_01_07_2024_22_41_[Changes]" date="1719866491465" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Update at 01/07/2024 22:41 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_23_07__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_23_07__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_23_07__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_23_07__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_01_07_2024_23_07_[Changes]" date="1719868039638" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_23_07_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 01/07/2024 23:07 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_48__Changes_1.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_48__Changes_1.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_48__Changes_1.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_48__Changes_1.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_29_06_2024_19_48_[Changes]1" date="1719683306075" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_29_06_2024_19_48_[Changes]1/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 29/06/2024 19:48 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_03_07_2024_09_36_[Changes]" date="1719992217198" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 03/07/2024 09:36 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36_[Changes]/shelved.patch	
++++ /dev/null	
+@@ -1,231 +0,0 @@
+-Index: app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.util.Patterns\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.*\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\n\r\n@Composable\r\nfun Registration(navController: NavController) {\r\n\r\n    val database = Firebase.database\r\n    val myRef = database.getReference()\r\n    val context = LocalContext.current\r\n    val scrollable = rememberScrollState()\r\n\r\n    // Variables needed for user registration\r\n    var firstName by remember { mutableStateOf(\"\") }\r\n    var lastName by remember { mutableStateOf(\"\") }\r\n    var email by remember { mutableStateOf(\"\") }\r\n    var phoneNumber by remember { mutableStateOf(\"\") }\r\n    var password by remember { mutableStateOf(\"\") }\r\n    var confirmPassword by remember { mutableStateOf(\"\") }\r\n    var passwordsMatch by remember { mutableStateOf(true) }\r\n    var isFormValid by remember { mutableStateOf(false) }\r\n    var showDialog by remember { mutableStateOf(false) }\r\n    var registrationMessage by remember { mutableStateOf(\"\") }\r\n    var isEmailValid by remember { mutableStateOf(true) }\r\n    var isPasswordValid by remember { mutableStateOf(true) }\r\n    var hasUpperCase by remember { mutableStateOf(false) }\r\n    var hasDigit by remember { mutableStateOf(false) }\r\n    var hasSymbol by remember { mutableStateOf(false) }\r\n\r\n    // Character limit in text fields\r\n    val maxName = 50\r\n    val maxEmail = 100\r\n    val maxNumber = 10\r\n    val maxPassword = 100\r\n\r\n    // Regex patterns\r\n    val emailPattern = Patterns.EMAIL_ADDRESS.toRegex()\r\n    val passwordPattern = Regex(\"^(?=.*[A-Za-z])(?=.*\\\\d)(?=.*[@\\$!%*#?&])[A-Za-z\\\\d@\\$!%*#?&]{8,}$\")\r\n\r\n    // Validate entered details\r\n    fun validateForm() {\r\n        isEmailValid = emailPattern.matches(email)\r\n        isPasswordValid = passwordPattern.matches(password)\r\n        hasUpperCase = password.any { it.isUpperCase() }\r\n        hasDigit = password.any { it.isDigit() }\r\n        hasSymbol = password.any { !it.isLetterOrDigit() }\r\n        isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&\r\n                lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&\r\n                email.isNotEmpty() && email.length <= maxEmail && isEmailValid &&\r\n                phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&\r\n                password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&\r\n                confirmPassword.isNotEmpty() && confirmPassword == password\r\n    }\r\n    fun saveUser(){\r\n        DatabaseConnection().getUserDetail(firstName,lastName,email,password,phoneNumber);\r\n        DatabaseConnection().saveUserByEmail(context)\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(20.dp)\r\n                .verticalScroll(scrollable),\r\n            verticalArrangement = Arrangement.spacedBy(18.dp),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            InstructionText(value = \"Sign Up\")\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            TextFields(value = firstName,\r\n                onChange = {\r\n                    if (it.length <= maxName) {\r\n                        firstName = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"First name\"\r\n            )\r\n\r\n            TextFields(value = lastName,\r\n                onChange = {\r\n                    if (it.length <= maxName) {\r\n                        lastName = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Last name\"\r\n            )\r\n\r\n            EmailTextFields(value = email,\r\n                onChange = {\r\n                    if (it.length <= maxEmail) {\r\n                        email = it\r\n                        validateForm()\r\n                    }\r\n                },\r\n                fieldLabel = \"Email Address\"\r\n            )\r\n\r\n            if (!isEmailValid) {\r\n                Text(\r\n                    text = \"Please enter a valid email address\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            NumberTextFields(value = phoneNumber,\r\n                onChange = {\r\n                    if (it.length <= maxNumber) {\r\n                        phoneNumber = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Phone number\"\r\n            )\r\n\r\n            PasswordTextFields(value = password,\r\n                onChange = {\r\n                    if (it.length <= maxPassword) {\r\n                        password = it\r\n                        passwordsMatch = confirmPassword == password\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Password\"\r\n            )\r\n\r\n            Column (\r\n\r\n            ){\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasUpperCase, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one capital letter\"\r\n                    , fontSize = 12.sp)\r\n                }\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasDigit, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one digit\",fontSize = 12.sp)\r\n                }\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasSymbol, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one symbol\",fontSize = 12.sp)\r\n                }\r\n            }\r\n\r\n            PasswordTextFields(value = confirmPassword,\r\n                onChange = {\r\n                    if (it.length <= maxPassword) {\r\n                        confirmPassword = it\r\n                        passwordsMatch = confirmPassword == password\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Confirm password\"\r\n            )\r\n\r\n            if (!isPasswordValid) {\r\n                Text(\r\n                    text = \"Enter a valid password\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            if (!passwordsMatch) {\r\n                Text(\r\n                    text = \"Passwords do not match\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            Row {\r\n                SignUpText(value = \"Do you give us permission to use your details for marketing purposes\")\r\n            }\r\n            Row {\r\n                SignUpText(value = \"Do you agree to Terms & Conditions of the app\")\r\n            }\r\n\r\n            Spacer(modifier = Modifier.size(16.dp))\r\n\r\n            LogBottomButtons(\r\n                name = \"Register\",\r\n                onClick = { showDialog = true },\r\n                enabled = isFormValid\r\n            )\r\n\r\n        }\r\n        if (showDialog) {\r\n            AlertDialog(\r\n                onDismissRequest = { showDialog = false },\r\n                title = { Text(\"Confirm Registration\") },\r\n                text = { Text(\"Are you sure you want to register with these details?\") },\r\n                confirmButton = {\r\n                    Button(modifier = Modifier\r\n                        .padding(start = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            saveUser()\r\n                            // method to save data to database\r\n                            registrationMessage = \"Successfully registered!\"\r\n                            showDialog = false\r\n                        }\r\n                    ) {\r\n                        Text(\"Confirm\",\r\n                            color = Color.Black)\r\n                    }\r\n                },\r\n                dismissButton = {\r\n                    Button(modifier = Modifier\r\n                        .padding(end = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = { showDialog = false }) {\r\n                        Text(\"Cancel\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n\r\n        if (registrationMessage.isNotEmpty()) {\r\n            AlertDialog(\r\n                onDismissRequest = { registrationMessage = \"\" },\r\n                title = { Text(\"Registration\") },\r\n                text = { Text(registrationMessage) },\r\n                confirmButton = {\r\n                    Button(colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            registrationMessage = \"\"\r\n                            // Navigate to login page\r\n                        }\r\n                    ) {\r\n                        Text(\"OK\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n\r\n    }\r\n\r\n\r\n}\r\n\r\n\r\n\r\n@Preview\r\n@Composable\r\nfun RegistrationPreview() {\r\n    val navController = rememberNavController()\r\n    Registration(navController)\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+---- a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(revision 1218ccb24e5caed9a306a9d14c434da32b30d58d)
+-+++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(date 1719842097574)
+-@@ -22,8 +22,6 @@
+- @Composable
+- fun Registration(navController: NavController) {
+- 
+--    val database = Firebase.database
+--    val myRef = database.getReference()
+-     val context = LocalContext.current
+-     val scrollable = rememberScrollState()
+- 
+-@@ -68,9 +66,11 @@
+-                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
+-                 confirmPassword.isNotEmpty() && confirmPassword == password
+-     }
+--    fun saveUser(){
+--        DatabaseConnection().getUserDetail(firstName,lastName,email,password,phoneNumber);
+--        DatabaseConnection().saveUserByEmail(context)
+-+
+-+    fun saveUser() {
+-+        val dbConnection = DatabaseConnection()
+-+        dbConnection.getUserDetail(firstName, lastName, email, password, phoneNumber)
+-+        dbConnection.saveUserByEmail(context)
+-     }
+- 
+-     Surface(color = Color.White) {
+-@@ -89,25 +89,30 @@
+- 
+-             Spacer(modifier = Modifier.size(12.dp))
+- 
+--            TextFields(value = firstName,
+-+            TextFields(
+-+                value = firstName,
+-                 onChange = {
+-                     if (it.length <= maxName) {
+-                         firstName = it
+-                         validateForm()
+-                     }
+--                }, fieldLabel = "First name"
+-+                },
+-+                fieldLabel = "First name"
+-             )
+- 
+--            TextFields(value = lastName,
+-+            TextFields(
+-+                value = lastName,
+-                 onChange = {
+-                     if (it.length <= maxName) {
+-                         lastName = it
+-                         validateForm()
+-                     }
+--                }, fieldLabel = "Last name"
+-+                },
+-+                fieldLabel = "Last name"
+-             )
+- 
+--            EmailTextFields(value = email,
+-+            EmailTextFields(
+-+                value = email,
+-                 onChange = {
+-                     if (it.length <= maxEmail) {
+-                         email = it
+-@@ -124,51 +129,57 @@
+-                 )
+-             }
+- 
+--            NumberTextFields(value = phoneNumber,
+-+            NumberTextFields(
+-+                value = phoneNumber,
+-                 onChange = {
+-                     if (it.length <= maxNumber) {
+-                         phoneNumber = it
+-                         validateForm()
+-                     }
+--                }, fieldLabel = "Phone number"
+-+                },
+-+                fieldLabel = "Phone number"
+-             )
+- 
+--            PasswordTextFields(value = password,
+-+            PasswordTextFields(
+-+                value = password,
+-                 onChange = {
+-                     if (it.length <= maxPassword) {
+-                         password = it
+--                        passwordsMatch = confirmPassword == password
+--                        validateForm()
+-+                        //passwordsMatch = confirmPassword == password
+-+                     //   validateForm()
+-                     }
+--                }, fieldLabel = "Password"
+-+                },
+-+                fieldLabel = "Password"
+-             )
+- 
+--            Column (
+--
+--            ){
+-+            Column {
+-                 Row(verticalAlignment = Alignment.CenterVertically) {
+-                     Checkbox(checked = hasUpperCase, onCheckedChange = null)
+--                    Text(text = "Must have at least one capital letter"
+--                    , fontSize = 12.sp)
+-+                    Text(
+-+                        text = "Must have at least one capital letter",
+-+                        fontSize = 12.sp
+-+                    )
+-                 }
+-                 Row(verticalAlignment = Alignment.CenterVertically) {
+-                     Checkbox(checked = hasDigit, onCheckedChange = null)
+--                    Text(text = "Must have at least one digit",fontSize = 12.sp)
+-+                    Text(text = "Must have at least one digit", fontSize = 12.sp)
+-                 }
+-                 Row(verticalAlignment = Alignment.CenterVertically) {
+-                     Checkbox(checked = hasSymbol, onCheckedChange = null)
+--                    Text(text = "Must have at least one symbol",fontSize = 12.sp)
+-+                    Text(text = "Must have at least one symbol", fontSize = 12.sp)
+-                 }
+-             }
+- 
+--            PasswordTextFields(value = confirmPassword,
+-+            PasswordTextFields(
+-+                value = confirmPassword,
+-                 onChange = {
+-                     if (it.length <= maxPassword) {
+-                         confirmPassword = it
+-                         passwordsMatch = confirmPassword == password
+--                        validateForm()
+-+                      //  validateForm()
+-                     }
+--                }, fieldLabel = "Confirm password"
+-+                },
+-+                fieldLabel = "Confirm password"
+-             )
+- 
+-             if (!isPasswordValid) {
+-@@ -199,7 +210,6 @@
+-                 onClick = { showDialog = true },
+-                 enabled = isFormValid
+-             )
+--
+-         }
+-         if (showDialog) {
+-             AlertDialog(
+-@@ -207,9 +217,10 @@
+-                 title = { Text("Confirm Registration") },
+-                 text = { Text("Are you sure you want to register with these details?") },
+-                 confirmButton = {
+--                    Button(modifier = Modifier
+--                        .padding(start = 20.dp)
+--                        .width(100.dp),
+-+                    Button(
+-+                        modifier = Modifier
+-+                            .padding(start = 20.dp)
+-+                            .width(100.dp),
+-                         colors = ButtonDefaults.buttonColors(Color.Green),
+-                         onClick = {
+-                             saveUser()
+-@@ -218,18 +229,24 @@
+-                             showDialog = false
+-                         }
+-                     ) {
+--                        Text("Confirm",
+--                            color = Color.Black)
+-+                        Text(
+-+                            "Confirm",
+-+                            color = Color.Black
+-+                        )
+-                     }
+-                 },
+-                 dismissButton = {
+--                    Button(modifier = Modifier
+--                        .padding(end = 20.dp)
+--                        .width(100.dp),
+-+                    Button(
+-+                        modifier = Modifier
+-+                            .padding(end = 20.dp)
+-+                            .width(100.dp),
+-                         colors = ButtonDefaults.buttonColors(Color.Green),
+--                        onClick = { showDialog = false }) {
+--                        Text("Cancel",
+--                            color = Color.Black)
+-+                        onClick = { showDialog = false }
+-+                    ) {
+-+                        Text(
+-+                            "Cancel",
+-+                            color = Color.Black
+-+                        )
+-                     }
+-                 }
+-             )
+-@@ -241,25 +258,23 @@
+-                 title = { Text("Registration") },
+-                 text = { Text(registrationMessage) },
+-                 confirmButton = {
+--                    Button(colors = ButtonDefaults.buttonColors(Color.Green),
+-+                    Button(
+-+                        colors = ButtonDefaults.buttonColors(Color.Green),
+-                         onClick = {
+-                             registrationMessage = ""
+-                             // Navigate to login page
+-                         }
+-                     ) {
+--                        Text("OK",
+--                            color = Color.Black)
+-+                        Text(
+-+                            "OK",
+-+                            color = Color.Black
+-+                        )
+-                     }
+-                 }
+-             )
+-         }
+--
+-     }
+--
+--
+- }
+--
+--
+- 
+- @Preview
+- @Composable
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_02_07_2024_18_14_[Changes]" date="1719936850962" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 02/07/2024 18:14 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_13_02__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_13_02__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_13_02__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_13_02__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_02_07_2024_13_02_[Changes]" date="1719918151444" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_13_02_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 02/07/2024 13:02 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_20_31_[Changes]/shelved.patch	
++++ /dev/null	
+@@ -1,267 +0,0 @@
+-Index: app/src/main/res/layout/activity_main2.xml
+-===================================================================
+-diff --git a/app/src/main/res/layout/activity_main2.xml b/app/src/main/res/layout/activity_main2.xml
+-deleted file mode 100644
+---- a/app/src/main/res/layout/activity_main2.xml	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-+++ /dev/null	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-@@ -1,45 +0,0 @@
+--<?xml version="1.0" encoding="utf-8"?>
+--<androidx.constraintlayout.widget.ConstraintLayout
+--    xmlns:android="http://schemas.android.com/apk/res/android"
+--    xmlns:app="http://schemas.android.com/apk/res-auto"
+--    xmlns:tools="http://schemas.android.com/tools"
+--    android:layout_width="match_parent"
+--    android:layout_height="match_parent"
+--    tools:context=".MainActivity2">
+--
+--    <androidx.camera.view.PreviewView
+--        android:id="@+id/viewFinder"
+--        android:layout_width="match_parent"
+--        android:layout_height="match_parent" />
+--
+--    <Button
+--        android:id="@+id/image_capture_button"
+--        android:layout_width="110dp"
+--        android:layout_height="110dp"
+--        android:layout_marginBottom="50dp"
+--        android:layout_marginEnd="50dp"
+--        android:elevation="2dp"
+--        android:text="@string/take_photo"
+--        app:layout_constraintBottom_toBottomOf="parent"
+--        app:layout_constraintLeft_toLeftOf="parent"
+--        app:layout_constraintEnd_toStartOf="@id/vertical_centerline" />
+--
+--    <Button
+--        android:id="@+id/upload_photo_button"
+--        android:layout_width="110dp"
+--        android:layout_height="110dp"
+--        android:layout_marginBottom="50dp"
+--        android:layout_marginStart="50dp"
+--        android:elevation="2dp"
+--        android:text="@string/uplaod_picture"
+--        app:layout_constraintBottom_toBottomOf="parent"
+--        app:layout_constraintStart_toEndOf="@id/vertical_centerline" />
+--
+--    <androidx.constraintlayout.widget.Guideline
+--        android:id="@+id/vertical_centerline"
+--        android:layout_width="wrap_content"
+--        android:layout_height="wrap_content"
+--        android:orientation="vertical"
+--        app:layout_constraintGuide_percent=".50" />
+--
+--</androidx.constraintlayout.widget.ConstraintLayout>
+-\ No newline at end of file
+-Index: app/src/main/res/layout/fragment_second.xml
+-===================================================================
+-diff --git a/app/src/main/res/layout/fragment_second.xml b/app/src/main/res/layout/fragment_second.xml
+-deleted file mode 100644
+---- a/app/src/main/res/layout/fragment_second.xml	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-+++ /dev/null	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-@@ -1,35 +0,0 @@
+--<?xml version="1.0" encoding="utf-8"?>
+--<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+--    xmlns:app="http://schemas.android.com/apk/res-auto"
+--    xmlns:tools="http://schemas.android.com/tools"
+--    android:layout_width="match_parent"
+--    android:layout_height="match_parent"
+--    tools:context=".SecondFragment">
+--
+--    <androidx.constraintlayout.widget.ConstraintLayout
+--        android:layout_width="match_parent"
+--        android:layout_height="match_parent"
+--        android:padding="16dp">
+--
+--        <Button
+--            android:id="@+id/button_second"
+--            android:layout_width="wrap_content"
+--            android:layout_height="wrap_content"
+--            android:text="@string/previous"
+--            app:layout_constraintBottom_toTopOf="@id/textview_second"
+--            app:layout_constraintEnd_toEndOf="parent"
+--            app:layout_constraintStart_toStartOf="parent"
+--            app:layout_constraintTop_toTopOf="parent" />
+--
+--        <TextView
+--            android:id="@+id/textview_second"
+--            android:layout_width="wrap_content"
+--            android:layout_height="wrap_content"
+--            android:layout_marginTop="16dp"
+--            android:text="@string/lorem_ipsum"
+--            app:layout_constraintBottom_toBottomOf="parent"
+--            app:layout_constraintEnd_toEndOf="parent"
+--            app:layout_constraintStart_toStartOf="parent"
+--            app:layout_constraintTop_toBottomOf="@id/button_second" />
+--    </androidx.constraintlayout.widget.ConstraintLayout>
+--</androidx.core.widget.NestedScrollView>
+-\ No newline at end of file
+-Index: app/src/main/java/com/example/civicalertoriginal/MainActivity2.kt
+-===================================================================
+-diff --git a/app/src/main/java/com/example/civicalertoriginal/MainActivity2.kt b/app/src/main/java/com/example/civicalertoriginal/MainActivity2.kt
+-deleted file mode 100644
+---- a/app/src/main/java/com/example/civicalertoriginal/MainActivity2.kt	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-+++ /dev/null	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-@@ -1,121 +0,0 @@
+--package com.example.civicalertoriginal
+--
+--import android.Manifest
+--import android.content.ContentValues
+--import android.content.pm.PackageManager
+--import android.os.Build
+--import android.os.Bundle
+--import android.provider.MediaStore
+--import androidx.appcompat.app.AppCompatActivity
+--import androidx.camera.core.ImageCapture
+--import androidx.camera.video.Recorder
+--import androidx.camera.video.Recording
+--import androidx.camera.video.VideoCapture
+--import androidx.core.app.ActivityCompat
+--import androidx.core.content.ContextCompat
+--import java.util.concurrent.ExecutorService
+--import java.util.concurrent.Executors
+--import android.widget.Toast
+--import androidx.activity.result.contract.ActivityResultContracts
+--import androidx.camera.lifecycle.ProcessCameraProvider
+--import androidx.camera.core.Preview
+--import androidx.camera.core.CameraSelector
+--import android.util.Log
+--import androidx.camera.core.ImageAnalysis
+--import androidx.camera.core.ImageCaptureException
+--import androidx.camera.core.ImageProxy
+--import androidx.camera.video.FallbackStrategy
+--import androidx.camera.video.MediaStoreOutputOptions
+--import androidx.camera.video.Quality
+--import androidx.camera.video.QualitySelector
+--import androidx.camera.video.VideoRecordEvent
+--import androidx.core.content.PermissionChecker
+--import com.example.civicalertoriginal.databinding.ActivityMainBinding
+--import java.nio.ByteBuffer
+--import java.text.SimpleDateFormat
+--import java.util.Locale
+--
+--typealias LumaListener = (luma: Double) -> Unit
+--
+--class MainActivity2 : AppCompatActivity() {
+--    private lateinit var viewBinding: ActivityMainBinding
+--
+--    private var imageCapture: ImageCapture? = null
+--
+--    private var videoCapture: VideoCapture<Recorder>? = null
+--    private var recording: Recording? = null
+--
+--    private lateinit var cameraExecutor: ExecutorService
+--
+--    override fun onCreate(savedInstanceState: Bundle?) {
+--        super.onCreate(savedInstanceState)
+--        viewBinding = ActivityMainBinding.inflate(layoutInflater)
+--        setContentView(viewBinding.root)
+--
+--        // Request camera permissions
+--        if (allPermissionsGranted()) {
+--            startCamera()
+--        } else {
+--            requestPermissions()
+--        }
+--
+--        // Set up the listeners for take photo and video capture buttons
+--       // viewBinding.imageCaptureButton.setOnClickListener { takePhoto() }
+--        //viewBinding.uploadPhotoButton.setOnClickListener { captureVideo() }
+--
+--
+--        cameraExecutor = Executors.newSingleThreadExecutor()
+--    }
+--
+--    private fun takePhoto() {}
+--
+--    private fun captureVideo() {}
+--
+--    private fun startCamera() {}
+--
+--    private fun requestPermissions() {
+--        activityResultLauncher.launch(REQUIRED_PERMISSIONS)
+--    }
+--
+--    private fun allPermissionsGranted() = REQUIRED_PERMISSIONS.all {
+--        ContextCompat.checkSelfPermission(
+--            baseContext, it) == PackageManager.PERMISSION_GRANTED
+--    }
+--
+--    override fun onDestroy() {
+--        super.onDestroy()
+--        cameraExecutor.shutdown()
+--    }
+--
+--    companion object {
+--        private const val TAG = "CameraXApp"
+--        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+--        private val REQUIRED_PERMISSIONS =
+--            mutableListOf (
+--                Manifest.permission.CAMERA,
+--                Manifest.permission.RECORD_AUDIO
+--            ).apply {
+--                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+--                    add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+--                }
+--            }.toTypedArray()
+--    }
+--    private val activityResultLauncher =
+--        registerForActivityResult(
+--            ActivityResultContracts.RequestMultiplePermissions())
+--        { permissions ->
+--            // Handle Permission granted/rejected
+--            var permissionGranted = true
+--            permissions.entries.forEach {
+--                if (it.key in REQUIRED_PERMISSIONS && it.value == false)
+--                    permissionGranted = false
+--            }
+--            if (!permissionGranted) {
+--                Toast.makeText(baseContext,
+--                    "Permission request denied",
+--                    Toast.LENGTH_SHORT).show()
+--            } else {
+--                startCamera()
+--            }
+--        }
+--}
+-\ No newline at end of file
+-Index: app/src/main/AndroidManifest.xml
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature android:name=\"android.hardware.camera.any\" />\r\n    <uses-permission android:name=\"android.permission.CAMERA\" />\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"\r\n        android:maxSdkVersion=\"28\" />\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.CivicAlertOriginal\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".MainActivity2\"\r\n            android:exported=\"true\"\r\n            android:theme=\"@style/Theme.CivicAlertOriginal\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\"\r\n            android:label=\"@string/app_name\"\r\n            android:theme=\"@style/Theme.CivicAlertOriginal\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n    </application>\r\n\r\n</manifest>
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+---- a/app/src/main/AndroidManifest.xml	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-+++ b/app/src/main/AndroidManifest.xml	(date 1719944238058)
+-@@ -3,8 +3,10 @@
+-     xmlns:tools="http://schemas.android.com/tools">
+- 
+-     <uses-feature android:name="android.hardware.camera.any" />
+-+
+-     <uses-permission android:name="android.permission.CAMERA" />
+--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+-+    <uses-permission
+-+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+-         android:maxSdkVersion="28" />
+- 
+-     <application
+-Index: app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.civicalertoriginal\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport com.example.civicalertoriginal.Components.Navigation\r\nimport com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme\r\nimport com.google.firebase.FirebaseApp\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        FirebaseApp.initializeApp(this)\r\n        setContent {\r\n            CivicAlertOriginalTheme {\r\n               // Navigation()\r\n                MainActivity2\r\n\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+---- a/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	(revision bf3d31374d53dacda8d756b8c3e67be69bf3d13c)
+-+++ b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	(date 1719943980416)
+-@@ -13,8 +13,7 @@
+-         FirebaseApp.initializeApp(this)
+-         setContent {
+-             CivicAlertOriginalTheme {
+--               // Navigation()
+--                MainActivity2
+-+                 Navigation()
+- 
+-             }
+-         }
+Index: .idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41_[Changes]/shelved.patch
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41_[Changes]/shelved.patch
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Update_at_01_07_2024_22_41_[Changes]/shelved.patch	
++++ /dev/null	
+@@ -1,214 +0,0 @@
+-Index: app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+-IDEA additional info:
+-Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+-<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.util.Patterns\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.*\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\n\r\n@Composable\r\nfun Registration(navController: NavController) {\r\n\r\n    val database = Firebase.database\r\n    val myRef = database.getReference()\r\n    val context = LocalContext.current\r\n    val scrollable = rememberScrollState()\r\n\r\n    // Variables needed for user registration\r\n    var firstName by remember { mutableStateOf(\"\") }\r\n    var lastName by remember { mutableStateOf(\"\") }\r\n    var email by remember { mutableStateOf(\"\") }\r\n    var phoneNumber by remember { mutableStateOf(\"\") }\r\n    var password by remember { mutableStateOf(\"\") }\r\n    var confirmPassword by remember { mutableStateOf(\"\") }\r\n    var passwordsMatch by remember { mutableStateOf(true) }\r\n    var isFormValid by remember { mutableStateOf(false) }\r\n    var showDialog by remember { mutableStateOf(false) }\r\n    var registrationMessage by remember { mutableStateOf(\"\") }\r\n    var isEmailValid by remember { mutableStateOf(true) }\r\n    var isPasswordValid by remember { mutableStateOf(true) }\r\n    var hasUpperCase by remember { mutableStateOf(false) }\r\n    var hasDigit by remember { mutableStateOf(false) }\r\n    var hasSymbol by remember { mutableStateOf(false) }\r\n\r\n    // Character limit in text fields\r\n    val maxName = 50\r\n    val maxEmail = 100\r\n    val maxNumber = 10\r\n    val maxPassword = 100\r\n\r\n    // Regex patterns\r\n    val emailPattern = Patterns.EMAIL_ADDRESS.toRegex()\r\n    val passwordPattern = Regex(\"^(?=.*[A-Za-z])(?=.*\\\\d)(?=.*[@\\$!%*#?&])[A-Za-z\\\\d@\\$!%*#?&]{8,}$\")\r\n\r\n    // Validate entered details\r\n    fun validateForm() {\r\n        isEmailValid = emailPattern.matches(email)\r\n        isPasswordValid = passwordPattern.matches(password)\r\n        hasUpperCase = password.any { it.isUpperCase() }\r\n        hasDigit = password.any { it.isDigit() }\r\n        hasSymbol = password.any { !it.isLetterOrDigit() }\r\n        isFormValid = firstName.all { it.isLetter() } && firstName.isNotEmpty() && firstName.length <= maxName &&\r\n                lastName.all { it.isLetter() } && lastName.isNotEmpty() && lastName.length <= maxName &&\r\n                email.isNotEmpty() && email.length <= maxEmail && isEmailValid &&\r\n                phoneNumber.all { it.isDigit() } && phoneNumber.length == maxNumber &&\r\n                password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&\r\n                confirmPassword.isNotEmpty() && confirmPassword == password\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(20.dp)\r\n                .verticalScroll(scrollable),\r\n            verticalArrangement = Arrangement.spacedBy(18.dp),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            InstructionText(value = \"Sign Up\")\r\n\r\n            Spacer(modifier = Modifier.size(12.dp))\r\n\r\n            TextFields(value = firstName,\r\n                onChange = {\r\n                    if (it.length <= maxName) {\r\n                        firstName = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"First name\"\r\n            )\r\n\r\n            TextFields(value = lastName,\r\n                onChange = {\r\n                    if (it.length <= maxName) {\r\n                        lastName = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Last name\"\r\n            )\r\n\r\n            EmailTextFields(value = email,\r\n                onChange = {\r\n                    if (it.length <= maxEmail) {\r\n                        email = it\r\n                        validateForm()\r\n                    }\r\n                },\r\n                fieldLabel = \"Email Address\"\r\n            )\r\n\r\n            if (!isEmailValid) {\r\n                Text(\r\n                    text = \"Please enter a valid email address\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            NumberTextFields(value = phoneNumber,\r\n                onChange = {\r\n                    if (it.length <= maxNumber) {\r\n                        phoneNumber = it\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Phone number\"\r\n            )\r\n\r\n            PasswordTextFields(value = password,\r\n                onChange = {\r\n                    if (it.length <= maxPassword) {\r\n                        password = it\r\n                        passwordsMatch = confirmPassword == password\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Password\"\r\n            )\r\n\r\n            Column (\r\n\r\n            ){\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasUpperCase, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one capital letter\"\r\n                    , fontSize = 12.sp)\r\n                }\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasDigit, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one digit\",fontSize = 12.sp)\r\n                }\r\n                Row(verticalAlignment = Alignment.CenterVertically) {\r\n                    Checkbox(checked = hasSymbol, onCheckedChange = null)\r\n                    Text(text = \"Must have at least one symbol\",fontSize = 12.sp)\r\n                }\r\n            }\r\n\r\n            PasswordTextFields(value = confirmPassword,\r\n                onChange = {\r\n                    if (it.length <= maxPassword) {\r\n                        confirmPassword = it\r\n                        passwordsMatch = confirmPassword == password\r\n                        validateForm()\r\n                    }\r\n                }, fieldLabel = \"Confirm password\"\r\n            )\r\n\r\n            if (!isPasswordValid) {\r\n                Text(\r\n                    text = \"Enter a valid password\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            if (!passwordsMatch) {\r\n                Text(\r\n                    text = \"Passwords do not match\",\r\n                    color = Color.Red\r\n                )\r\n            }\r\n\r\n            Row {\r\n                SignUpText(value = \"Do you give us permission to use your details for marketing purposes\")\r\n            }\r\n            Row {\r\n                SignUpText(value = \"Do you agree to Terms & Conditions of the app\")\r\n            }\r\n\r\n            Spacer(modifier = Modifier.size(16.dp))\r\n\r\n            LogBottomButtons(\r\n                name = \"Register\",\r\n                onClick = { showDialog = true },\r\n                enabled = isFormValid\r\n            )\r\n\r\n        }\r\n        if (showDialog) {\r\n            AlertDialog(\r\n                onDismissRequest = { showDialog = false },\r\n                title = { Text(\"Confirm Registration\") },\r\n                text = { Text(\"Are you sure you want to register with these details?\") },\r\n                confirmButton = {\r\n                    Button(modifier = Modifier\r\n                        .padding(start = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            // method to save data to database\r\n                            registrationMessage = \"Successfully registered!\"\r\n                            showDialog = false\r\n                        }\r\n                    ) {\r\n                        Text(\"Confirm\",\r\n                            color = Color.Black)\r\n                    }\r\n                },\r\n                dismissButton = {\r\n                    Button(modifier = Modifier\r\n                        .padding(end = 20.dp)\r\n                        .width(100.dp),\r\n                        colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = { showDialog = false }) {\r\n                        Text(\"Cancel\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n\r\n        if (registrationMessage.isNotEmpty()) {\r\n            AlertDialog(\r\n                onDismissRequest = { registrationMessage = \"\" },\r\n                title = { Text(\"Registration\") },\r\n                text = { Text(registrationMessage) },\r\n                confirmButton = {\r\n                    Button(colors = ButtonDefaults.buttonColors(Color.Green),\r\n                        onClick = {\r\n                            registrationMessage = \"\"\r\n                            // Navigate to login page\r\n                        }\r\n                    ) {\r\n                        Text(\"OK\",\r\n                            color = Color.Black)\r\n                    }\r\n                }\r\n            )\r\n        }\r\n    }\r\n}\r\n\r\n@Preview\r\n@Composable\r\nfun RegistrationPreview() {\r\n    val navController = rememberNavController()\r\n    Registration(navController)\r\n}\r\n
+-Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+-<+>UTF-8
+-===================================================================
+-diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt
+---- a/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(revision 39b51ab4e038993ea9dbe4017947c92a3c1ba983)
+-+++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Registration.kt	(date 1719866296375)
+-@@ -22,8 +22,6 @@
+- @Composable
+- fun Registration(navController: NavController) {
+- 
+--    val database = Firebase.database
+--    val myRef = database.getReference()
+-     val context = LocalContext.current
+-     val scrollable = rememberScrollState()
+- 
+-@@ -69,6 +67,7 @@
+-                 confirmPassword.isNotEmpty() && confirmPassword == password
+-     }
+- 
+-+
+-     Surface(color = Color.White) {
+-         Column(
+-             modifier = Modifier
+-@@ -85,25 +84,30 @@
+- 
+-             Spacer(modifier = Modifier.size(12.dp))
+- 
+--            TextFields(value = firstName,
+-+            TextFields(
+-+                value = firstName,
+-                 onChange = {
+-                     if (it.length <= maxName) {
+-                         firstName = it
+-                         validateForm()
+-                     }
+--                }, fieldLabel = "First name"
+-+                },
+-+                fieldLabel = "First name"
+-             )
+- 
+--            TextFields(value = lastName,
+-+            TextFields(
+-+                value = lastName,
+-                 onChange = {
+-                     if (it.length <= maxName) {
+-                         lastName = it
+-                         validateForm()
+-                     }
+--                }, fieldLabel = "Last name"
+-+                },
+-+                fieldLabel = "Last name"
+-             )
+- 
+--            EmailTextFields(value = email,
+-+            EmailTextFields(
+-+                value = email,
+-                 onChange = {
+-                     if (it.length <= maxEmail) {
+-                         email = it
+-@@ -120,51 +124,57 @@
+-                 )
+-             }
+- 
+--            NumberTextFields(value = phoneNumber,
+-+            NumberTextFields(
+-+                value = phoneNumber,
+-                 onChange = {
+-                     if (it.length <= maxNumber) {
+-                         phoneNumber = it
+-                         validateForm()
+-                     }
+--                }, fieldLabel = "Phone number"
+-+                },
+-+                fieldLabel = "Phone number"
+-             )
+- 
+--            PasswordTextFields(value = password,
+-+            PasswordTextFields(
+-+                value = password,
+-                 onChange = {
+-                     if (it.length <= maxPassword) {
+-                         password = it
+--                        passwordsMatch = confirmPassword == password
+--                        validateForm()
+-+                        //passwordsMatch = confirmPassword == password
+-+                     //   validateForm()
+-                     }
+--                }, fieldLabel = "Password"
+-+                },
+-+                fieldLabel = "Password"
+-             )
+- 
+--            Column (
+--
+--            ){
+-+            Column {
+-                 Row(verticalAlignment = Alignment.CenterVertically) {
+-                     Checkbox(checked = hasUpperCase, onCheckedChange = null)
+--                    Text(text = "Must have at least one capital letter"
+--                    , fontSize = 12.sp)
+-+                    Text(
+-+                        text = "Must have at least one capital letter",
+-+                        fontSize = 12.sp
+-+                    )
+-                 }
+-                 Row(verticalAlignment = Alignment.CenterVertically) {
+-                     Checkbox(checked = hasDigit, onCheckedChange = null)
+--                    Text(text = "Must have at least one digit",fontSize = 12.sp)
+-+                    Text(text = "Must have at least one digit", fontSize = 12.sp)
+-                 }
+-                 Row(verticalAlignment = Alignment.CenterVertically) {
+-                     Checkbox(checked = hasSymbol, onCheckedChange = null)
+--                    Text(text = "Must have at least one symbol",fontSize = 12.sp)
+-+                    Text(text = "Must have at least one symbol", fontSize = 12.sp)
+-                 }
+-             }
+- 
+--            PasswordTextFields(value = confirmPassword,
+-+            PasswordTextFields(
+-+                value = confirmPassword,
+-                 onChange = {
+-                     if (it.length <= maxPassword) {
+-                         confirmPassword = it
+-                         passwordsMatch = confirmPassword == password
+--                        validateForm()
+-+                      //  validateForm()
+-                     }
+--                }, fieldLabel = "Confirm password"
+-+                },
+-+                fieldLabel = "Confirm password"
+-             )
+- 
+-             if (!isPasswordValid) {
+-@@ -195,7 +205,6 @@
+-                 onClick = { showDialog = true },
+-                 enabled = isFormValid
+-             )
+--
+-         }
+-         if (showDialog) {
+-             AlertDialog(
+-@@ -203,28 +212,36 @@
+-                 title = { Text("Confirm Registration") },
+-                 text = { Text("Are you sure you want to register with these details?") },
+-                 confirmButton = {
+--                    Button(modifier = Modifier
+--                        .padding(start = 20.dp)
+--                        .width(100.dp),
+-+                    Button(
+-+                        modifier = Modifier
+-+                            .padding(start = 20.dp)
+-+                            .width(100.dp),
+-                         colors = ButtonDefaults.buttonColors(Color.Green),
+-                         onClick = {
+-+                           // saveUser()
+-                             // method to save data to database
+-                             registrationMessage = "Successfully registered!"
+-                             showDialog = false
+-                         }
+-                     ) {
+--                        Text("Confirm",
+--                            color = Color.Black)
+-+                        Text(
+-+                            "Confirm",
+-+                            color = Color.Black
+-+                        )
+-                     }
+-                 },
+-                 dismissButton = {
+--                    Button(modifier = Modifier
+--                        .padding(end = 20.dp)
+--                        .width(100.dp),
+-+                    Button(
+-+                        modifier = Modifier
+-+                            .padding(end = 20.dp)
+-+                            .width(100.dp),
+-                         colors = ButtonDefaults.buttonColors(Color.Green),
+--                        onClick = { showDialog = false }) {
+--                        Text("Cancel",
+--                            color = Color.Black)
+-+                        onClick = { showDialog = false }
+-+                    ) {
+-+                        Text(
+-+                            "Cancel",
+-+                            color = Color.Black
+-+                        )
+-                     }
+-                 }
+-             )
+-@@ -236,14 +253,17 @@
+-                 title = { Text("Registration") },
+-                 text = { Text(registrationMessage) },
+-                 confirmButton = {
+--                    Button(colors = ButtonDefaults.buttonColors(Color.Green),
+-+                    Button(
+-+                        colors = ButtonDefaults.buttonColors(Color.Green),
+-                         onClick = {
+-                             registrationMessage = ""
+-                             // Navigate to login page
+-                         }
+-                     ) {
+--                        Text("OK",
+--                            color = Color.Black)
+-+                        Text(
+-+                            "OK",
+-+                            color = Color.Black
+-+                        )
+-                     }
+-                 }
+-             )
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36__Changes_.xml	
++++ /dev/null	
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_01_07_2024_22_36_[Changes]" date="1719866194500" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_01_07_2024_22_36_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 01/07/2024 22:36 [Changes]" />
+-</changelist>
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_7_6_2024_4_56_AM__Changes_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_7_6_2024_4_56_AM__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_7_6_2024_4_56_AM__Changes_.xml
+new file mode 100644
+--- /dev/null	
++++ b/.idea/shelf/Uncommitted_changes_before_Checkout_at_7_6_2024_4_56_AM__Changes_.xml	
+@@ -0,0 +1,4 @@
++<changelist name="Uncommitted_changes_before_Checkout_at_7_6_2024_4_56_AM_[Changes]" date="1720234564315" recycled="true" deleted="true">
++  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_7_6_2024_4_56_AM_[Changes]/shelved.patch" />
++  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 7/6/2024 4:56 AM [Changes]" />
++</changelist>
+\ No newline at end of file
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"deploymentTargetSelector\">\r\n    <selectionStates>\r\n      <SelectionState runConfigName=\"app\">\r\n        <option name=\"selectionMode\" value=\"DROPDOWN\" />\r\n      </SelectionState>\r\n    </selectionStates>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+--- a/.idea/deploymentTargetSelector.xml	
++++ b/.idea/deploymentTargetSelector.xml	
+@@ -4,6 +4,14 @@
+     <selectionStates>
+       <SelectionState runConfigName="app">
+         <option name="selectionMode" value="DROPDOWN" />
++        <DropdownSelection timestamp="2024-07-10T09:15:44.857870100Z">
++          <Target type="DEFAULT_BOOT">
++            <handle>
++              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Cash\.android\avd\Pixel_3a_API_34_extension_level_7_x86_64.avd" />
++            </handle>
++          </Target>
++        </DropdownSelection>
++        <DialogSelection />
+       </SelectionState>
+     </selectionStates>
+   </component>
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_36_[Changes]/shelved.patch
+deleted file mode 100644
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_18_[Changes]/shelved.patch
+deleted file mode 100644
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_03_07_2024_09_27_[Changes]/shelved.patch
+deleted file mode 100644
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_02_07_2024_18_14_[Changes]/shelved.patch
+deleted file mode 100644
