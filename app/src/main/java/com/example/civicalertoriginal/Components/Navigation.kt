@@ -7,9 +7,11 @@ import androidx.annotation.RequiresApi
 import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.internal.composableLambda
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.civicalertoriginal.Screens.*
 
 
@@ -45,8 +47,11 @@ fun Navigation (){
         composable("helpSupport"){
             HelpAndSupport(navController)
         }
-        composable("map_screen") { MapScreen(navController = navController, onLocationSelected = { location ->
-            navController.previousBackStackEntry?.savedStateHandle?.set("selectedLocation", location)
-        }) }
+        composable("viewReport/{reportId}") { backStackEntry ->
+            val reportId = backStackEntry.arguments?.getString("reportId") ?: ""
+            ViewFullReport(navController, reportId)
+        }
+
+
     }
 }
