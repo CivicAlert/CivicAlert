@@ -4,15 +4,19 @@ package com.example.civicalertoriginal.Components
 import LogIn
 import android.os.Build
 import androidx.annotation.RequiresApi
-import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambda
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.civicalertoriginal.Screens.*
+import civicalertoriginal.Screen.MakeReports
+import com.example.civicalertoriginal.Screens.ContactUs
+import com.example.civicalertoriginal.Screens.Dashboard
+import com.example.civicalertoriginal.Screens.ForgotPassword
+import com.example.civicalertoriginal.Screens.HelpAndSupport
+import com.example.civicalertoriginal.Screens.Registration
+import com.example.civicalertoriginal.Screens.UpdateProfile
+import com.example.civicalertoriginal.Screens.ViewFullReport
+import com.example.civicalertoriginal.Screens.ViewReports
 
 
 @RequiresApi(Build.VERSION_CODES.O)
