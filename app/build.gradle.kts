@@ -14,7 +14,6 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -63,9 +62,13 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
-    implementation (libs.mapbox)
-    implementation("com.mapbox.mapboxsdk:mapbox-android:9.7.0")
-    implementation(libs.play.services.maps)
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0")
+    implementation ("androidx.navigation:navigation-compose:2.4.0-alpha10")
+    implementation ("com.mapbox.maps:android:11.5.0")
+    implementation ("com.android.volley:volley:1.2.1")
+    implementation(libs.maps)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

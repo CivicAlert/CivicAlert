@@ -1,37 +1,49 @@
-package civicalertoriginal.Screen
+package com.example.civicalertoriginal.Screens
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Point
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.*
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
-import com.example.civicalertoriginal.R
+import com.mapbox.maps.MapView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.mapbox.maps.CameraOptions
+import com.mapbox.maps.plugin.gestures.addOnMapClickListener
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -55,6 +67,7 @@ class SharedPrefs(context: Context) {
         }
 }
 
+@SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
 fun generateReferenceNumber(context: Context): String {
     val sharedPrefs = SharedPrefs(context)
@@ -186,7 +199,7 @@ fun AnimatedMakeReports(navController: NavController, userEmail: String, onClose
             description = description,
             dateTime = formattedDateTime,
             refNumber = referenceNumber,
-            status = "Agent looking at it",
+            status = "Submitted",
             userID = userEmail // Set userID to current user's email
         )
 
@@ -202,93 +215,179 @@ fun AnimatedMakeReports(navController: NavController, userEmail: String, onClose
                 "userID" to report.userID
             )
 
-            // Use the reference number as the key
-            myRef.child(report.refNumber).setValue(reportWithUser).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Handle success
-                    showDialog = true // Show the dialog upon successful submission
-                } else {
-                    // Handle failure
-                    task.exception?.let {
-                        println("Error saving user: ${it.message}")
+            val currentUser = auth.currentUser
+            val userUid = currentUser?.uid
+
+            if (userUid != null) {
+                myRef.child(userUid).push().setValue(reportWithUser)
+            }
+        }
+
+        SubmitButton {
+            saveReport(userReport)
+            showDialog = true // Show success dialog when report is submitted
+        }
+
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Report Submitted", color = Color.Green) },
+                text = {
+                    Text(
+                        "Your report has been successfully submitted!",
+                        color = Color.Black
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showDialog = false
+                            onClose()
+                        },
+                        colors = ButtonDefaults.buttonColors(Color.Green)
+                    ) {
+                        Text("OK")
                     }
                 }
-            }
+            )
+        }
+    }
+}
+
+@Composable
+fun MapboxMapView(onLocationSelected: (Double, Double) -> Unit) {
+    val context = LocalContext.current
+    val mapView = rememberMapViewWithLifecycle()
+
+    AndroidView(factory = { mapView }) { mapView ->
+        val mapboxMap = mapView.getMapboxMap()
+        mapboxMap.setCamera(
+            CameraOptions.Builder()
+                .center(Point.fromLngLat(30.0, -25.0)) // Centering the map at a default location
+                .zoom(8.0)
+                .build()
+        )
+
+        mapboxMap.addOnMapClickListener { point ->
+            onLocationSelected(point.latitude(), point.longitude())
+            true
+        }
+    }
+}
+
+@Composable
+fun rememberMapViewWithLifecycle(): MapView {
+    val context = LocalContext.current
+    val mapView = remember { MapView(context) }
+
+    DisposableEffect(mapView) {
+        val lifecycle = LocalLifecycleOwner.current.lifecycle
+        val lifecycleObserver = getMapViewLifecycleObserver(mapView)
+        lifecycle.addObserver(lifecycleObserver)
+
+        onDispose {
+            lifecycle.removeObserver(lifecycleObserver)
+        }
+    }
+
+    return mapView
+}
+
+@Composable
+fun getMapViewLifecycleObserver(mapView: MapView): DefaultLifecycleObserver {
+    return object : DefaultLifecycleObserver {
+        override fun onStart(owner: LifecycleOwner) {
+            mapView.onStart()
         }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+        override fun onResume(owner: LifecycleOwner) {
+            mapView.onResume()
+        }
+
+        override fun onPause(owner: LifecycleOwner) {
+            mapView.onPause()
+        }
+
+        override fun onStop(owner: LifecycleOwner) {
+            mapView.onStop()
+        }
+
+        override fun onDestroy(owner: LifecycleOwner) {
+            mapView.onDestroy()
+        }
+    }
+}
+
+
+@Composable
+fun MapboxPickerDialog(
+    onDismiss: () -> Unit,
+    onLocationSelected: (String) -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        )
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            SubmitButton(name = "Submit") {
-                saveReport(userReport)
-            }
-        }
-        Spacer(modifier = Modifier.size(8.dp))
-
-        // Display the success dialog if showDialog is true
-        if (showDialog) {
-            SuccessDialog(referenceNumber = referenceNumber, onDismiss = {
-                showDialog = false
-                onClose() // Close the current screen or perform other actions on dismiss
+            MapboxMapView(onLocationSelected = { latitude, longitude ->
+                val location = "$latitude, $longitude"
+                onLocationSelected(location)
+                onDismiss()
             })
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SuccessDialog(referenceNumber: String, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(dismissOnClickOutside = false),
-        confirmButton = {
-            Button(
-                onClick = onDismiss,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFB2F4B8))
-            ) {
-                Text("DONE", color = Color.Black)
-            }
-        },
-        title = null,
-        text = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Box(
+fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String) {
+    var showMapDialog by remember { mutableStateOf(false) }
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onChange,
+            placeholder = { Text(text = fieldLabel, color = Color.Green) },
+            trailingIcon = {
+                Icon(
                     modifier = Modifier
-                        .size(80.dp)
-                        .background(Color(0xFFE0F7EA)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.check),
-                        contentDescription = null,
-                        tint = Color(0xFF00C853),
-                        modifier = Modifier.size(60.dp)
-                    )
-                }
-                Text(
-                    text = "Report Successfully\n    Submitted",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp
+                        .size(35.dp)
+                        .clickable { showMapDialog = true },
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Location Icon"
                 )
-                Text(
-                    text = "Thank you for reporting to us. We\n  will take a look at the incident."
-                )
-                Text(
-                    text = "  Your Reference ID:\n$referenceNumber",
-                    fontWeight = FontWeight.Bold
-                )
+            },
+            keyboardOptions = KeyboardOptions.Default,
+            textStyle = TextStyle(color = Color.Black),
+            modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+        )
+    }
+
+    if (showMapDialog) {
+        MapboxPickerDialog(
+            onDismiss = { showMapDialog = false },
+            onLocationSelected = { location ->
+                onChange(location)
             }
-        }
-    )
+        )
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun MakeReportsPreview() {
+fun PreviewMakeReports() {
     val navController = rememberNavController()
-    MakeReports(navController = navController)
+    MakeReports(navController)
 }

@@ -2,9 +2,7 @@
 
 package com.example.civicalertoriginal.Components
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -63,15 +60,12 @@ import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.example.civicalertoriginal.R
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import com.example.civicalertoriginal.Screens.MapboxPickerDialog
 
 
 @Composable
@@ -275,8 +269,9 @@ fun InstructionText(value: String){
         )
     )
 }
+
 @Composable
-fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
+fun  ssLocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -297,6 +292,46 @@ fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: St
         )
     }
 }
+@Composable
+fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String) {
+    var showMapDialog by remember { mutableStateOf(false) }
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onChange,
+            placeholder = { Text(text = fieldLabel, color = Color.Green) },
+            trailingIcon = {
+                Icon(
+                    modifier = Modifier
+                        .size(35.dp)
+                        .clickable { showMapDialog = true },
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Location Icon"
+                )
+            },
+            keyboardOptions = KeyboardOptions.Default,
+            textStyle = TextStyle(color = Color.Black),
+            modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth()
+                .background(Color.White)
+        )
+    }
+
+    if (showMapDialog) {
+        MapboxPickerDialog(
+            onDismiss = { showMapDialog = false },
+            onLocationSelected = { location ->
+                onChange(location)
+            }
+        )
+    }
+}
+
 @Composable
 fun ReportDescriptionText(value1: String, value:String,){
     Column {
