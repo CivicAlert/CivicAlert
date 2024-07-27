@@ -1,57 +1,80 @@
 package civicalertoriginal.Screen
 
-import android.health.connect.datatypes.ExerciseRoute.Location
 import android.os.Build
-import android.widget.Space
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Components.*
+import com.example.civicalertoriginal.Components.DescriptionTextFields
+import com.example.civicalertoriginal.Components.ExposedDropdownMenuBox
+import com.example.civicalertoriginal.Components.LocationTextFields
+import com.example.civicalertoriginal.Components.PictureTextFields
+import com.example.civicalertoriginal.Components.ReportDescriptionText
+import com.example.civicalertoriginal.Components.SubmitButton
 import com.example.civicalertoriginal.R
-import com.example.civicalertoriginal.Screens.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.random.Random
-
+import java.util.concurrent.atomic.AtomicInteger
 
 data class Reports(
     val incidentType: String = "",
     val location: String = "",
-    val description: String ="",
-    val dateTime: String ="",
-    val refNumber: String =""
-
+    val description: String = "",
+    val dateTime: String = "",
+    val refNumber: String = "",
+    val status: String = "Submitted",
+    val userUID: String = ""
 )
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MakeReports(navController: NavController) {
@@ -74,9 +97,10 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController){isVisible = false
-            navController.navigate("Dashboard")}
-
+            AnimatedMakeReports(navController) {
+                isVisible = false
+                navController.navigate("Dashboard")
+            }
         }
     }
 }
@@ -94,6 +118,9 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
     val currentDateTime = LocalDateTime.now()
     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
     var showDialog by remember { mutableStateOf(false) }
+    var savedRefNumber by remember { mutableStateOf("") }
+
+    val referenceNumber = ReferenceNumberGenerator.generateReferenceNumber()
 
     Column(
         verticalArrangement = Arrangement.spacedBy(30.dp),
@@ -156,19 +183,29 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             location = location,
             description = description,
             dateTime = formattedDateTime,
-            refNumber = referenceNumber
+            refNumber = referenceNumber,
+            userUID = auth.currentUser?.email ?: "Unknown"
         )
 
         fun saveReport(report: Reports) {
-            val userId = myRef.push().key ?: return
+            val userId = report.refNumber
             myRef.child(userId).setValue(report).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    // Handle success
-                    showDialog = true // Show the dialog upon successful submission
+                    myRef.child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            savedRefNumber = snapshot.child("refNumber").getValue(String::class.java) ?: ""
+                            showDialog = true // Show the dialog upon successful retrieval
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle error
+                            println("Error retrieving reference number: ${error.message}")
+                        }
+                    })
                 } else {
                     // Handle failure
                     task.exception?.let {
-                        println("Error saving user: ${it.message}")
+                        println("Error saving report: ${it.message}")
                     }
                 }
             }
@@ -185,17 +222,17 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
 
         // Display the success dialog if showDialog is true
         if (showDialog) {
-            SuccessDialog(onDismiss = {
+            SuccessDialog(savedRefNumber, onDismiss = {
                 showDialog = false
                 onClose() // Close the current screen or perform other actions on dismiss
             })
         }
-
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun SuccessDialog(onDismiss: () -> Unit) {
+fun SuccessDialog(referenceNumber: String, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnClickOutside = false),
@@ -228,7 +265,7 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     )
                 }
                 Text(
-                    text = "Report Successful Submitted",
+                    text = "Report Successfully Submitted",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp
                 )
@@ -236,35 +273,28 @@ fun SuccessDialog(onDismiss: () -> Unit) {
                     text = "Thank you for reporting to us. We\n  will take a look at the incident."
                 )
                 Text(
-                    text = "Your Reference ID:\n  $referenceNumber",
+                    text = "Your Reference ID, keep it safe:\n     $referenceNumber",
                     fontWeight = FontWeight.Bold
                 )
-
             }
         }
     )
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
-fun generateReferenceNumber(): String {
-    val currentDateTime = LocalDateTime.now()
-    val dateFormatter = DateTimeFormatter.ofPattern("yyMM")
-    val timeFormatter = DateTimeFormatter.ofPattern("HH")
+object ReferenceNumberGenerator {
+    private val counter = AtomicInteger(0)
 
-    val datePart = currentDateTime.format(dateFormatter)
-    val timePart = currentDateTime.format(timeFormatter)
+    fun generateReferenceNumber(): String {
+        val currentDateTime = LocalDateTime.now()
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyMMdd-HHmmss")
 
-    // Generate a random alphanumeric string of length 4
-    val randomPart = (1..4)
-        .map { ('A'..'Z') + ('0'..'9') }
-        .flatten()
-        .shuffled()
-        .take(4)
-        .joinToString("")
+        val dateTimePart = currentDateTime.format(dateTimeFormatter)
+        val countPart = counter.getAndIncrement().toString().padStart(4, '0')
 
-    return "$datePart/$timePart-$randomPart"
+        return "$dateTimePart-$countPart"
+    }
 }
-@RequiresApi(Build.VERSION_CODES.O)
-val referenceNumber = generateReferenceNumber()
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
