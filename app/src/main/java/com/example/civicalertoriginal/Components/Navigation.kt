@@ -1,6 +1,5 @@
 package com.example.civicalertoriginal.Components
 
-
 import LogIn
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -17,15 +16,18 @@ import com.example.civicalertoriginal.Screens.*
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "Login") {
+    NavHost(navController = navController, startDestination = "helpSupport") {
         composable("registration"){
             Registration(navController)
         }
-        composable("Login"){
-            LogIn(navController)
-        }
+        /*composable("Login"){
+           LogIn(navController)
+        }*/
         composable("forgotPassword"){
             ForgotPassword(navController)
+        }
+        composable("login"){
+            LogIn(navController)
         }
         composable("Dashboard"){
             Dashboard(navController)

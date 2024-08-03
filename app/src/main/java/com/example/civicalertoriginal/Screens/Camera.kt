@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.ComponentActivity
 import androidx.annotation.RequiresApi
 import androidx.camera.core.*
+import androidx.camera.core.ImageCapture
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
