@@ -1,15 +1,19 @@
 package com.example.civicalertoriginal.Screens
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.camera.core.*
-import androidx.camera.core.ImageCapture
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -54,6 +58,18 @@ fun CameraScreen() {
         }
     }
 
+    // State to hold the selected image URI
+    var selectedImageUri by remember { mutableStateOf<String?>(null) }
+
+    // Launcher for image picker intent
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            selectedImageUri = result.data?.data.toString()
+        }
+    }
+
     LaunchedEffect(key1 = hasCameraPermission) {
         if (hasCameraPermission) {
             // Initialize CameraX and set up image capture
@@ -86,7 +102,10 @@ fun CameraScreen() {
                 }
             }
         } else {
-            Box(modifier = Modifier.align(Alignment.Center)) {
+            Column(
+                modifier = Modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Button(onClick = {
                     ActivityCompat.requestPermissions(
                         context as ComponentActivity,
@@ -95,6 +114,17 @@ fun CameraScreen() {
                     )
                 }) {
                     Text("Request Camera Permission")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = {
+                    val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    imagePickerLauncher.launch(intent)
+                }) {
+                    Text("Upload Image")
+                }
+                selectedImageUri?.let {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = "Selected Image URI: $it")
                 }
             }
         }
