@@ -56,20 +56,11 @@ fun Dashboard(navController: NavController) {
     val currentUser = auth.currentUser
 
     LaunchedEffect(Unit) {
-        if (currentUser != null) {
-            val email = currentUser.email
-            if (email != null) {
-                recentReport = fetchRecentReport(email)
-                Log.d("Dashboard", "Fetched recent report: $recentReport") // Debug statement
-            } else {
-                Log.e("Dashboard", "User email is null")
-            }
-        } else {
-            Log.e("Dashboard", "User not authenticated")
-        }
+        recentReport = fetchRecentReport()
+        Log.d("Dashboard", "Fetched recent report: $recentReport") // Debug statement
     }
 
-    Surface(color = Color.White) {
+        Surface(color = Color.White) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -183,28 +174,32 @@ fun Dashboard(navController: NavController) {
     }
 }
 
-suspend fun fetchRecentReport(userEmail: String): IncidentReport? {
+suspend fun fetchRecentReport(): IncidentReport? {
     val database = FirebaseDatabase.getInstance()
-    val reportsRef = database.getReference("Make Report Instance").child(userEmail)
+    val reportsRef = database.getReference("Make Report Instance")
 
     return try {
-        val dataSnapshot = reportsRef.limitToLast(1).get().await()
-        dataSnapshot.children.firstOrNull()?.let { snapshot ->
-            val description = snapshot.child("description").getValue(String::class.java) ?: ""
-            val location = snapshot.child("location").getValue(String::class.java) ?: ""
-            val dateTime = snapshot.child("dateTime").getValue(String::class.java) ?: ""
-            val incidentType = snapshot.child("incidentType").getValue(String::class.java) ?: ""
+        val dataSnapshot = reportsRef.get().await()
+        val reports = dataSnapshot.children.mapNotNull { snapshot ->
+            val description = snapshot.child("description").getValue(String::class.java) ?: return@mapNotNull null
+            val location = snapshot.child("location").getValue(String::class.java) ?: return@mapNotNull null
+            val dateTime = snapshot.child("dateTime").getValue(String::class.java) ?: return@mapNotNull null
+            val incidentType = snapshot.child("incidentType").getValue(String::class.java) ?: return@mapNotNull null
 
             IncidentReport(description, location, dateTime, incidentType)
-        }.also {
-            Log.d("fetchRecentReport", "Fetched report: $it") // Debug statement
         }
+
+        reports.maxByOrNull { it.dateTime } // Find the report with the latest dateTime
+            .also {
+                Log.d("fetchRecentReport", "Fetched most recent report: $it") // Debug statement
+            }
     } catch (e: Exception) {
         e.printStackTrace()
         Log.e("fetchRecentReport", "Error fetching report", e) // Error log
         null
     }
 }
+
 
 @Preview
 @Composable
