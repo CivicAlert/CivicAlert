@@ -3,20 +3,26 @@ package com.example.civicalertoriginal.Components
 import LogIn
 import android.os.Build
 import androidx.annotation.RequiresApi
-import civicalertoriginal.Screen.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.internal.composableLambda
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Screens.*
+import civicalertoriginal.Screen.MakeReports
+import com.example.civicalertoriginal.Screens.ContactUs
+import com.example.civicalertoriginal.Screens.Dashboard
+import com.example.civicalertoriginal.Screens.ForgotPassword
+import com.example.civicalertoriginal.Screens.HelpAndSupport
+import com.example.civicalertoriginal.Screens.MapBox
+import com.example.civicalertoriginal.Screens.Registration
+import com.example.civicalertoriginal.Screens.UpdateProfile
+import com.example.civicalertoriginal.Screens.ViewReports
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "helpSupport") {
+    NavHost(navController = navController, startDestination = "mapbox") {
         composable("registration"){
             Registration(navController)
         }
@@ -46,6 +52,9 @@ fun Navigation (){
         }
         composable("helpSupport"){
             HelpAndSupport(navController)
+        }
+        composable("mapbox"){
+            MapBox(navController)
         }
     }
 }

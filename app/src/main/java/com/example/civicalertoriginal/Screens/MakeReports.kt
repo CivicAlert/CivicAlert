@@ -1,35 +1,51 @@
 package civicalertoriginal.Screen
 
-import android.health.connect.datatypes.ExerciseRoute.Location
 import android.os.Build
-import android.widget.Space
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Components.*
-import com.example.civicalertoriginal.Screens.User
+import com.example.civicalertoriginal.Components.DescriptionTextFields
+import com.example.civicalertoriginal.Components.ExposedDropdownMenuBox
+import com.example.civicalertoriginal.Components.LocationTextFields
+import com.example.civicalertoriginal.Components.PictureTextFields
+import com.example.civicalertoriginal.Components.ReportDescriptionText
+import com.example.civicalertoriginal.Components.SubmitButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -76,8 +92,8 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance();
-    var location by remember { mutableStateOf("Enter Location") }
-    var description by remember { mutableStateOf("Brief details of the incident") }
+    var location by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
     val context = LocalContext.current
     val currentDateTime = LocalDateTime.now()
@@ -116,7 +132,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location" )
+        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location", navController = navController )
 
         ReportDescriptionText(
             value1 = "Photos*",

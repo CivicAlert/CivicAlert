@@ -71,6 +71,10 @@ dependencies {
     implementation (libs.androidx.camera.view.v110)
     implementation (libs.androidx.camera.extensions)
 
+    implementation ("com.mapbox.maps:android:11.6.0") {
+        exclude (group = "group_name", module = "module_name")
+    }
+
     implementation(libs.androidx.activity)
     implementation(libs.coil.compose)
     implementation(libs.androidx.constraintlayout)
