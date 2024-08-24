@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,6 +53,7 @@ import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
 data class Reports(
     val incidentType: String = "",
     val location: String = "",
@@ -62,7 +64,14 @@ data class Reports(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MakeReports(navController: NavController) {
-    var isVisible by remember { mutableStateOf(false) }
+    var isVisible by remember { mutableStateOf(false)
+    }
+    var locationText by remember { mutableStateOf("")}
+
+    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+    savedStateHandle?.getLiveData<String>("selectedLocation")?.observeAsState()?.value?.let { location ->
+        locationText = location
+    }
 
     LaunchedEffect(Unit) {
         isVisible = true
@@ -88,11 +97,11 @@ fun MakeReports(navController: NavController) {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
+fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
-    val auth = FirebaseAuth.getInstance();
-    var location by remember { mutableStateOf("") }
+    val auth = FirebaseAuth.getInstance()
+    var locationText by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -106,12 +115,15 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             .padding(start = 16.dp, end = 16.dp, top = 50.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier
-                .size(30.dp)
-                .clickable { onClose() },
-                tint = Color.Red)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(30.dp)
+                    .clickable { onClose() },
+                tint = Color.Red
+            )
             Spacer(modifier = Modifier.size(25.dp))
             Text(
                 text = "Make A Report",
@@ -125,40 +137,51 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value = "Choose Incident type"
         )
         var selectedIncident by remember { mutableStateOf("Water") }
-        ExposedDropdownMenuBox( selectedIncident = selectedIncident,
-            onIncidentSelected = {newIncident -> selectedIncident = newIncident})
+        ExposedDropdownMenuBox(
+            selectedIncident = selectedIncident,
+            onIncidentSelected = { newIncident -> selectedIncident = newIncident }
+        )
 
         ReportDescriptionText(
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = " Enter location", navController = navController )
+
+        LocationTextFields(
+            value = locationText,
+            onChange = { locationText = it },
+            fieldLabel = "Enter location",
+            navController = navController
+        )
 
         ReportDescriptionText(
             value1 = "Photos*",
             value = "Take photos of the incident you are reporting"
         )
-        PictureTextFields(value = picture, onChange = { picture = it }, )
+        PictureTextFields(value = picture, onChange = { picture = it })
 
         ReportDescriptionText(
             value1 = "Report Description*",
             value = "Short Description of the incident"
         )
-        DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = "describe the incident" )
+        DescriptionTextFields(
+            value = description,
+            onChange = { description = it },
+            fieldLabel = "describe the incident"
+        )
 
         val userReport = Reports(
             incidentType = selectedIncident,
-            location = location,
+            location = locationText,
             description = description,
-            dateTime =  formattedDateTime
-           )
+            dateTime = formattedDateTime
+        )
 
-        fun saveReport(report:Reports) {
+        fun saveReport(report: Reports) {
             val userId = myRef.push().key ?: return
             myRef.child(userId).setValue(report).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Handle success
-                    println("Report saved")
                     Toast.makeText(
                         context,
                         "Your report has been submitted.",
@@ -172,16 +195,19 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
                 }
             }
         }
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             SubmitButton(name = "Submit") {
                 saveReport(userReport)
-                navController.navigate("Dashboard")}
+                navController.navigate("Dashboard")
+            }
         }
         Spacer(modifier = Modifier.size(8.dp))
-
     }
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview

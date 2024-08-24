@@ -16,7 +16,7 @@ import com.example.civicalertoriginal.Screens.ContactUs
 import com.example.civicalertoriginal.Screens.Dashboard
 import com.example.civicalertoriginal.Screens.ForgotPassword
 import com.example.civicalertoriginal.Screens.HelpAndSupport
-import com.example.civicalertoriginal.Screens.MapBox
+import com.example.civicalertoriginal.Screens.MapBoxScreen
 import com.example.civicalertoriginal.Screens.Registration
 import com.example.civicalertoriginal.Screens.UpdateProfile
 import com.example.civicalertoriginal.Screens.ViewReports
@@ -31,7 +31,7 @@ fun Navigation() {
     var latitude by remember { mutableStateOf(0.0) }
     var longitude by remember { mutableStateOf(0.0) }
 
-    NavHost(navController = navController, startDestination = "mapbox") {
+    NavHost(navController = navController, startDestination = "makeReports") {
         composable("registration") {
             Registration(navController)
         }
@@ -60,12 +60,11 @@ fun Navigation() {
             HelpAndSupport(navController)
         }
         composable("mapbox") {
-            MapBox { name, lat, lon ->
-                // Update the location state
-                locationName = name
-                latitude = lat
-                longitude = lon
+            MapBoxScreen(navController = navController) { selectedLocation ->
+
+                navController.previousBackStackEntry?.savedStateHandle?.set("selectedLocation", selectedLocation)
             }
         }
+
     }
 }
