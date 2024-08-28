@@ -122,7 +122,8 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Photos*",
             value = "Take photos of the incident you are reporting"
         )
-        PictureTextFields(value = picture, onChange = { picture = it }, )
+        var picture by remember { mutableStateOf("") }
+        PictureTextFields(value = picture, onChange = { picture = it }, navController = navController)
 
         ReportDescriptionText(
             value1 = "Report Description*",
