@@ -1,0 +1,97 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Components\r\n\r\n\r\nimport LogIn\r\nimport android.os.Build\r\nimport androidx.annotation.RequiresApi\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport civicalertoriginal.Screen.MakeReports\r\nimport com.example.civicalertoriginal.Screens.ContactUs\r\nimport com.example.civicalertoriginal.Screens.Dashboard\r\nimport com.example.civicalertoriginal.Screens.ForgotPassword\r\nimport com.example.civicalertoriginal.Screens.HelpAndSupport\r\nimport com.example.civicalertoriginal.Screens.Registration\r\nimport com.example.civicalertoriginal.Screens.UpdateProfile\r\nimport com.example.civicalertoriginal.Screens.ViewFullReport\r\nimport com.example.civicalertoriginal.Screens.ViewReports\r\n\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun Navigation (){\r\n    val navController = rememberNavController()\r\n    NavHost(navController = navController, startDestination = \"Login\") {\r\n        composable(\"registration\"){\r\n            Registration(navController)\r\n        }\r\n        composable(\"Login\"){\r\n            LogIn(navController)\r\n        }\r\n        composable(\"forgotPassword\"){\r\n            ForgotPassword(navController)\r\n        }\r\n        composable(\"Dashboard\"){\r\n            Dashboard(navController)\r\n        }\r\n        composable(\"makeReports\"){\r\n            MakeReports(navController)\r\n        }\r\n        composable(\"userProfile\"){\r\n            UpdateProfile(navController)\r\n        }\r\n        composable(\"emergencyContacts\"){\r\n            ContactUs(navController)\r\n        }\r\n        composable(\"Viewreports\"){\r\n            ViewReports(navController)\r\n        }\r\n        composable(\"helpSupport\"){\r\n            HelpAndSupport(navController)\r\n        }\r\n        composable(\"viewReport/{reportId}\") { backStackEntry ->\r\n            val reportId = backStackEntry.arguments?.getString(\"reportId\") ?: \"\"\r\n            ViewFullReport(navController, reportId)\r\n        }\r\n\r\n\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	(revision 17d768aa0fcf101e2fc3708152a3ebea9b25dce5)
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	(date 1724862314261)
+@@ -23,7 +23,7 @@
+ @Composable
+ fun Navigation (){
+     val navController = rememberNavController()
+-    NavHost(navController = navController, startDestination = "Login") {
++    NavHost(navController = navController, startDestination = "Dashboard") {
+         composable("registration"){
+             Registration(navController)
+         }
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.util.Log\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.fillMaxHeight\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.height\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.lazy.LazyColumn\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.CardDefaults\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.CardButton\r\nimport com.example.civicalertoriginal.Components.Logo\r\nimport com.example.civicalertoriginal.R\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.database.FirebaseDatabase\r\nimport kotlinx.coroutines.tasks.await\r\n\r\ndata class IncidentReport(\r\n    val description: String = \"\",\r\n    val location: String = \"\",\r\n    val dateTime: String = \"\",\r\n    val incidentType: String = \"\"\r\n)\r\n\r\n@OptIn(ExperimentalMaterial3Api::class)\r\n@Composable\r\nfun Dashboard(navController: NavController) {\r\n    var recentReport by remember { mutableStateOf<IncidentReport?>(null) }\r\n    val auth = FirebaseAuth.getInstance()\r\n    val currentUser = auth.currentUser\r\n\r\n    LaunchedEffect(Unit) {\r\n        if (currentUser != null) {\r\n            val email = currentUser.email\r\n            if (email != null) {\r\n                recentReport = fetchRecentReport(email)\r\n                Log.d(\"Dashboard\", \"Fetched recent report: $recentReport\") // Debug statement\r\n            } else {\r\n                Log.e(\"Dashboard\", \"User email is null\")\r\n            }\r\n        } else {\r\n            Log.e(\"Dashboard\", \"User not authenticated\")\r\n        }\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        LazyColumn(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp, top = 12.dp),\r\n            verticalArrangement = Arrangement.spacedBy(18.dp),\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            item {\r\n                Row(\r\n                    horizontalArrangement = Arrangement.SpaceBetween,\r\n                    modifier = Modifier\r\n                        .height(80.dp)\r\n                        .fillMaxWidth()\r\n                ) {\r\n                    Logo()\r\n                    Image(\r\n                        painter = painterResource(id = R.drawable.profie),\r\n                        contentDescription = \"\",\r\n                        modifier = Modifier\r\n                            .size(50.dp, 70.dp)\r\n                            .clickable { navController.navigate(\"userProfile\") }\r\n                    )\r\n                }\r\n            }\r\n\r\n            recentReport?.let { report ->\r\n                item {\r\n                    Column(\r\n                        modifier = Modifier.height(300.dp)\r\n                    ) {\r\n                        Card(\r\n                            modifier = Modifier\r\n                                .fillMaxWidth()\r\n                                .fillMaxHeight(),\r\n                            colors = CardDefaults.cardColors(containerColor = Color.White),\r\n                            elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)\r\n                        ) {\r\n                            Column(\r\n                                modifier = Modifier.padding(16.dp)\r\n                            ) {\r\n                                Text(\r\n                                    text = \"Recent report\",\r\n                                    fontWeight = FontWeight.Bold,\r\n                                    fontSize = 20.sp\r\n                                )\r\n                                Image(\r\n                                    painter = painterResource(id = R.drawable.photo),\r\n                                    contentDescription = \"Picture of reported incident\",\r\n                                    modifier = Modifier.height(150.dp)\r\n                                )\r\n                                Text(text = report.description, fontWeight = FontWeight.Bold, fontSize = 20.sp)\r\n                                Text(text = report.location)\r\n                                Text(text = report.dateTime)\r\n                                Text(text = report.incidentType)\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            } ?: item {\r\n                // Display a placeholder or message if there's no recent report\r\n                Text(\"No recent report available\", fontWeight = FontWeight.Bold, fontSize = 20.sp)\r\n            }\r\n\r\n            item {\r\n                Row(\r\n                    modifier = Modifier\r\n                        .fillMaxWidth()\r\n                        .padding(top = 20.dp),\r\n                    horizontalArrangement = Arrangement.SpaceAround\r\n                ) {\r\n                    CardButton(\r\n                        iconRes = R.drawable.info,\r\n                        label = \"Report Incident\",\r\n                        onClick = { navController.navigate(\"makeReports\") }\r\n                    )\r\n                    CardButton(\r\n                        iconRes = R.drawable.clipboard,\r\n                        label = \"View Reports\",\r\n                        onClick = { navController.navigate(\"Viewreports\") }\r\n                    )\r\n                }\r\n            }\r\n\r\n            item {\r\n                Row(\r\n                    modifier = Modifier\r\n                        .fillMaxWidth(),\r\n                    horizontalArrangement = Arrangement.SpaceAround\r\n                ) {\r\n                    CardButton(\r\n                        iconRes = R.drawable.headphones,\r\n                        label = \"Help & Support\",\r\n                        onClick = { navController.navigate(\"helpSupport\") }\r\n                    )\r\n                    CardButton(\r\n                        iconRes = R.drawable.emergency_contacts,\r\n                        label = \"Emergency\\n Contacts\",\r\n                        onClick = { navController.navigate(\"emergencyContacts\") }\r\n                    )\r\n                }\r\n            }\r\n\r\n            item {\r\n                Row(\r\n                    modifier = Modifier.height(20.dp)\r\n                ) {\r\n                    // Placeholder for spacing\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nsuspend fun fetchRecentReport(userEmail: String): IncidentReport? {\r\n    val database = FirebaseDatabase.getInstance()\r\n    val reportsRef = database.getReference(\"Make Report Instance\").child(userEmail)\r\n\r\n    return try {\r\n        val dataSnapshot = reportsRef.limitToLast(1).get().await()\r\n        dataSnapshot.children.firstOrNull()?.let { snapshot ->\r\n            val description = snapshot.child(\"description\").getValue(String::class.java) ?: \"\"\r\n            val location = snapshot.child(\"location\").getValue(String::class.java) ?: \"\"\r\n            val dateTime = snapshot.child(\"dateTime\").getValue(String::class.java) ?: \"\"\r\n            val incidentType = snapshot.child(\"incidentType\").getValue(String::class.java) ?: \"\"\r\n\r\n            IncidentReport(description, location, dateTime, incidentType)\r\n        }.also {\r\n            Log.d(\"fetchRecentReport\", \"Fetched report: $it\") // Debug statement\r\n        }\r\n    } catch (e: Exception) {\r\n        e.printStackTrace()\r\n        Log.e(\"fetchRecentReport\", \"Error fetching report\", e) // Error log\r\n        null\r\n    }\r\n}\r\n\r\n@Preview\r\n@Composable\r\nfun DashboardPreview() {\r\n    val navController = rememberNavController()\r\n    Dashboard(navController)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt	(revision 17d768aa0fcf101e2fc3708152a3ebea9b25dce5)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Dashboard.kt	(date 1724862314263)
+@@ -56,20 +56,11 @@
+     val currentUser = auth.currentUser
+ 
+     LaunchedEffect(Unit) {
+-        if (currentUser != null) {
+-            val email = currentUser.email
+-            if (email != null) {
+-                recentReport = fetchRecentReport(email)
+-                Log.d("Dashboard", "Fetched recent report: $recentReport") // Debug statement
+-            } else {
+-                Log.e("Dashboard", "User email is null")
+-            }
+-        } else {
+-            Log.e("Dashboard", "User not authenticated")
+-        }
++        recentReport = fetchRecentReport()
++        Log.d("Dashboard", "Fetched recent report: $recentReport") // Debug statement
+     }
+ 
+-    Surface(color = Color.White) {
++        Surface(color = Color.White) {
+         LazyColumn(
+             modifier = Modifier
+                 .fillMaxSize()
+@@ -183,22 +174,25 @@
+     }
+ }
+ 
+-suspend fun fetchRecentReport(userEmail: String): IncidentReport? {
++suspend fun fetchRecentReport(): IncidentReport? {
+     val database = FirebaseDatabase.getInstance()
+-    val reportsRef = database.getReference("Make Report Instance").child(userEmail)
++    val reportsRef = database.getReference("Make Report Instance")
+ 
+     return try {
+-        val dataSnapshot = reportsRef.limitToLast(1).get().await()
+-        dataSnapshot.children.firstOrNull()?.let { snapshot ->
+-            val description = snapshot.child("description").getValue(String::class.java) ?: ""
+-            val location = snapshot.child("location").getValue(String::class.java) ?: ""
+-            val dateTime = snapshot.child("dateTime").getValue(String::class.java) ?: ""
+-            val incidentType = snapshot.child("incidentType").getValue(String::class.java) ?: ""
++        val dataSnapshot = reportsRef.get().await()
++        val reports = dataSnapshot.children.mapNotNull { snapshot ->
++            val description = snapshot.child("description").getValue(String::class.java) ?: return@mapNotNull null
++            val location = snapshot.child("location").getValue(String::class.java) ?: return@mapNotNull null
++            val dateTime = snapshot.child("dateTime").getValue(String::class.java) ?: return@mapNotNull null
++            val incidentType = snapshot.child("incidentType").getValue(String::class.java) ?: return@mapNotNull null
+ 
+             IncidentReport(description, location, dateTime, incidentType)
+-        }.also {
+-            Log.d("fetchRecentReport", "Fetched report: $it") // Debug statement
+         }
++
++        reports.maxByOrNull { it.dateTime } // Find the report with the latest dateTime
++            .also {
++                Log.d("fetchRecentReport", "Fetched most recent report: $it") // Debug statement
++            }
+     } catch (e: Exception) {
+         e.printStackTrace()
+         Log.e("fetchRecentReport", "Error fetching report", e) // Error log
+@@ -206,6 +200,7 @@
+     }
+ }
+ 
++
+ @Preview
+ @Composable
+ fun DashboardPreview() {
