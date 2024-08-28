@@ -23,6 +23,9 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -92,6 +95,25 @@ fun Registration(navController: NavController) {
    fun encodeEmail(email: String): String {
         return email.replace(".", "_dot_") // Replace '.' with '_dot_' or use any suitable encoding method
     }
+    fun checkEmailExists(email:String, onResult:(Boolean)-> Unit){
+        val formattedEmail = encodeEmail(email)
+        val myRef = Firebase.database.getReference("Community members").child(formattedEmail)
+
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    onResult(true)
+                }else{
+                    onResult(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onResult(false)
+                println("Failed to check user")
+            }
+        })
+    }
 
     fun saveUser(user: User) {
        //val userId = user.email
@@ -113,6 +135,23 @@ fun Registration(navController: NavController) {
     }
     fun saveByEmail(user : User){
         auth.createUserWithEmailAndPassword(email, password);
+    }
+    fun registerUser() {
+        checkEmailExists(email) { exists ->
+            if (exists) {
+                registrationMessage = "Email already exists in the system"
+            } else {
+                val user = User(
+                    email = email,
+                    firstName = firstName,
+                    lastName = lastName,
+                    phoneNumber = phoneNumber,
+                    password = password
+                )
+                saveUser(user)
+                saveByEmail(user)
+            }
+        }
     }
 
 
@@ -258,21 +297,8 @@ fun Registration(navController: NavController) {
                         .padding(start = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
-                        onClick = {
-                                val user = User(
-                                    email = email,
-                                    firstName = firstName,
-                                    lastName = lastName,
-                                    phoneNumber = phoneNumber,
-                                    password = password)
-                                    saveUser(user)
-                            saveByEmail(user)
-                                showDialog = false
-
-
-                            // method to save data to database
-
-                        }
+                        onClick = { showDialog = false
+                        registerUser()}
                     ) {
                         Text("Confirm",
                             color = Color.Black)

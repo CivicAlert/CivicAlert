@@ -57,7 +57,7 @@ fun UpdateProfile(navController: NavController) {
                     )
                     BottomNavItem(
                         icon = Icons.Rounded.Call,
-                        label = "Emergency\nContact",
+                        label = "Emergency\n Contact",
                         onClick = { navController.navigate("emergencyContacts") }
                     )
                 }
