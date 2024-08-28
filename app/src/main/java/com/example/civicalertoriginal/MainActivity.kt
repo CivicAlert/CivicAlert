@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import com.example.civicalertoriginal.Components.Navigation
 import com.example.civicalertoriginal.Screens.CameraScreen
 import com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme
 import com.google.firebase.FirebaseApp
@@ -16,8 +17,8 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         setContent {
             CivicAlertOriginalTheme {
-              // Navigation()
-                CameraScreen()
+               Navigation()
+                //CameraScreen()
 
             }
 

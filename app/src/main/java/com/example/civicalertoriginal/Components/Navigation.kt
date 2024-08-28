@@ -16,7 +16,7 @@ import com.example.civicalertoriginal.Screens.*
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "helpSupport") {
+    NavHost(navController = navController, startDestination = "Dashboard") {
         composable("registration"){
             Registration(navController)
         }
@@ -46,6 +46,9 @@ fun Navigation (){
         }
         composable("helpSupport"){
             HelpAndSupport(navController)
+        }
+        composable("Camera"){
+            CameraScreen(navController)
         }
     }
 }
