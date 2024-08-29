@@ -38,8 +38,10 @@ import com.google.firebase.database.database
 data class getReport(
     var incidentType: String = "",
     var description: String = "",
-    var reference_number: String = "",
-    var location: String = ""
+    var dateTime: String = "",
+    var location: String = "",
+    var refNumber: String = "",
+    var status: String = ""
 
 )
 @Composable
@@ -61,9 +63,8 @@ fun ViewFullReport (navController: NavController, reportId:String){
         })
 
     }
-    Surface(color = Color.White, modifier = Modifier.fillMaxSize()) {
-        Column ( modifier = Modifier.fillMaxWidth()
-            .padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)){
+    Surface(color = Color.White, modifier = Modifier.fillMaxSize() .padding(10.dp)) {
+        Column ( modifier = Modifier.fillMaxWidth() .padding(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)){
             Text(text = "View Report", modifier = Modifier.fillMaxWidth(),
                 fontSize = 50.sp, fontFamily = FontFamily.Default,
                 fontStyle = FontStyle.Normal
@@ -71,7 +72,8 @@ fun ViewFullReport (navController: NavController, reportId:String){
 
             //Spacer(modifier = Modifier.size(25.dp))
             Row {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "", modifier = Modifier.clickable { navController.navigate("Viewreports") })
+                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "",
+                    modifier = Modifier.clickable { navController.navigate("Viewreports") })
                 Spacer(modifier = Modifier.size(20.dp))
                 Text(text = "Back")
                     }
@@ -79,14 +81,14 @@ fun ViewFullReport (navController: NavController, reportId:String){
                     Image(painter = painterResource(id = R.drawable.photo), contentDescription ="", modifier = Modifier.fillMaxWidth() )
                     Spacer(modifier = Modifier.size(25.dp))
                     ReportDescriptionText(value1 = "Details", value = report.value.incidentType)
-                    Spacer(modifier = Modifier.size(10.dp))
+                    Spacer(modifier = Modifier.size(8.dp))
                     ReportDescriptionText(value1 = "Report Description", value = report.value.description )
-                    Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "Status", value = "Agent looking At it")
-                    Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "Status", value = report.value.location)
-                    Spacer(modifier = Modifier.size(10.dp))
-                    ReportDescriptionText(value1 = "ReferenceId", value = report.value.reference_number)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    ReportDescriptionText(value1 = "Status", value = report.value.status)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    ReportDescriptionText(value1 = "Location", value = report.value.location)
+                    Spacer(modifier = Modifier.size(8.dp))
+                    ReportDescriptionText(value1 = "Reference Number", value = report.value.refNumber)
 
 
         }
