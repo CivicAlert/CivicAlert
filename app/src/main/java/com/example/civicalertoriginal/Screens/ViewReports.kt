@@ -163,7 +163,7 @@ fun ExpandableReportItem(report: Report, navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            ,
+            .clickable { expanded = !expanded },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(
@@ -187,7 +187,7 @@ fun ExpandableReportItem(report: Report, navController: NavController) {
                         .width(50.dp)
                 ) {
                     Text(
-                        text = report.description. take(20),
+                        text = report.description.take(20),
                         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold, color = Color.DarkGray)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
@@ -201,12 +201,11 @@ fun ExpandableReportItem(report: Report, navController: NavController) {
                             text = report.dateTime,
                             style = MaterialTheme.typography.bodyMedium.copy(color = Color.DarkGray)
                         )
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(
-                                text = report.incidentType,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue)
-                        )
                         Spacer(modifier = Modifier.width(40.dp))
+                        Text(
+                            text = report.incidentType,
+                            style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue)
+                        )
                     }
                 }
                 IconButton(

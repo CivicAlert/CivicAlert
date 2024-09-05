@@ -122,7 +122,6 @@ fun Dashboard(navController: NavController) {
                 Text("No recent report available", fontWeight = FontWeight.Bold, fontSize = 20.sp)
             }
 
-            // Other UI items...
             item {
                 Row(
                     modifier = Modifier

@@ -69,6 +69,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.example.civicalertoriginal.R
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -276,11 +277,11 @@ fun InstructionText(value: String){
     )
 }
 @Composable
-fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String ){
+fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: String){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-           placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Icon(
                     modifier = Modifier
@@ -298,7 +299,7 @@ fun LocationTextFields(value: String, onChange: (String) -> Unit, fieldLabel: St
     }
 }
 @Composable
-fun ReportDescriptionText(value1: String, value:String){
+fun ReportDescriptionText(value1: String, value:String,){
     Column {
 
         Text(text = value1, style = TextStyle(
@@ -316,19 +317,15 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun PictureTextFields(value: String, onChange: (String) -> Unit, ){
+fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
            // placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
-                Icon(
-                    modifier = Modifier
-                        .size(35.dp, 35.dp)
-                        .clickable { },
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Location Icon"
-                ) },
+                Image(painter = painterResource(id = R.drawable.camera), contentDescription ="" ,
+                    modifier = Modifier.clickable { navController.navigate("Camera")}
+                        .size(25.dp)) },
             keyboardOptions = KeyboardOptions.Default,
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)
@@ -343,14 +340,6 @@ fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel:
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
            placeholder = { Text(text = fieldLabel, color = Color.Green)},
-            trailingIcon = {
-                Icon(
-                    modifier = Modifier
-                        .size(35.dp, 35.dp)
-                        .clickable { },
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Location Icon"
-                ) },
             keyboardOptions = KeyboardOptions.Default,
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)
