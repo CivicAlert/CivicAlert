@@ -244,20 +244,24 @@ fun LogBottomButtons(name: String, onClick: () -> Unit, enabled: Boolean){
     }
 }
 @Composable
-fun SignUpText(value: String){
-    Row ( modifier = Modifier.padding(2.dp)){
-        var state by remember { mutableStateOf("") }
-        Text(text = value, modifier = Modifier
-        )
+fun SignUpText(value: String) {
+    var checkedState by remember { mutableStateOf(false) } // State for checkbox
 
-        Checkbox(checked = false, onCheckedChange = { }, enabled = true, modifier = Modifier
-            .size(20.dp)
-            .padding(end = 16.dp, start = 12.dp)
+    Row(modifier = Modifier.padding(2.dp)) {
+        Text(text = value, modifier = Modifier.padding(end = 8.dp)) // Added padding to the text
 
-            .clip(RoundedCornerShape(50.dp))
+        Checkbox(
+            checked = checkedState, // Use the state for the checkbox
+            onCheckedChange = { checkedState = it }, // Update the state when clicked
+            enabled = true,
+            modifier = Modifier
+                .size(20.dp)
+                .padding(end = 16.dp, start = 12.dp)
+                .clip(RoundedCornerShape(50.dp))
         )
     }
 }
+
 @Composable
 fun InstructionText(value: String){
     Text(

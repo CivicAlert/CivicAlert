@@ -2,12 +2,27 @@ package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
 import android.util.Patterns
-import androidx.annotation.NonNull
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,12 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Components.*
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
+import com.example.civicalertoriginal.Components.EmailTextFields
+import com.example.civicalertoriginal.Components.InstructionText
+import com.example.civicalertoriginal.Components.LogBottomButtons
+import com.example.civicalertoriginal.Components.NumberTextFields
+import com.example.civicalertoriginal.Components.PasswordTextFields
+import com.example.civicalertoriginal.Components.SignUpText
+import com.example.civicalertoriginal.Components.TextFields
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -271,10 +288,12 @@ fun Registration(navController: NavController) {
                 )
             }
 
-            Row {
+            Row(
+                modifier = Modifier.padding(end = 20.dp)
+            ) {
                 SignUpText(value = "Do you give us permission to use your details for marketing purposes")
             }
-            Row {
+            Row(modifier = Modifier.padding(end = 20.dp)) {
                 SignUpText(value = "Do you agree to Terms & Conditions of the app")
             }
 

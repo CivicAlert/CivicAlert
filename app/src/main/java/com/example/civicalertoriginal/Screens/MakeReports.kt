@@ -212,7 +212,7 @@ fun AnimatedMakeReports(navController: NavController, userEmail: String, onClose
             description = description,
             dateTime = formattedDateTime,
             refNumber = referenceNumber,
-            status = "Agent looking at it",
+            status = "Submitted",
             userID = userEmail // Set userID to current user's email
         )
 
