@@ -18,8 +18,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.civicalertoriginal.Components.BottomButtonsMyProfile
 import com.example.civicalertoriginal.Components.ProfileText
+import com.example.civicalertoriginal.Components.UpdateProfileButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+
 
 data class getUser(
     var email: String = "",
@@ -35,7 +37,9 @@ fun UpdateProfile(navController: NavController) {
 
     Surface(color = Color.White) {
         Scaffold(bottomBar = {
-            BottomAppBar {
+            BottomAppBar(
+                containerColor = Color.White,
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround
@@ -80,7 +84,11 @@ fun UpdateProfile(navController: NavController) {
                 }
             }
 
-            Column {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 16.dp, end = 16.dp)
+            ) {
                 Spacer(modifier = Modifier.size(10.dp))
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,7 +127,7 @@ fun UpdateProfile(navController: NavController) {
                 }
 
                 Spacer(modifier = Modifier.size(20.dp))
-                BottomButtonsMyProfile(name = "UPDATE") {
+                UpdateProfileButton(name = "UPDATE") {
                     updateDetails(user) {
                         Toast.makeText(context, "Update successful", Toast.LENGTH_SHORT).show()
                     }
