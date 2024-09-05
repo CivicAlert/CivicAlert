@@ -2,8 +2,6 @@ package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -30,8 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,121 +39,171 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HelpAndSupport(navController: NavController) {
-    Surface(color = Color.White,
-        modifier = Modifier.fillMaxWidth()
-            .padding(10.dp)) {
+    val questions = remember { mutableStateListOf<String>() } // To store the questions
+    val database = FirebaseDatabase.getInstance().getReference("Question")
 
-        Scaffold (bottomBar = {
-            BottomAppBar (
-                containerColor = Color.White,
-            ){
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    BottomNavItem(
-                        icon = Icons.Rounded.Home,
-                        label = "Home",
-                        onClick = { navController.navigate("Dashboard") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Rounded.Edit,
-                        label = "Make report",
-                        onClick = { navController.navigate("makeReports") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Rounded.List,
-                        label = "View reports",
-                        onClick = { navController.navigate("Viewreports") }
-                    )
-                    BottomNavItem(
-                        icon = Icons.Rounded.Call,
-                        label = "Emergency\nContact",
-                        onClick = { navController.navigate("emergencyContacts") }
-                    )
+    LaunchedEffect(Unit) {
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                questions.clear()
+                for (data in snapshot.children) {
+                    val question = data.child("Question").getValue(String::class.java)
+                    if (question != null) {
+                        questions.add(question)
+                    }
                 }
             }
-        }){
-            Column ( modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.Start){
-                val searching by remember { mutableStateOf("") }
-                Spacer(modifier = Modifier.size(20.dp))
-                Text(text = "What do you need help with?", fontWeight = FontWeight.Black, fontSize = 20.sp)
-                Spacer(modifier =Modifier.size(20.dp))
-                Column ( verticalArrangement = Arrangement.Center) {
-                    OutlinedTextField(value = searching , onValueChange = {},
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    Surface(
+        color = Color.White, modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp)
+    ) {
+        Scaffold(
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = Color.White,
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        BottomNavItem(
+                            icon = Icons.Rounded.Home,
+                            label = "Home",
+                            onClick = { navController.navigate("Dashboard") }
+                        )
+                        BottomNavItem(
+                            icon = Icons.Rounded.Edit,
+                            label = "Make report",
+                            onClick = { navController.navigate("makeReports") }
+                        )
+                        BottomNavItem(
+                            icon = Icons.Rounded.List,
+                            label = "View reports",
+                            onClick = { navController.navigate("Viewreports") }
+                        )
+                        BottomNavItem(
+                            icon = Icons.Rounded.Call,
+                            label = "Emergency\nContact",
+                            onClick = { navController.navigate("emergencyContacts") }
+                        )
+                    }
+                }
+            }
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
+            ) {
+                item {
+                    Spacer(modifier = Modifier.size(20.dp))
+                    Text(
+                        text = "What do you need help with?",
+                        fontWeight = FontWeight.Black,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.size(20.dp))
+                    OutlinedTextField(
+                        value = "",
+                        onValueChange = {},
                         trailingIcon = {
                             Icon(
-                                modifier = Modifier
-                                    .size(35.dp, 35.dp)
-                                    .clickable { },
+                                modifier = Modifier.size(35.dp, 35.dp),
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "Search"
-                            ) },
+                            )
+                        },
                         keyboardOptions = KeyboardOptions.Default,
-                        textStyle = TextStyle(color = Color.Black ), modifier = Modifier
+                        textStyle = TextStyle(color = Color.Black),
+                        modifier = Modifier
                             .height(50.dp)
                             .fillMaxWidth()
                             .background(Color.White)
                     )
+                    Spacer(modifier = Modifier.size(40.dp))
                 }
-                Spacer(modifier = Modifier.size(40.dp))
-                Text(text = "FAQs", fontSize = 35.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
-                Spacer(modifier = Modifier.size(15.dp))
-                Text(text = "Find frequently asked question below.", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                Spacer(modifier = Modifier.size(12.dp))
-                val cardColor by remember {
-                    mutableStateOf(Color.White)
-                }
-                Card ( modifier = Modifier
-                    .fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)) {
-                        Row (horizontalArrangement = Arrangement.spacedBy(50.dp), modifier = Modifier.border(0.dp, color = Color.Transparent)
-                        ){
-                            Text(text = "How does incident reporting system work?" )
-                            //Spacer(modifier = Modifier.size(45.dp))
-                            Text(text = "+")
-                        }
 
-                            Spacer(modifier = Modifier.size(20.dp))
-                       // Spacer(modifier = Modifier.size(10.dp))
-                        Row (horizontalArrangement = Arrangement.spacedBy(50.dp), modifier = Modifier.border(0.dp, color = Color.LightGray)){
-                            Text(text = "How does incident reporting system work?")
-                            Text(text = "+")
-                        }
-                }
-                Spacer(modifier =Modifier.size(45.dp))
-                Text(text ="Support", fontSize = 20.sp)
-                Spacer(modifier = Modifier.size(20.dp))
-                Card ( modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)){
-                    Text(text = "Get help with managing your Account", color = Color.Blue, textDecoration = TextDecoration.Underline)
+                // FAQs Section
+                item {
+                    Text(text = "FAQs", fontSize = 35.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                     Spacer(modifier = Modifier.size(15.dp))
-                    Text(text ="Having Technical issues" , color = Color.Blue, textDecoration = TextDecoration.Underline)
+                }
+
+                items(questions.size) { index ->
+                    val question = questions[index]
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(text = question, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+
+                        }
+                    }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.size(45.dp))
+                    Text(text = "Support", fontSize = 20.sp)
+                    Spacer(modifier = Modifier.size(20.dp))
+                }
+
+                item {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = "Get help with managing your Account",
+                                color = Color.Blue,
+                                textDecoration = TextDecoration.Underline
+                            )
+                            Spacer(modifier = Modifier.size(15.dp))
+                            Text(
+                                text = "Having Technical issues",
+                                color = Color.Blue,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        }
+                    }
                 }
             }
-
         }
-        }
-
-
-
     }
-
-
-@Preview
-@Composable
-fun HelpPreview(){
-    //HelpAndSupport(navController)
 }
+
