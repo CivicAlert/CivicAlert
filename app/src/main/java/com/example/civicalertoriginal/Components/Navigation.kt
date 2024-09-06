@@ -23,7 +23,7 @@ import com.example.civicalertoriginal.Screens.ViewReports
 @Composable
 fun Navigation (){
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "helpSupport") {
+    NavHost(navController = navController, startDestination = "Login") {
         composable("registration"){
             Registration(navController)
         }
