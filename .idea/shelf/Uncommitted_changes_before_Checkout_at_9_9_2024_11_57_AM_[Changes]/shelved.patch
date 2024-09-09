@@ -1,0 +1,117 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/Mapbox.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Screens\r\n\r\nimport android.annotation.SuppressLint\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TextButton\r\nimport androidx.compose.material3.TextField\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.viewinterop.AndroidView\r\nimport androidx.navigation.NavController\r\nimport com.mapbox.geojson.Point\r\nimport com.mapbox.maps.CameraOptions\r\nimport com.mapbox.maps.MapView\r\nimport com.mapbox.maps.Style\r\nimport com.mapbox.maps.plugin.animation.flyTo\r\nimport com.mapbox.maps.plugin.annotation.annotations\r\nimport com.mapbox.maps.plugin.annotation.generated.PointAnnotation\r\nimport com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager\r\nimport com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions\r\nimport com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager\r\nimport com.mapbox.maps.plugin.gestures.gestures\r\nimport kotlinx.coroutines.CoroutineScope\r\nimport kotlinx.coroutines.Dispatchers\r\nimport kotlinx.coroutines.launch\r\nimport kotlinx.coroutines.withContext\r\nimport okhttp3.OkHttpClient\r\nimport okhttp3.Request\r\nimport org.json.JSONObject\r\nimport java.io.IOException\r\n\r\n@Composable\r\nfun MapBox(\r\n    location: String,\r\n    onLocationSelected: (String, Double, Double) -> Unit,\r\n    onAddressFetched: (String) -> Unit // Add a callback for the reverse geocoded address\r\n) {\r\n    var searchQuery by remember { mutableStateOf(\"\") }\r\n    var searchResults by remember { mutableStateOf(listOf<Pair<String, Point>>()) }\r\n    var selectedLocation by remember { mutableStateOf<Point?>(null) }\r\n    var mapView: MapView? by remember { mutableStateOf(null) }\r\n    var pointAnnotationManager: PointAnnotationManager? by remember { mutableStateOf(null) }\r\n    var currentMarker: PointAnnotation? by remember { mutableStateOf(null) }\r\n\r\n    Column {\r\n        // Search bar\r\n        TextField(\r\n            value = searchQuery,\r\n            onValueChange = {\r\n                searchQuery = it\r\n                if (searchQuery.isNotEmpty()) {\r\n                    performGeocoding(searchQuery) { results ->\r\n                        searchResults = results\r\n                    }\r\n                }\r\n            },\r\n            label = { Text(\"Search location\") },\r\n            modifier = Modifier\r\n                .fillMaxWidth()\r\n                .padding(12.dp),\r\n            singleLine = true\r\n        )\r\n\r\n        // Show search results\r\n        searchResults.forEach { result ->\r\n            TextButton(onClick = {\r\n                selectedLocation = result.second\r\n                searchQuery = result.first\r\n                onLocationSelected(result.first, result.second.latitude(), result.second.longitude())  // Update location\r\n\r\n                // Reverse geocode the coordinates to get the address\r\n                performReverseGeocoding(result.second.latitude(), result.second.longitude()) { address ->\r\n                    onAddressFetched(address)\r\n                }\r\n\r\n                // Update the map's camera position\r\n                selectedLocation?.let { locationPoint ->\r\n                    val cameraOptions = CameraOptions.Builder()\r\n                        .center(locationPoint)\r\n                        .zoom(14.0)\r\n                        .build()\r\n                    mapView?.getMapboxMap()?.flyTo(cameraOptions)\r\n\r\n                    // Place a marker at the selected location\r\n                    addMarker(locationPoint, pointAnnotationManager, currentMarker) {\r\n                        currentMarker = it\r\n                    }\r\n                }\r\n            }) {\r\n                Text(result.first)\r\n            }\r\n        }\r\n\r\n        // MapView with a click listener\r\n        AndroidView(factory = { context ->\r\n            MapView(context).apply {\r\n                mapView = this // Store a reference to the MapView\r\n\r\n                // Initialize the point annotation manager\r\n                pointAnnotationManager = annotations.createPointAnnotationManager()\r\n\r\n                // Load the map style and set up the gesture plugin\r\n                getMapboxMap().loadStyleUri(Style.SATELLITE_STREETS) {\r\n\r\n                    // Set up a click listener to pick a location on the map\r\n                    gestures.addOnMapClickListener { point ->\r\n                        selectedLocation = point\r\n                        searchQuery = \"${point.latitude()}, ${point.longitude()}\"\r\n                        onLocationSelected(searchQuery, point.latitude(), point.longitude())  // Update location\r\n\r\n                        // Reverse geocode the coordinates to get the address\r\n                        performReverseGeocoding(point.latitude(), point.longitude()) { address ->\r\n                            onAddressFetched(address)\r\n                        }\r\n\r\n                        // Place a marker at the clicked location\r\n                        addMarker(point, pointAnnotationManager, currentMarker) {\r\n                            currentMarker = it\r\n                        }\r\n                        true\r\n                    }\r\n\r\n                    // Optionally, set initial camera position\r\n                    selectedLocation?.let { locationPoint ->\r\n                        val cameraOptions = CameraOptions.Builder()\r\n                            .center(locationPoint)\r\n                            .zoom(12.0)\r\n                            .build()\r\n                        getMapboxMap().flyTo(cameraOptions)\r\n                    }\r\n                }\r\n            }\r\n        }, modifier = Modifier.fillMaxSize())\r\n    }\r\n}\r\n\r\n// Function to perform reverse geocoding\r\nfun performReverseGeocoding(latitude: Double, longitude: Double, onResult: (String) -> Unit) {\r\n    CoroutineScope(Dispatchers.IO).launch {\r\n        // Replace with your actual Mapbox access token\r\n        val accessToken = \"your-mapbox-access-token-here\"\r\n        val url = \"https://api.mapbox.com/geocoding/v5/mapbox.places/$longitude,$latitude.json?access_token=$accessToken\"\r\n\r\n        val request = Request.Builder()\r\n            .url(url)\r\n            .build()\r\n\r\n        try {\r\n            client.newCall(request).execute().use { response ->\r\n                if (!response.isSuccessful) throw IOException(\"Unexpected code $response\")\r\n\r\n                // Parse JSON response\r\n                val responseBody = response.body?.string()\r\n                if (!responseBody.isNullOrEmpty()) {\r\n                    val json = JSONObject(responseBody)\r\n                    val features = json.getJSONArray(\"features\")\r\n                    if (features.length() > 0) {\r\n                        val address = features.getJSONObject(0).getString(\"place_name\")\r\n                        withContext(Dispatchers.Main) {\r\n                            onResult(address)\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        } catch (e: IOException) {\r\n            e.printStackTrace()\r\n        }\r\n    }\r\n}\r\n\r\n\r\n@SuppressLint(\"MissingPermission\")\r\nfun addMarker(\r\n    location: Point,\r\n    pointAnnotationManager: PointAnnotationManager?,\r\n    currentMarker: PointAnnotation?,\r\n    onMarkerAdded: (PointAnnotation) -> Unit\r\n) {\r\n    // Remove the previous marker if it exists\r\n    currentMarker?.let {\r\n        pointAnnotationManager?.delete(it)\r\n    }\r\n\r\n    // Create a new marker at the specified location\r\n    val pointAnnotationOptions = PointAnnotationOptions()\r\n        .withPoint(location)\r\n        .withIconImage(\"marker-icon\") // Replace with your custom marker icon\r\n\r\n    val newMarker = pointAnnotationManager?.create(pointAnnotationOptions)\r\n    newMarker?.let { onMarkerAdded(it) }\r\n}\r\n\r\nval client = OkHttpClient()\r\n\r\nfun performGeocoding(query: String, onResult: (List<Pair<String, Point>>) -> Unit) {\r\n    CoroutineScope(Dispatchers.IO).launch {\r\n        val results = mutableListOf<Pair<String, Point>>()\r\n\r\n        // Replace with your actual Mapbox access token\r\n        val accessToken = \"sk.eyJ1Ijoibnlpa29kZWFydGtpZCIsImEiOiJjbTA2ZjBkemowdDBsMmtzYnppMnl3Mno5In0._msAzoio9GC2Abrzshe05w\"\r\n        val url =\r\n            \"https://api.mapbox.com/geocoding/v5/mapbox.places/$query.json?access_token=$accessToken\"\r\n\r\n        val request = Request.Builder()\r\n            .url(url)\r\n            .build()\r\n\r\n        try {\r\n            client.newCall(request).execute().use { response ->\r\n                if (!response.isSuccessful) throw IOException(\"Unexpected code $response\")\r\n\r\n                // Parse JSON response\r\n                val responseBody = response.body?.string()\r\n                if (!responseBody.isNullOrEmpty()) {\r\n                    val json = JSONObject(responseBody)\r\n                    val features = json.getJSONArray(\"features\")\r\n\r\n                    for (i in 0 until features.length()) {\r\n                        val feature = features.getJSONObject(i)\r\n                        val placeName = feature.getString(\"place_name\")\r\n                        val coordinates =\r\n                            feature.getJSONObject(\"geometry\").getJSONArray(\"coordinates\")\r\n                        val longitude = coordinates.getDouble(0)\r\n                        val latitude = coordinates.getDouble(1)\r\n                        results.add(placeName to Point.fromLngLat(longitude, latitude))\r\n                    }\r\n                }\r\n            }\r\n        } catch (e: IOException) {\r\n            e.printStackTrace()\r\n        }\r\n\r\n        // Switch to the main thread to update the UI\r\n        withContext(Dispatchers.Main) {\r\n            onResult(results)\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun MapBoxScreen(navController: NavController, onLocationSelected: (String) -> Unit) {\r\n    MapBox(\r\n        location = \"\",\r\n        onLocationSelected = { name, lat, lng ->\r\n            // Call the callback to return to the previous screen with the selected location\r\n            onLocationSelected(name)\r\n            navController.popBackStack() // Go back to the previous screen\r\n        },\r\n        onAddressFetched = { address ->\r\n            // Optionally, you can handle address fetching here\r\n        }\r\n    )\r\n}
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/Mapbox.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/Mapbox.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/Mapbox.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/Mapbox.kt	
+@@ -1,6 +1,5 @@
+ package com.example.civicalertoriginal.Screens
+ 
+-import android.annotation.SuppressLint
+ import androidx.compose.foundation.layout.Column
+ import androidx.compose.foundation.layout.fillMaxSize
+ import androidx.compose.foundation.layout.fillMaxWidth
+@@ -19,7 +18,6 @@
+ import androidx.navigation.NavController
+ import com.mapbox.geojson.Point
+ import com.mapbox.maps.CameraOptions
+-import com.mapbox.maps.MapView
+ import com.mapbox.maps.Style
+ import com.mapbox.maps.plugin.animation.flyTo
+ import com.mapbox.maps.plugin.annotation.annotations
+@@ -46,7 +44,7 @@
+     var searchQuery by remember { mutableStateOf("") }
+     var searchResults by remember { mutableStateOf(listOf<Pair<String, Point>>()) }
+     var selectedLocation by remember { mutableStateOf<Point?>(null) }
+-    var mapView: MapView? by remember { mutableStateOf(null) }
++    var mapView: com.mapbox.maps.MapView? by remember { mutableStateOf(null) }
+     var pointAnnotationManager: PointAnnotationManager? by remember { mutableStateOf(null) }
+     var currentMarker: PointAnnotation? by remember { mutableStateOf(null) }
+ 
+@@ -101,7 +99,7 @@
+ 
+         // MapView with a click listener
+         AndroidView(factory = { context ->
+-            MapView(context).apply {
++            com.mapbox.maps.MapView(context).apply {
+                 mapView = this // Store a reference to the MapView
+ 
+                 // Initialize the point annotation manager
+@@ -146,7 +144,7 @@
+ fun performReverseGeocoding(latitude: Double, longitude: Double, onResult: (String) -> Unit) {
+     CoroutineScope(Dispatchers.IO).launch {
+         // Replace with your actual Mapbox access token
+-        val accessToken = "your-mapbox-access-token-here"
++        val accessToken = "sk.eyJ1Ijoibnlpa29kZWFydGtpZCIsImEiOiJjbTA2ZjBkemowdDBsMmtzYnppMnl3Mno5In0._msAzoio9GC2Abrzshe05w"
+         val url = "https://api.mapbox.com/geocoding/v5/mapbox.places/$longitude,$latitude.json?access_token=$accessToken"
+ 
+         val request = Request.Builder()
+@@ -177,7 +175,6 @@
+ }
+ 
+ 
+-@SuppressLint("MissingPermission")
+ fun addMarker(
+     location: Point,
+     pointAnnotationManager: PointAnnotationManager?,
+@@ -226,8 +223,7 @@
+                     for (i in 0 until features.length()) {
+                         val feature = features.getJSONObject(i)
+                         val placeName = feature.getString("place_name")
+-                        val coordinates =
+-                            feature.getJSONObject("geometry").getJSONArray("coordinates")
++                        val coordinates = feature.getJSONObject("geometry").getJSONArray("coordinates")
+                         val longitude = coordinates.getDouble(0)
+                         val latitude = coordinates.getDouble(1)
+                         results.add(placeName to Point.fromLngLat(longitude, latitude))
+@@ -238,7 +234,7 @@
+             e.printStackTrace()
+         }
+ 
+-        // Switch to the main thread to update the UI
++      
+         withContext(Dispatchers.Main) {
+             onResult(results)
+         }
+@@ -246,15 +242,26 @@
+ }
+ @Composable
+ fun MapBoxScreen(navController: NavController, onLocationSelected: (String) -> Unit) {
+-    MapBox(
+-        location = "",
+-        onLocationSelected = { name, lat, lng ->
+-            // Call the callback to return to the previous screen with the selected location
+-            onLocationSelected(name)
+-            navController.popBackStack() // Go back to the previous screen
+-        },
+-        onAddressFetched = { address ->
+-            // Optionally, you can handle address fetching here
+-        }
+-    )
+-}
+\ No newline at end of file
++
++    var locationText by remember { mutableStateOf("") }
++
++    Column {
++
++        MapBox(
++            location = locationText,
++            onLocationSelected = { name, lat, lng ->
++
++                locationText = name
++                onLocationSelected(name)
++
++
++                navController.popBackStack()
++            },
++            onAddressFetched = { address ->
++
++                locationText = address
++            }
++        )
++    }
++}
++

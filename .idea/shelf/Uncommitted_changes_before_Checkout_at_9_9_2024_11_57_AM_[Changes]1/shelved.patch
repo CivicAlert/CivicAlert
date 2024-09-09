@@ -1,0 +1,391 @@
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\r\n    xmlns:tools=\"http://schemas.android.com/tools\">\r\n\r\n    <uses-feature\r\n        android:name=\"android.hardware.camera\"\r\n        android:required=\"false\" />\r\n    <uses-permission android:name=\"android.permission.CAMERA\"/>\r\n    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\"\r\n        android:maxSdkVersion=\"32\"\r\n        tools:ignore=\"ScopedStorage\" />\r\n    <uses-permission android:name=\"android.permission.ACCESS_COARSE_LOCATION\"/>\r\n    <uses-permission android:name=\"android.permission.ACCESS_FINE_LOCATION\"/>\r\n    <uses-permission android:name=\"android.permission.INTERNET\"/>\r\n\r\n\r\n    <application\r\n        android:allowBackup=\"true\"\r\n        android:dataExtractionRules=\"@xml/data_extraction_rules\"\r\n        android:fullBackupContent=\"@xml/backup_rules\"\r\n        android:icon=\"@mipmap/ic_launcher\"\r\n        android:label=\"@string/app_name\"\r\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\r\n        android:supportsRtl=\"true\"\r\n        android:theme=\"@style/Theme.CivicAlertOriginal\"\r\n        tools:targetApi=\"31\">\r\n        <activity\r\n            android:name=\".MainActivity\"\r\n            android:exported=\"true\"\r\n            android:label=\"@string/app_name\"\r\n            android:theme=\"@style/Theme.CivicAlertOriginal\">\r\n            <intent-filter>\r\n                <action android:name=\"android.intent.action.MAIN\" />\r\n\r\n                <category android:name=\"android.intent.category.LAUNCHER\" />\r\n            </intent-filter>\r\n        </activity>\r\n        <provider\r\n            android:authorities=\"${applicationId}.provider\"\r\n            android:name=\"androidx.core.content.FileProvider\"\r\n            android:exported=\"false\"\r\n            android:grantUriPermissions=\"true\"/>\r\n        <meta-data\r\n            android:name=\"android.support.FILE_PROVIDER_PATHS\"\r\n            android:resource=\"@xml/path\"/>\r\n        <meta-data\r\n            android:name=\"com.mapbox.token\"\r\n            android:value=\"@string/mapbox_access_token\"/>\r\n    </application>\r\n\r\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/AndroidManifest.xml b/app/src/main/AndroidManifest.xml
+--- a/app/src/main/AndroidManifest.xml	
++++ b/app/src/main/AndroidManifest.xml	
+@@ -12,6 +12,8 @@
+     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+     <uses-permission android:name="android.permission.INTERNET"/>
++    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
++
+ 
+ 
+     <application
+@@ -28,7 +30,7 @@
+             android:name=".MainActivity"
+             android:exported="true"
+             android:label="@string/app_name"
+-            android:theme="@style/Theme.CivicAlertOriginal">
++            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+             <intent-filter>
+                 <action android:name="android.intent.action.MAIN" />
+ 
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package civicalertoriginal.Screen\r\n\r\nimport android.os.Build\r\nimport android.widget.Toast\r\nimport androidx.annotation.RequiresApi\r\nimport androidx.compose.animation.AnimatedVisibility\r\nimport androidx.compose.animation.core.LinearEasing\r\nimport androidx.compose.animation.core.tween\r\nimport androidx.compose.animation.slideInVertically\r\nimport androidx.compose.animation.slideOutVertically\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.Arrangement\r\nimport androidx.compose.foundation.layout.Column\r\nimport androidx.compose.foundation.layout.Row\r\nimport androidx.compose.foundation.layout.Spacer\r\nimport androidx.compose.foundation.layout.fillMaxSize\r\nimport androidx.compose.foundation.layout.fillMaxWidth\r\nimport androidx.compose.foundation.layout.padding\r\nimport androidx.compose.foundation.layout.size\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material3.Icon\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.livedata.observeAsState\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.DescriptionTextFields\r\nimport com.example.civicalertoriginal.Components.ExposedDropdownMenuBox\r\nimport com.example.civicalertoriginal.Components.LocationTextFields\r\nimport com.example.civicalertoriginal.Components.PictureTextFields\r\nimport com.example.civicalertoriginal.Components.ReportDescriptionText\r\nimport com.example.civicalertoriginal.Components.SubmitButton\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\nimport java.time.LocalDateTime\r\nimport java.time.format.DateTimeFormatter\r\n\r\n\r\ndata class Reports(\r\n    val incidentType: String = \"\",\r\n    val location: String = \"\",\r\n    val description: String =\"\",\r\n    val dateTime: String =\"\",\r\n\r\n)\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun MakeReports(navController: NavController) {\r\n    var isVisible by remember { mutableStateOf(false)\r\n    }\r\n    var locationText by remember { mutableStateOf(\"\")}\r\n\r\n    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle\r\n    savedStateHandle?.getLiveData<String>(\"selectedLocation\")?.observeAsState()?.value?.let { location ->\r\n        locationText = location\r\n    }\r\n\r\n    LaunchedEffect(Unit) {\r\n        isVisible = true\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        AnimatedVisibility(\r\n            visible = isVisible,\r\n            enter = slideInVertically(\r\n                initialOffsetY = { it },\r\n                animationSpec = tween(1000, easing = LinearEasing)\r\n            ),\r\n            exit = slideOutVertically(\r\n                targetOffsetY = { it },\r\n                animationSpec = tween(1000, easing = LinearEasing)\r\n            )\r\n        ) {\r\n            AnimatedMakeReports(navController){isVisible = false\r\n            navController.navigate(\"Dashboard\")}\r\n        }\r\n    }\r\n}\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {\r\n    val database = Firebase.database\r\n    val myRef = database.getReference(\"Make Report Instance\")\r\n    val auth = FirebaseAuth.getInstance()\r\n    var locationText by remember { mutableStateOf(\"\") }\r\n    var description by remember { mutableStateOf(\"\") }\r\n    var picture by remember { mutableStateOf(\"\") }\r\n    val context = LocalContext.current\r\n    val currentDateTime = LocalDateTime.now()\r\n    val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\"))\r\n\r\n    Column(\r\n        verticalArrangement = Arrangement.spacedBy(30.dp),\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .padding(start = 16.dp, end = 16.dp, top = 50.dp)\r\n            .verticalScroll(rememberScrollState())\r\n    ) {\r\n        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {\r\n            Icon(\r\n                imageVector = Icons.Default.ArrowBack,\r\n                contentDescription = \"\",\r\n                modifier = Modifier\r\n                    .size(30.dp)\r\n                    .clickable { onClose() },\r\n                tint = Color.Red\r\n            )\r\n            Spacer(modifier = Modifier.size(25.dp))\r\n            Text(\r\n                text = \"Make A Report\",\r\n                fontSize = 35.sp,\r\n                fontWeight = FontWeight.Bold,\r\n                color = Color.Black\r\n            )\r\n        }\r\n        ReportDescriptionText(\r\n            value1 = \"Incident\",\r\n            value = \"Choose Incident type\"\r\n        )\r\n        var selectedIncident by remember { mutableStateOf(\"Water\") }\r\n        ExposedDropdownMenuBox(\r\n            selectedIncident = selectedIncident,\r\n            onIncidentSelected = { newIncident -> selectedIncident = newIncident }\r\n        )\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Location(Optional)\",\r\n            value = \"Share the location of the incident\"\r\n        )\r\n\r\n        LocationTextFields(\r\n            value = locationText,\r\n            onChange = { locationText = it },\r\n            fieldLabel = \"Enter location\",\r\n            navController = navController\r\n        )\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Photos*\",\r\n            value = \"Take photos of the incident you are reporting\"\r\n        )\r\n        PictureTextFields(value = picture, onChange = { picture = it })\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Report Description*\",\r\n            value = \"Short Description of the incident\"\r\n        )\r\n        DescriptionTextFields(\r\n            value = description,\r\n            onChange = { description = it },\r\n            fieldLabel = \"describe the incident\"\r\n        )\r\n\r\n        val userReport = Reports(\r\n            incidentType = selectedIncident,\r\n            location = locationText,\r\n            description = description,\r\n            dateTime = formattedDateTime\r\n        )\r\n\r\n        fun saveReport(report: Reports) {\r\n            val userId = myRef.push().key ?: return\r\n            myRef.child(userId).setValue(report).addOnCompleteListener { task ->\r\n                if (task.isSuccessful) {\r\n                    // Handle success\r\n                    Toast.makeText(\r\n                        context,\r\n                        \"Your report has been submitted.\",\r\n                        Toast.LENGTH_SHORT\r\n                    ).show()\r\n                } else {\r\n                    // Handle failure\r\n                    task.exception?.let {\r\n                        println(\"Error saving user: ${it.message}\")\r\n                    }\r\n                }\r\n            }\r\n        }\r\n\r\n        Column(\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            SubmitButton(name = \"Submit\") {\r\n                saveReport(userReport)\r\n                navController.navigate(\"Dashboard\")\r\n            }\r\n        }\r\n        Spacer(modifier = Modifier.size(8.dp))\r\n    }\r\n}\r\n\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Preview\r\n@Composable\r\nfun MakeReportsPreview() {\r\n    val navController = rememberNavController()\r\n    MakeReports(navController = navController)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	
+@@ -58,19 +58,22 @@
+     val incidentType: String = "",
+     val location: String = "",
+     val description: String ="",
+-    val dateTime: String ="",
++    val dateTime: String ="",)
+ 
+-)
+-@RequiresApi(Build.VERSION_CODES.O)
+-@Composable
+-fun MakeReports(navController: NavController) {
+-    var isVisible by remember { mutableStateOf(false)
+-    }
+-    var locationText by remember { mutableStateOf("")}
++    @RequiresApi(Build.VERSION_CODES.O)
++    @Composable
++    fun MakeReports(navController: NavController, selectedLocation: String?) {
++    var isVisible by remember { mutableStateOf(false) }
++    var locationText by remember { mutableStateOf("") }
+ 
++    // Observe selectedLocation from savedStateHandle
+     val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
+-    savedStateHandle?.getLiveData<String>("selectedLocation")?.observeAsState()?.value?.let { location ->
++    val locationFromMap = savedStateHandle?.getLiveData<String>("selectedLocation")?.observeAsState()
++
++    // If there's a selectedLocation, update the locationText state
++    locationFromMap?.value?.let { location ->
+         locationText = location
++        savedStateHandle.remove<String>("selectedLocation") // Remove after use
+     }
+ 
+     LaunchedEffect(Unit) {
+@@ -89,21 +92,33 @@
+                 animationSpec = tween(1000, easing = LinearEasing)
+             )
+         ) {
+-            AnimatedMakeReports(navController){isVisible = false
+-            navController.navigate("Dashboard")}
++            AnimatedMakeReports(
++                navController = navController,
++                locationText = locationText,  // Pass locationText to AnimatedMakeReports
++                onClose = {
++                    isVisible = false
++                    navController.navigate("Dashboard")
++                }
++            )
+         }
+     }
+ }
+ 
+ @RequiresApi(Build.VERSION_CODES.O)
+ @Composable
+-fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
++fun AnimatedMakeReports(
++    navController: NavController,
++    locationText: String,  // Receive the locationText from MakeReports
++    onClose: () -> Unit
++) {
+     val database = Firebase.database
+     val myRef = database.getReference("Make Report Instance")
+     val auth = FirebaseAuth.getInstance()
+-    var locationText by remember { mutableStateOf("") }
++
++    // Initialize state variables for report fields
+     var description by remember { mutableStateOf("") }
+     var picture by remember { mutableStateOf("") }
++    var currentLocationText by remember { mutableStateOf(locationText) } // Initialize with passed location
+     val context = LocalContext.current
+     val currentDateTime = LocalDateTime.now()
+     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+@@ -115,6 +130,7 @@
+             .padding(start = 16.dp, end = 16.dp, top = 50.dp)
+             .verticalScroll(rememberScrollState())
+     ) {
++        // Back button and title
+         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+             Icon(
+                 imageVector = Icons.Default.ArrowBack,
+@@ -132,63 +148,48 @@
+                 color = Color.Black
+             )
+         }
+-        ReportDescriptionText(
+-            value1 = "Incident",
+-            value = "Choose Incident type"
+-        )
++
++        // Incident dropdown
++        ReportDescriptionText(value1 = "Incident", value = "Choose Incident type")
+         var selectedIncident by remember { mutableStateOf("Water") }
+         ExposedDropdownMenuBox(
+             selectedIncident = selectedIncident,
+             onIncidentSelected = { newIncident -> selectedIncident = newIncident }
+         )
+ 
+-        ReportDescriptionText(
+-            value1 = "Location(Optional)",
+-            value = "Share the location of the incident"
+-        )
++        // Location field
++        ReportDescriptionText(value1 = "Location(Optional)", value = "Share the location of the incident")
+ 
+         LocationTextFields(
+-            value = locationText,
+-            onChange = { locationText = it },
++            value = currentLocationText,
++            onChange = { currentLocationText = it },
+             fieldLabel = "Enter location",
+             navController = navController
+         )
+ 
+-        ReportDescriptionText(
+-            value1 = "Photos*",
+-            value = "Take photos of the incident you are reporting"
+-        )
++        // Photo input
++        ReportDescriptionText(value1 = "Photos*", value = "Take photos of the incident you are reporting")
+         PictureTextFields(value = picture, onChange = { picture = it })
+ 
+-        ReportDescriptionText(
+-            value1 = "Report Description*",
+-            value = "Short Description of the incident"
+-        )
+-        DescriptionTextFields(
+-            value = description,
+-            onChange = { description = it },
+-            fieldLabel = "describe the incident"
+-        )
++        // Description input
++        ReportDescriptionText(value1 = "Report Description*", value = "Short Description of the incident")
++        DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = "describe the incident")
+ 
++        // Prepare report object
+         val userReport = Reports(
+             incidentType = selectedIncident,
+-            location = locationText,
++            location = currentLocationText,
+             description = description,
+             dateTime = formattedDateTime
+         )
+ 
++        // Save the report to Firebase
+         fun saveReport(report: Reports) {
+             val userId = myRef.push().key ?: return
+             myRef.child(userId).setValue(report).addOnCompleteListener { task ->
+                 if (task.isSuccessful) {
+-                    // Handle success
+-                    Toast.makeText(
+-                        context,
+-                        "Your report has been submitted.",
+-                        Toast.LENGTH_SHORT
+-                    ).show()
++                    Toast.makeText(context, "Your report has been submitted.", Toast.LENGTH_SHORT).show()
+                 } else {
+-                    // Handle failure
+                     task.exception?.let {
+                         println("Error saving user: ${it.message}")
+                     }
+@@ -196,9 +197,8 @@
+             }
+         }
+ 
+-        Column(
+-            horizontalAlignment = Alignment.CenterHorizontally
+-        ) {
++        // Submit button
++        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+             SubmitButton(name = "Submit") {
+                 saveReport(userReport)
+                 navController.navigate("Dashboard")
+@@ -214,5 +214,6 @@
+ @Composable
+ fun MakeReportsPreview() {
+     val navController = rememberNavController()
+-    MakeReports(navController = navController)
++    val selectedLocation = "Example Location"
++    MakeReports(navController = navController, selectedLocation = selectedLocation)
+ }
+Index: app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal\r\n\r\nimport android.os.Build\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.annotation.RequiresApi\r\nimport com.example.civicalertoriginal.Components.Navigation\r\nimport com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme\r\nimport com.google.firebase.FirebaseApp\r\n\r\nclass MainActivity : ComponentActivity() {\r\n    @RequiresApi(Build.VERSION_CODES.O)\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        FirebaseApp.initializeApp(this)\r\n        setContent {\r\n            CivicAlertOriginalTheme {\r\n              Navigation()\r\n\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/MainActivity.kt	
+@@ -1,11 +1,11 @@
+ package com.example.civicalertoriginal
+ 
++import Navigation
+ import android.os.Build
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+ import androidx.annotation.RequiresApi
+-import com.example.civicalertoriginal.Components.Navigation
+ import com.example.civicalertoriginal.ui.theme.CivicAlertOriginalTheme
+ import com.google.firebase.FirebaseApp
+ 
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Components\r\n\r\nimport LogIn\r\nimport android.os.Build\r\nimport androidx.annotation.RequiresApi\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport civicalertoriginal.Screen.MakeReports\r\nimport com.example.civicalertoriginal.Screens.ContactUs\r\nimport com.example.civicalertoriginal.Screens.Dashboard\r\nimport com.example.civicalertoriginal.Screens.ForgotPassword\r\nimport com.example.civicalertoriginal.Screens.HelpAndSupport\r\nimport com.example.civicalertoriginal.Screens.MapBoxScreen\r\nimport com.example.civicalertoriginal.Screens.Registration\r\nimport com.example.civicalertoriginal.Screens.UpdateProfile\r\nimport com.example.civicalertoriginal.Screens.ViewReports\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun Navigation() {\r\n    val navController = rememberNavController()\r\n\r\n    // State for location details\r\n    var locationName by remember { mutableStateOf(\"\") }\r\n    var latitude by remember { mutableStateOf(0.0) }\r\n    var longitude by remember { mutableStateOf(0.0) }\r\n\r\n    NavHost(navController = navController, startDestination = \"makeReports\") {\r\n        composable(\"registration\") {\r\n            Registration(navController)\r\n        }\r\n        composable(\"forgotPassword\") {\r\n            ForgotPassword(navController)\r\n        }\r\n        composable(\"login\") {\r\n            LogIn(navController)\r\n        }\r\n        composable(\"Dashboard\") {\r\n            Dashboard(navController)\r\n        }\r\n        composable(\"makeReports\") {\r\n            MakeReports(navController)\r\n        }\r\n        composable(\"userProfile\") {\r\n            UpdateProfile(navController)\r\n        }\r\n        composable(\"emergencyContacts\") {\r\n            ContactUs(navController)\r\n        }\r\n        composable(\"Viewreports\") {\r\n            ViewReports(navController)\r\n        }\r\n        composable(\"helpSupport\") {\r\n            HelpAndSupport(navController)\r\n        }\r\n        composable(\"mapbox\") {\r\n            MapBoxScreen(navController = navController) { selectedLocation ->\r\n\r\n                navController.previousBackStackEntry?.savedStateHandle?.set(\"selectedLocation\", selectedLocation)\r\n            }\r\n        }\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	
+@@ -1,13 +1,6 @@
+-package com.example.civicalertoriginal.Components
+-
+-import LogIn
+ import android.os.Build
+ import androidx.annotation.RequiresApi
+ import androidx.compose.runtime.Composable
+-import androidx.compose.runtime.getValue
+-import androidx.compose.runtime.mutableStateOf
+-import androidx.compose.runtime.remember
+-import androidx.compose.runtime.setValue
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.rememberNavController
+@@ -26,45 +19,74 @@
+ fun Navigation() {
+     val navController = rememberNavController()
+ 
+-    // State for location details
+-    var locationName by remember { mutableStateOf("") }
+-    var latitude by remember { mutableStateOf(0.0) }
+-    var longitude by remember { mutableStateOf(0.0) }
+-
++    // NavHost setup
+     NavHost(navController = navController, startDestination = "makeReports") {
++
++        // Registration screen
+         composable("registration") {
+             Registration(navController)
+         }
++
++        // Forgot Password screen
+         composable("forgotPassword") {
+             ForgotPassword(navController)
+         }
++
++        // LogIn screen
+         composable("login") {
+             LogIn(navController)
+         }
++
++        // Dashboard screen
+         composable("Dashboard") {
+             Dashboard(navController)
+         }
+-        composable("makeReports") {
+-            MakeReports(navController)
+-        }
++
++        // User Profile screen
+         composable("userProfile") {
+             UpdateProfile(navController)
+         }
++
++        // Emergency Contacts screen
+         composable("emergencyContacts") {
+             ContactUs(navController)
+         }
++
++        // View Reports screen
+         composable("Viewreports") {
+             ViewReports(navController)
+         }
++
++        // Help and Support screen
+         composable("helpSupport") {
+             HelpAndSupport(navController)
+         }
++
++        // Make Reports screen
++        composable("makeReports") {
++            // Retrieve the selected location from MapBoxScreen if available
++            val selectedLocation = navController.currentBackStackEntry
++                ?.savedStateHandle
++                ?.get<String>("selectedLocation")
++
++            // Call the MakeReports screen, passing the selectedLocation
++            MakeReports(navController, selectedLocation)
++        }
++
++
+         composable("mapbox") {
+             MapBoxScreen(navController = navController) { selectedLocation ->
+ 
+-                navController.previousBackStackEntry?.savedStateHandle?.set("selectedLocation", selectedLocation)
++                // Pass the selected location back to MakeReports using savedStateHandle
++                navController.previousBackStackEntry
++                    ?.savedStateHandle
++                    ?.set("selectedLocation", selectedLocation)
++
++                // Navigate back to MakeReports
++                navController.popBackStack()
+             }
+         }
+ 
+     }
++
+ }
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.4.1\"\r\ncameraCore = \"1.3.4\"\r\ncameraViewVersion = \"1.1.0\"\r\ncoilCompose = \"1.4.0\"\r\nkotlin = \"1.9.0\"\r\ncoreKtx = \"1.13.1\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.1.5\"\r\nespressoCore = \"3.5.1\"\r\nlifecycleRuntimeKtx = \"2.8.1\"\r\nactivityCompose = \"1.9.0\"\r\ncomposeBom = \"2023.08.00\"\r\nfirebaseCommonKtx = \"21.0.0\"\r\nnavigationCompose = \"2.7.7\"\r\ngoogleGmsGoogleServices = \"4.4.2\"\r\nfirebaseDatabase = \"21.0.0\"\r\nfirebaseAuth = \"23.0.0\"\r\nappcompat = \"1.7.0\"\r\nmaterial = \"1.12.0\"\r\nactivity = \"1.9.0\"\r\nconstraintlayout = \"2.1.4\"\r\ncameraView = \"1.3.4\"\r\nruntimeLivedata = \"1.6.8\"\r\n\r\n[libraries]\r\nandroidx-camera-camera2 = { module = \"androidx.camera:camera-camera2\", version.ref = \"cameraCore\" }\r\nandroidx-camera-core = { module = \"androidx.camera:camera-core\", version.ref = \"cameraCore\" }\r\nandroidx-camera-extensions = { module = \"androidx.camera:camera-extensions\", version.ref = \"cameraViewVersion\" }\r\nandroidx-camera-lifecycle = { module = \"androidx.camera:camera-lifecycle\", version.ref = \"cameraCore\" }\r\nandroidx-camera-view-v110 = { module = \"androidx.camera:camera-view\", version.ref = \"cameraViewVersion\" }\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\ncoil-compose = { module = \"io.coil-kt:coil-compose\", version.ref = \"coilCompose\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\nfirebase-common-ktx = { group = \"com.google.firebase\", name = \"firebase-common-ktx\", version.ref = \"firebaseCommonKtx\" }\r\nandroidx-navigation-compose = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"navigationCompose\" }\r\nfirebase-database = { group = \"com.google.firebase\", name = \"firebase-database\", version.ref = \"firebaseDatabase\" }\r\nfirebase-auth = { group = \"com.google.firebase\", name = \"firebase-auth\", version.ref = \"firebaseAuth\" }\r\nandroidx-appcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\r\nmaterial = { group = \"com.google.android.material\", name = \"material\", version.ref = \"material\" }\r\nandroidx-activity = { group = \"androidx.activity\", name = \"activity\", version.ref = \"activity\" }\r\nandroidx-constraintlayout = { group = \"androidx.constraintlayout\", name = \"constraintlayout\", version.ref = \"constraintlayout\" }\r\nandroidx-camera-view = { group = \"androidx.camera\", name = \"camera-view\", version.ref = \"cameraView\" }\r\nandroidx-runtime-livedata = { group = \"androidx.compose.runtime\", name = \"runtime-livedata\", version.ref = \"runtimeLivedata\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\njetbrains-kotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\ngoogle-gms-google-services = { id = \"com.google.gms.google-services\", version.ref = \"googleGmsGoogleServices\" }\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	
++++ b/gradle/libs.versions.toml	
+@@ -22,6 +22,7 @@
+ constraintlayout = "2.1.4"
+ cameraView = "1.3.4"
+ runtimeLivedata = "1.6.8"
++playServicesMaps = "19.0.0"
+ 
+ [libraries]
+ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
+@@ -54,6 +55,7 @@
+ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+ androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
+ androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
++play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+ 
+ [plugins]
+ android-application = { id = "com.android.application", version.ref = "agp" }
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.jetbrains.kotlin.android)\r\n    alias(libs.plugins.google.gms.google.services)\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.example.civicalertoriginal\"\r\n    compileSdk = 34\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.example.civicalertoriginal\"\r\n        minSdk = 24\r\n        targetSdk = 34\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n        vectorDrawables {\r\n            useSupportLibrary = true\r\n        }\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_1_8\r\n        targetCompatibility = JavaVersion.VERSION_1_8\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"1.8\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n    composeOptions {\r\n        kotlinCompilerExtensionVersion = \"1.5.1\"\r\n    }\r\n    packaging {\r\n        resources {\r\n            excludes += \"/META-INF/{AL2.0,LGPL2.1}\"\r\n        }\r\n    }\r\n}\r\n\r\ndependencies {\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n    implementation(libs.firebase.common.ktx)\r\n    implementation(libs.androidx.navigation.compose)\r\n    implementation(libs.firebase.database)\r\n    implementation(libs.firebase.auth)\r\n    implementation(libs.androidx.appcompat)\r\n    implementation(libs.material)\r\n    implementation (libs.androidx.camera.core)\r\n    implementation (libs.androidx.camera.camera2)\r\n    implementation (libs.androidx.camera.lifecycle)\r\n    implementation (libs.androidx.camera.view.v110)\r\n    implementation (libs.androidx.camera.extensions)\r\n\r\n    implementation (\"com.mapbox.maps:android:11.6.0\") {\r\n        exclude (group = \"group_name\", module = \"module_name\")\r\n    }\r\n    implementation (\"com.mapbox.mapboxsdk:mapbox-sdk-services:6.6.0\"){\r\n        exclude (group = \"group_name\", module = \"module_name\")\r\n    }\r\n\r\n\r\n\r\n    implementation(libs.androidx.activity)\r\n    implementation(libs.coil.compose)\r\n    implementation(libs.androidx.constraintlayout)\r\n    implementation(libs.androidx.camera.view)\r\n    implementation(libs.androidx.runtime.livedata)\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	
++++ b/app/build.gradle.kts	
+@@ -85,6 +85,7 @@
+     implementation(libs.androidx.constraintlayout)
+     implementation(libs.androidx.camera.view)
+     implementation(libs.androidx.runtime.livedata)
++    implementation(libs.play.services.maps)
+     testImplementation(libs.junit)
+     androidTestImplementation(libs.androidx.junit)
+     androidTestImplementation(libs.androidx.espresso.core)
