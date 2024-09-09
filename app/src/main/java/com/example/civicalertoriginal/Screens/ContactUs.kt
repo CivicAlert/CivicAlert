@@ -2,13 +2,25 @@ package com.example.civicalertoriginal.Screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.List
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +35,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.civicalertoriginal.Components.*
+import com.example.civicalertoriginal.Components.ContactUSEmailButton
+import com.example.civicalertoriginal.Components.ContactUsContactButton
+import com.example.civicalertoriginal.Components.ContactUsInsta
+import com.example.civicalertoriginal.Components.ContactUsTwitter
+import com.example.civicalertoriginal.Components.ContactUsWMessanger
+import com.example.civicalertoriginal.Components.ContactUsWhatsApp
 import com.example.civicalertoriginal.R
 
 @Composable
@@ -31,7 +48,9 @@ fun ContactUs(navController: NavController) {
     Surface(color = Color.White) {
         Scaffold(
             bottomBar = {
-                BottomAppBar {
+                BottomAppBar(
+                    containerColor = Color.White
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
@@ -98,9 +117,10 @@ fun ContactUs(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    ContactUsContactButton(value = "Call")
-                    ContactUSEmailButton(value = "Email")
+                    ContactUsContactButton(value = "Call Us", phoneNumber = "+1234567890")
+                    ContactUSEmailButton(value = "Email Us", email = "info@example.com")
                 }
+
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
                     text = "Social Media",

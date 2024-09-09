@@ -23,16 +23,17 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CameraScreen() {
+fun CameraScreen(navController: NavController) {
     val context = LocalContext.current
     val lifecycleOwner = LocalContext.current as LifecycleOwner
-    var hasCameraPermission by remember {
+    val hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
                 context,
@@ -131,5 +132,5 @@ private const val CAMERA_PERMISSION_REQUEST_CODE = 1001
 @androidx.compose.ui.tooling.preview.Preview
 @Composable
 fun CameraPreview() {
-    CameraScreen()
+   // CameraScreen(navController = nav)
 }

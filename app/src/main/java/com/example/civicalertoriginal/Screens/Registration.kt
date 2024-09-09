@@ -2,7 +2,6 @@ package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
 import android.util.Patterns
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,6 +40,9 @@ import com.example.civicalertoriginal.Components.PasswordTextFields
 import com.example.civicalertoriginal.Components.SignUpText
 import com.example.civicalertoriginal.Components.TextFields
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
@@ -57,11 +59,11 @@ data class User(
 @Composable
 fun Registration(navController: NavController) {
 
+    val context = LocalContext.current
+    val scrollable = rememberScrollState()
     val database = Firebase.database
     val myRef = database.getReference("Community members")
     val auth = FirebaseAuth.getInstance();
-    val context = LocalContext.current
-    val scrollable = rememberScrollState()
 
     // Variables needed for user registration
     var firstName by remember { mutableStateOf("") }
@@ -107,12 +109,35 @@ fun Registration(navController: NavController) {
                 password.isNotEmpty() && password.length <= maxPassword && isPasswordValid &&
                 confirmPassword.isNotEmpty() && confirmPassword == password
     }
+   fun encodeEmail(email: String): String {
+        return email.replace(".", "_dot_") // Replace '.' with '_dot_' or use any suitable encoding method
+    }
+    fun checkEmailExists(email:String, onResult:(Boolean)-> Unit){
+        val formattedEmail = encodeEmail(email)
+        val myRef = Firebase.database.getReference("Community members").child(formattedEmail)
+
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()){
+                    onResult(true)
+                }else{
+                    onResult(false)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                onResult(false)
+                println("Failed to check user")
+            }
+        })
+    }
+
     fun saveUser(user: User) {
-        val userId = myRef.push().key ?: return
+       //val userId = user.email
+        val userId = encodeEmail(user.email)
+       // val userId = user.firstName
         myRef.child(userId).setValue(user).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-
-
                 // Handle success
                 registrationMessage = "Successfully registered!"
                 println("User saved successfully")
@@ -125,17 +150,25 @@ fun Registration(navController: NavController) {
             }
         }
     }
-    fun saveByEmail(){
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-        if (it.isSuccessful){
-            //send Email
-            auth.currentUser?.sendEmailVerification()
-                ?.addOnCompleteListener{
-                    Toast.makeText(context, "Please check your Email inbox sent to verify your email address",
-                        Toast.LENGTH_SHORT).show()
-
-                }
-        }}
+    fun saveByEmail(user : User){
+        auth.createUserWithEmailAndPassword(email, password);
+    }
+    fun registerUser() {
+        checkEmailExists(email) { exists ->
+            if (exists) {
+                registrationMessage = "Email already exists in the system"
+            } else {
+                val user = User(
+                    email = email,
+                    firstName = firstName,
+                    lastName = lastName,
+                    phoneNumber = phoneNumber,
+                    password = password
+                )
+                saveUser(user)
+                saveByEmail(user)
+            }
+        }
     }
 
 
@@ -255,10 +288,12 @@ fun Registration(navController: NavController) {
                 )
             }
 
-            Row {
+            Row(
+                modifier = Modifier.padding(end = 20.dp)
+            ) {
                 SignUpText(value = "Do you give us permission to use your details for marketing purposes")
             }
-            Row {
+            Row(modifier = Modifier.padding(end = 20.dp)) {
                 SignUpText(value = "Do you agree to Terms & Conditions of the app")
             }
 
@@ -266,7 +301,8 @@ fun Registration(navController: NavController) {
 
             LogBottomButtons(
                 name = "Register",
-                onClick = { showDialog = true },
+                onClick = { showDialog = true
+                          registerUser()},
                 enabled = isFormValid
             )
 
@@ -281,20 +317,8 @@ fun Registration(navController: NavController) {
                         .padding(start = 20.dp)
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
-                        onClick = {
-                                val user = User(firstName = firstName,
-                                    lastName = lastName,
-                                    email = email,
-                                    phoneNumber = phoneNumber,
-                                    password = password)
-                                    saveUser(user)
-                            saveByEmail()
-                                showDialog = false
-
-
-                            // method to save data to database
-
-                        }
+                        onClick = { showDialog = false
+                        registerUser()}
                     ) {
                         Text("Confirm",
                             color = Color.Black)
