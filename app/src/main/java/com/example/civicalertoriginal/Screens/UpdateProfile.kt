@@ -3,6 +3,7 @@ package com.example.civicalertoriginal.Screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -12,12 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.civicalertoriginal.Components.BottomButtonsMyProfile
 import com.example.civicalertoriginal.Components.ProfileText
+import com.example.civicalertoriginal.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -87,11 +90,8 @@ fun UpdateProfile(navController: NavController) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Face,
-                        contentDescription = "",
-                        modifier = Modifier.size(80.dp)
-                    )
+                    Image(painter = painterResource(id = R.drawable.icon), contentDescription = "",
+                        modifier = Modifier.size(150.dp))
                     Text(text = "Hi ${user.firstName}", fontSize = 25.sp)
                     Spacer(modifier = Modifier.size(10.dp))
 
