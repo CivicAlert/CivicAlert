@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "858192785417",
+    "firebase_url": "https://civicalertoriginal-default-rtdb.firebaseio.com",
     "project_id": "civicalertoriginal",
     "storage_bucket": "civicalertoriginal.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.civicalertoriginal"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "858192785417-1c5sj2122bkkmcaamnbtvaiu3l3q1s01.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.civicalertoriginal",
+            "certificate_hash": "9ac9a59c6f1354e1eed85a854455f00b4f7b2e00"
+          }
+        },
+        {
+          "client_id": "858192785417-e2pm5clll7mdup68aflkf9vprttrbvpj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBnpgTzvn6M-m03q_tiPM9DmvUBnlItBck"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858192785417-e2pm5clll7mdup68aflkf9vprttrbvpj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

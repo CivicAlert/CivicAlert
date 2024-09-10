@@ -2,6 +2,7 @@ package com.example.civicalertoriginal.Screens
 
 import android.annotation.SuppressLint
 import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -150,9 +151,38 @@ fun Registration(navController: NavController) {
             }
         }
     }
-    fun saveByEmail(user : User){
-        auth.createUserWithEmailAndPassword(email, password);
+    fun saveByEmail() {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    // Send verification email
+                    auth.currentUser?.sendEmailVerification()
+                        ?.addOnCompleteListener { emailTask ->
+                            if (emailTask.isSuccessful) {
+                                Toast.makeText(
+                                    context,
+                                    "Please check your email inbox to verify your email address.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Error: Failed to send verification email: ${emailTask.exception?.message}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                } else {
+                    // Handle registration failure
+                    Toast.makeText(
+                        context,
+                        "Registration failed: ${task.exception?.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
     }
+
     fun registerUser() {
         checkEmailExists(email) { exists ->
             if (exists) {
@@ -166,7 +196,7 @@ fun Registration(navController: NavController) {
                     password = password
                 )
                 saveUser(user)
-                saveByEmail(user)
+                saveByEmail()
             }
         }
     }
@@ -301,8 +331,7 @@ fun Registration(navController: NavController) {
 
             LogBottomButtons(
                 name = "Register",
-                onClick = { showDialog = true
-                          registerUser()},
+                onClick = { showDialog = true },
                 enabled = isFormValid
             )
 
@@ -318,10 +347,10 @@ fun Registration(navController: NavController) {
                         .width(100.dp),
                         colors = ButtonDefaults.buttonColors(Color.Green),
                         onClick = { showDialog = false
-                        registerUser()}
+                        registerUser()
+                        }
                     ) {
-                        Text("Confirm",
-                            color = Color.Black)
+                        Text("Confirm", color = Color.Black)
                     }
                 },
                 dismissButton = {
