@@ -318,7 +318,7 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: 
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-           // placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            // placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
                 Image(painter = painterResource(id = R.drawable.camera), contentDescription ="" ,
                     modifier = Modifier.clickable { navController.navigate("Camera")}
@@ -336,7 +336,7 @@ fun DescriptionTextFields(value: String, onChange: (String) -> Unit, fieldLabel:
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
-           placeholder = { Text(text = fieldLabel, color = Color.Green)},
+            placeholder = { Text(text = fieldLabel, color = Color.Green)},
             keyboardOptions = KeyboardOptions.Default,
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)
@@ -354,7 +354,7 @@ fun ExposedDropdownMenuBox(
     val context = LocalContext.current
     val Incidents= arrayOf("Water", "Electricity", "Pothole", "Other")
     var expanded by remember { mutableStateOf(false) }
-   // var selectedText by remember { mutableStateOf(Incidents[0]) }
+
 
     Box(
         modifier = Modifier
@@ -385,7 +385,7 @@ fun ExposedDropdownMenuBox(
                     DropdownMenuItem(
                         text = { Text(text = item) },
                         onClick = {
-                           onIncidentSelected(item)
+                            onIncidentSelected(item)
                             expanded = false
                             Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
                         }

@@ -25,15 +25,17 @@ import com.example.civicalertoriginal.Components.BottomButtons
 import com.example.civicalertoriginal.Components.EmailTextFields
 import com.example.civicalertoriginal.Components.InstructionText
 import com.example.civicalertoriginal.Components.LogAndForgotHeader
+import com.google.firebase.auth.FirebaseAuth
 import java.util.regex.Pattern
 
 @Composable
-fun ForgotPassword (navController: NavController){
+fun ForgotPassword(navController: NavController) {
     val context = LocalContext.current
-    var email by remember {
-        mutableStateOf("")
-    }
-    Surface (color = Color.White) {
+    var email by remember { mutableStateOf("") }
+    var isEmailValid by remember { mutableStateOf(true) }
+    val auth = FirebaseAuth.getInstance()
+
+    Surface(color = Color.White) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(45.dp),
@@ -46,33 +48,62 @@ fun ForgotPassword (navController: NavController){
 
             LogAndForgotHeader(screenLabel = "Forgot Password?")
 
-            InstructionText(value = "Enter your email to recover your password" )
+            InstructionText(value = "Enter your email to recover your password")
+
+            // Email validation function
             fun validateEmail(email: String): Boolean {
-                val emailPattern = "[a-zA-Z0-9_]+@+\\.[a-zA-Z]"
+                val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
                 return Pattern.matches(emailPattern, email)
             }
 
+            // Email text field
             EmailTextFields(value = email, onChange = {
-                if (email.length<=100){
-                    email=it
-                    validateEmail(email)
-                }                                     },
-                fieldLabel = "Enter Email Address" )
+                email = it
+                isEmailValid = validateEmail(email)
+            }, fieldLabel = "Enter Email Address")
 
-            
+            if (!isEmailValid && email.isNotEmpty()) {
+                InstructionText(value = "Please enter a valid email", )
+            }
+
             Spacer(modifier = Modifier.size(10.dp))
-            
-            BottomButtons(name = "Reset") { Toast.makeText(context,"Email has been sent to $email",Toast.LENGTH_SHORT).show()
-            navController.navigate("logIn")}
-            
+
+            // Reset button
+            BottomButtons(name = "Reset") {
+                if (isEmailValid && email.isNotEmpty()) {
+                    auth.sendPasswordResetEmail(email)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(
+                                    context,
+                                    "Email has been sent to $email",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate("logIn") // Navigate back to login screen
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Error: ${task.exception?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                } else {
+                    Toast.makeText(
+                        context,
+                        "Please enter a valid email address",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
 
         }
     }
-    
 }
+
 @Preview
 @Composable
-fun ResetPasswordPreview(){
+fun ResetPasswordPreview() {
     val navController = rememberNavController()
     ForgotPassword(navController)
 }

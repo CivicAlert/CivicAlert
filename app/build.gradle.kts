@@ -64,12 +64,12 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)
     implementation (libs.androidx.camera.core)
     implementation (libs.androidx.camera.camera2)
     implementation (libs.androidx.camera.lifecycle)
     implementation (libs.androidx.camera.view.v110)
     implementation (libs.androidx.camera.extensions)
+    implementation ("com.google.android.gms:play-services-auth:20.6.0")
 
     implementation(libs.androidx.activity)
     implementation(libs.coil.compose)
