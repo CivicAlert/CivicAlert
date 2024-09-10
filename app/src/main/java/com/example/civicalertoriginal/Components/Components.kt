@@ -309,7 +309,7 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController.Companion){
+fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
@@ -317,7 +317,7 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: 
             trailingIcon = {
                Image(painter = painterResource(id = R.drawable.camera), contentDescription = "",
                    modifier = Modifier.size(40.dp)
-                       .clickable {/* NavController. */}) },
+                       .clickable {navController.navigate("camera")}) },
             keyboardOptions = KeyboardOptions.Default,
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)

@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -91,7 +92,7 @@ fun CameraScreen(navController: NavController) {
     }
 
     // Surface for camera preview
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize() . padding(100.dp),) {
         if (hasCameraPermission) {
             AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
             Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
@@ -104,8 +105,8 @@ fun CameraScreen(navController: NavController) {
             }
         } else {
             Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.align(Alignment.BottomEnd),
+                horizontalAlignment = Alignment.End
             ) {
                 Button(onClick = {
                     ActivityCompat.requestPermissions(
@@ -114,14 +115,22 @@ fun CameraScreen(navController: NavController) {
                         CAMERA_PERMISSION_REQUEST_CODE
                     )
                 }) {
-                    Text("Request Camera Permission")
+                    Column (modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.End) {
+                        Text("Request Camera Permission", modifier = Modifier.size(150.dp,50.dp))
+                        //Text("Upload Image From Device" , modifier = Modifier.clickable { navController.navigate("UploadImage") })
+                    }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = {
                     val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                     imagePickerLauncher.launch(intent)
                 }) {
-                    Text("Upload Image")
+                    Column (modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Request access to file storage" , modifier = Modifier.clickable { navController.navigate("UploadImage") } .size(150.dp, 50.dp))
+                    }
+
                 }
                 selectedImageUri?.let {
                     Spacer(modifier = Modifier.height(16.dp))

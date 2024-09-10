@@ -47,5 +47,8 @@ fun Navigation (){
         composable("camera"){
             CameraScreen(navController)
         }
+        composable("uploadImage"){
+            UploadImage(navController)
+        }
     }
 }
