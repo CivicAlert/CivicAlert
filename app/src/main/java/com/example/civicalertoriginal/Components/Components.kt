@@ -2,9 +2,7 @@
 
 package com.example.civicalertoriginal.Components
 
-import android.os.Build
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +26,6 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,7 +38,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -63,15 +59,12 @@ import androidx.compose.ui.text.font.FontSynthesis
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.example.civicalertoriginal.R
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -316,19 +309,15 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun PictureTextFields(value: String, onChange: (String) -> Unit, ){
+fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController.Companion){
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
            // placeholder = { Text(text = fieldLabel, color = Color.Green)},
             trailingIcon = {
-                Icon(
-                    modifier = Modifier
-                        .size(35.dp, 35.dp)
-                        .clickable { },
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Location Icon"
-                ) },
+               Image(painter = painterResource(id = R.drawable.camera), contentDescription = "",
+                   modifier = Modifier.size(40.dp)
+                       .clickable {/* NavController. */}) },
             keyboardOptions = KeyboardOptions.Default,
             textStyle = TextStyle(color = Color.Black ), modifier = Modifier
                 .height(50.dp)

@@ -1,8 +1,6 @@
 package civicalertoriginal.Screen
 
-import android.health.connect.datatypes.ExerciseRoute.Location
 import android.os.Build
-import android.widget.Space
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
@@ -18,18 +16,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.civicalertoriginal.Components.*
-import com.example.civicalertoriginal.Screens.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -122,7 +117,7 @@ fun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {
             value1 = "Photos*",
             value = "Take photos of the incident you are reporting"
         )
-        PictureTextFields(value = picture, onChange = { picture = it }, )
+        PictureTextFields(value = picture, onChange = { picture = it },  navController = NavController)
 
         ReportDescriptionText(
             value1 = "Report Description*",
