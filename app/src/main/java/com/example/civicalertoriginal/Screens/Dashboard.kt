@@ -44,8 +44,18 @@ import kotlinx.coroutines.tasks.await
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard(navController: NavController) {
+
+
+
+    // After logging out, navigate back to the login screen
+    navController.navigate("login") {
+        popUpTo("dashboard") { inclusive = true }
+    }
+
     // Coroutine scope to launch async operations
     val coroutineScope = rememberCoroutineScope()
+
+
 
     // State to hold the recent report
     var recentReport by remember { mutableStateOf<IncidentReport?>(null) }

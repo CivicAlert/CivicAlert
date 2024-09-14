@@ -1,8 +1,9 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">CivicAlertOriginal</string>
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="take_photo">Take Picture\n</string>
     <string name="upload_picture">Upload Picture</string>
     <string name="google_id">858192785417-1c5sj2122bkkmcaamnbtvaiu3l3q1s01.apps.googleusercontent.com</string>
+    <string name="mapbox_access_token" translatable="false" tools:ignore="UnusedResources">sk.eyJ1Ijoibnlpa29kZWFydGtpZCIsImEiOiJjbTA2ZjBkemowdDBsMmtzYnppMnl3Mno5In0._msAzoio9GC2Abrzshe05w</string>
 </resources>
