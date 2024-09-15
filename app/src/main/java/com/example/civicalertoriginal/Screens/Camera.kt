@@ -60,6 +60,7 @@ fun CameraScreen(navController: NavController) {
             // Initialize CameraX and set up image capture
             val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
             cameraProviderFuture.addListener({
+
                 val cameraProvider = cameraProviderFuture.get()
                 imageCapture = ImageCapture.Builder().build()
 
@@ -103,6 +104,12 @@ fun CameraScreen(navController: NavController) {
 }
 
 private fun takePicture(imageCapture: ImageCapture?, context: Context) {
+
+    if(imageCapture == null){
+        println("Error: Image capture not initialized")
+        return
+    }
+
     val photoFile = File(
         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
         "civic_alert_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}.jpg"
@@ -110,7 +117,7 @@ private fun takePicture(imageCapture: ImageCapture?, context: Context) {
 
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-    imageCapture?.takePicture(
+    imageCapture.takePicture(
         outputOptions,
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
