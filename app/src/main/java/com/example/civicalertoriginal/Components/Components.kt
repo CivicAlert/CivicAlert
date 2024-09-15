@@ -2,7 +2,10 @@
 
 package com.example.civicalertoriginal.Components
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,6 +68,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.civicalertoriginal.R
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 
 @Composable
@@ -310,6 +315,31 @@ fun ReportDescriptionText(value1: String, value:String){
 }
 @Composable
 fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController){
+    val context = LocalContext.current
+    val storage = FirebaseStorage.getInstance().reference
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        selectedImageUri = uri
+
+        uri?.let {
+            // Upload to Firebase Storage
+            val fileName = UUID.randomUUID().toString()
+            val imageRef = storage.child("report-image/$fileName")
+
+            imageRef.putFile(it).addOnSuccessListener { taskSnapshot ->
+                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                    // Update the PictureTextField with the image URL
+                    onChange(downloadUri.toString())
+                    Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener {
+                Toast.makeText(context, "Image upload failed", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
     Column (verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally){
         OutlinedTextField(value = value , onValueChange = onChange,
