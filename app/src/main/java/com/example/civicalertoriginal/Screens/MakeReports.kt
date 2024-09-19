@@ -1,5 +1,6 @@
 package civicalertoriginal.Screen
 
+import android.content.Context
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -52,6 +53,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import  android.util.Log
 
 
 data class Reports(
@@ -68,10 +70,9 @@ fun MakeReports(navController: NavController) {
     }
     var locationText by remember { mutableStateOf("")}
 
-    val savedStateHandle = navController.currentBackStackEntry?.savedStateHandle
-    savedStateHandle?.getLiveData<String>("selectedLocation")?.observeAsState()?.value?.let { location ->
-        locationText = location
-    }
+    val context = LocalContext.current
+    val sharedP = context.getSharedPreferences("app_prefs",Context.MODE_PRIVATE)
+    locationText = sharedP.getString("incidentAddress", "").toString()
 
     LaunchedEffect(Unit) {
         isVisible = true
@@ -89,21 +90,29 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController){isVisible = false
-            navController.navigate("Dashboard")}
+            // Passing locationText to AnimatedMakeReports
+            AnimatedMakeReports(navController, locationText) {
+                isVisible = false
+                navController.navigate("Dashboard")
+            }
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
+fun AnimatedMakeReports(
+    navController: NavController,
+    locationText: String,
+    onClose: () -> Unit
+) {
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance()
-    var locationText by remember { mutableStateOf("") }
+
     var description by remember { mutableStateOf("") }
     var picture by remember { mutableStateOf("") }
+    var selectedIncident by remember { mutableStateOf("Water") }
     val context = LocalContext.current
     val currentDateTime = LocalDateTime.now()
     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
@@ -132,28 +141,30 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
                 color = Color.Black
             )
         }
+
+        // Incident type dropdown
         ReportDescriptionText(
             value1 = "Incident",
             value = "Choose Incident type"
         )
-        var selectedIncident by remember { mutableStateOf("Water") }
         ExposedDropdownMenuBox(
             selectedIncident = selectedIncident,
             onIncidentSelected = { newIncident -> selectedIncident = newIncident }
         )
 
+        // Location section, passing the locationText (which contains the address)
         ReportDescriptionText(
             value1 = "Location(Optional)",
             value = "Share the location of the incident"
         )
-
         LocationTextFields(
             value = locationText,
-            onChange = { locationText = it },
+            onChange = { },
             fieldLabel = "Enter location",
             navController = navController
         )
 
+        // Photos and description section
         ReportDescriptionText(
             value1 = "Photos*",
             value = "Take photos of the incident you are reporting"
@@ -170,6 +181,7 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             fieldLabel = "describe the incident"
         )
 
+        // Create a report object
         val userReport = Reports(
             incidentType = selectedIncident,
             location = locationText,
@@ -177,6 +189,7 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             dateTime = formattedDateTime
         )
 
+        // Save the report to Firebase
         fun saveReport(report: Reports) {
             val userId = myRef.push().key ?: return
             myRef.child(userId).setValue(report).addOnCompleteListener { task ->
@@ -196,6 +209,7 @@ fun AnimatedMakeReports(navController: NavController, onClose: () -> Unit) {
             }
         }
 
+        // Submit button
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

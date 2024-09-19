@@ -285,8 +285,8 @@ fun LocationTextFields(
             onValueChange = onChange,
             placeholder = {
                 Text(
-                    text = fieldLabel,
-                    color = Color.Green,
+                    text = value,
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
             },
