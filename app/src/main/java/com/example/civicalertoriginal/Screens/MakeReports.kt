@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,7 +52,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import  android.util.Log
 
 
 data class Reports(
@@ -154,8 +152,8 @@ fun AnimatedMakeReports(
 
         // Location section, passing the locationText (which contains the address)
         ReportDescriptionText(
-            value1 = "Location(Optional)",
-            value = "Share the location of the incident"
+            value1 = "Location",
+            value = "Share the location of the incident using pin location or enter manually"
         )
         LocationTextFields(
             value = locationText,
@@ -166,13 +164,13 @@ fun AnimatedMakeReports(
 
         // Photos and description section
         ReportDescriptionText(
-            value1 = "Photos*",
+            value1 = "Photos (Optional)",
             value = "Take photos of the incident you are reporting"
         )
         PictureTextFields(value = picture, onChange = { picture = it })
 
         ReportDescriptionText(
-            value1 = "Report Description*",
+            value1 = "Report Description *",
             value = "Short Description of the incident"
         )
         DescriptionTextFields(
