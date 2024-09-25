@@ -61,6 +61,7 @@ data class Reports(
     val dateTime: String ="",
 
 )
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MakeReports(navController: NavController) {
@@ -87,31 +88,38 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            AnimatedMakeReports(navController, locationText) {
-                isVisible = false
-                navController.navigate("Dashboard")
+            // Define onClose action with explicit type
+            val onClose: () -> Unit = {
+                // Handle the close action, e.g., navigate back
+                navController.popBackStack()
             }
+
+            // Pass the mutable locationText and the onClose function to AnimatedMakeReports
+            AnimatedMakeReports(navController, locationText, onLocationChange = { newLocation ->
+                locationText = newLocation
+            }, onClose = onClose)
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnimatedMakeReports(
     navController: NavController,
-   locationText: String,
+    locationText: String,
+    onLocationChange: (String) -> Unit,
     onClose: () -> Unit
 ) {
-    var mutableLocationText by remember { mutableStateOf(locationText) }
+    // Remove mutableLocationText as state is being passed down
+    var description by remember { mutableStateOf("") }
+    var picture by remember { mutableStateOf("") }
+    var selectedIncident by remember { mutableStateOf("Water") }
 
+    // Firebase setup
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance()
 
-    var description by remember { mutableStateOf("") }
-    var picture by remember { mutableStateOf("") }
-    var selectedIncident by remember { mutableStateOf("Water") }
     val context = LocalContext.current
     val currentDateTime = LocalDateTime.now()
     val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
@@ -120,13 +128,13 @@ fun AnimatedMakeReports(
         verticalArrangement = Arrangement.spacedBy(30.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 16.dp, end = 16.dp, top = 50.dp)
+            .padding(16.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
-                contentDescription = "",
+                contentDescription = "Back",
                 modifier = Modifier
                     .size(30.dp)
                     .clickable { onClose() },
@@ -151,19 +159,19 @@ fun AnimatedMakeReports(
             onIncidentSelected = { newIncident -> selectedIncident = newIncident }
         )
 
-        // Location section, passing the locationText (which contains the address)
+        // Location section
         ReportDescriptionText(
             value1 = "Location",
-            value = "Share the location of the incident using pin location or enter manually"
+            value = "Share the location of the incident"
         )
         LocationTextFields(
-            value = mutableLocationText, // Use the mutable locationText
-            onChange = { updatedLocation -> mutableLocationText = updatedLocation }, // Allow updates
+            value = locationText,
+            onChange = { updatedLocation ->
+                onLocationChange(updatedLocation)
+            },
             fieldLabel = "Enter location",
             navController = navController
         )
-
-
 
         // Photos and description section
         ReportDescriptionText(
@@ -179,7 +187,7 @@ fun AnimatedMakeReports(
         DescriptionTextFields(
             value = description,
             onChange = { description = it },
-            fieldLabel = "describe the incident"
+            fieldLabel = "Describe the incident"
         )
 
         // Create a report object
@@ -193,14 +201,15 @@ fun AnimatedMakeReports(
         // Save the report to Firebase
         fun saveReport(report: Reports) {
             val userId = myRef.push().key ?: return
-            myRef.child(userId).setValue(report).addOnCompleteListener { task ->if (task.isSuccessful) {
-                Toast.makeText(context, "Your report has been submitted.", Toast.LENGTH_SHORT).show()
-                description = ""
-                picture = ""
-                selectedIncident = ""
-                mutableLocationText= ""
-            }
-            else {
+            myRef.child(userId).setValue(report).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Your report has been submitted.", Toast.LENGTH_SHORT).show()
+                    // Clear the fields
+                    description = ""
+                    picture = ""
+                    selectedIncident = "Water" // Reset to default
+                    onLocationChange("") // Clear location
+                } else {
                     // Handle failure
                     task.exception?.let {
                         println("Error saving user: ${it.message}")
@@ -210,9 +219,7 @@ fun AnimatedMakeReports(
         }
 
         // Submit button
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             SubmitButton(name = "Submit") {
                 if (description.isBlank()) {
                     Toast.makeText(context, "Please enter a description", Toast.LENGTH_SHORT).show()
