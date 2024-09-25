@@ -56,7 +56,7 @@ import java.time.format.DateTimeFormatter
 
 data class Reports(
     val incidentType: String = "",
-    val location: String = "",
+    var location: String = "",
     val description: String ="",
     val dateTime: String ="",
 
@@ -64,12 +64,11 @@ data class Reports(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MakeReports(navController: NavController) {
-    var isVisible by remember { mutableStateOf(false)
-    }
-    var locationText by remember { mutableStateOf("")}
+    var isVisible by remember { mutableStateOf(false) }
+    var locationText by remember { mutableStateOf("") }
 
     val context = LocalContext.current
-    val sharedP = context.getSharedPreferences("app_prefs",Context.MODE_PRIVATE)
+    val sharedP = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     locationText = sharedP.getString("incidentAddress", "").toString()
 
     LaunchedEffect(Unit) {
@@ -88,7 +87,6 @@ fun MakeReports(navController: NavController) {
                 animationSpec = tween(1000, easing = LinearEasing)
             )
         ) {
-            // Passing locationText to AnimatedMakeReports
             AnimatedMakeReports(navController, locationText) {
                 isVisible = false
                 navController.navigate("Dashboard")
@@ -97,13 +95,16 @@ fun MakeReports(navController: NavController) {
     }
 }
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnimatedMakeReports(
     navController: NavController,
-    locationText: String,
+   locationText: String,
     onClose: () -> Unit
 ) {
+    var mutableLocationText by remember { mutableStateOf(locationText) }
+
     val database = Firebase.database
     val myRef = database.getReference("Make Report Instance")
     val auth = FirebaseAuth.getInstance()
@@ -156,11 +157,13 @@ fun AnimatedMakeReports(
             value = "Share the location of the incident using pin location or enter manually"
         )
         LocationTextFields(
-            value = locationText,
-            onChange = { },
+            value = mutableLocationText, // Use the mutable locationText
+            onChange = { updatedLocation -> mutableLocationText = updatedLocation }, // Allow updates
             fieldLabel = "Enter location",
             navController = navController
         )
+
+
 
         // Photos and description section
         ReportDescriptionText(
@@ -190,15 +193,14 @@ fun AnimatedMakeReports(
         // Save the report to Firebase
         fun saveReport(report: Reports) {
             val userId = myRef.push().key ?: return
-            myRef.child(userId).setValue(report).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    // Handle success
-                    Toast.makeText(
-                        context,
-                        "Your report has been submitted.",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
+            myRef.child(userId).setValue(report).addOnCompleteListener { task ->if (task.isSuccessful) {
+                Toast.makeText(context, "Your report has been submitted.", Toast.LENGTH_SHORT).show()
+                description = ""
+                picture = ""
+                selectedIncident = ""
+                mutableLocationText= ""
+            }
+            else {
                     // Handle failure
                     task.exception?.let {
                         println("Error saving user: ${it.message}")
@@ -212,8 +214,12 @@ fun AnimatedMakeReports(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             SubmitButton(name = "Submit") {
-                saveReport(userReport)
-                navController.navigate("Dashboard")
+                if (description.isBlank()) {
+                    Toast.makeText(context, "Please enter a description", Toast.LENGTH_SHORT).show()
+                } else {
+                    saveReport(userReport)
+                    navController.navigate("Dashboard")
+                }
             }
         }
         Spacer(modifier = Modifier.size(8.dp))

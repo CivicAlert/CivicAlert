@@ -182,7 +182,7 @@ fun MapBox(
                     selectedLocation?.let { locationPoint ->
                         val cameraOptions = CameraOptions.Builder()
                             .center(locationPoint)
-                            .zoom(12.0)
+                            .zoom(14.0)
                             .build()
                         getMapboxMap().flyTo(cameraOptions)
                     }
