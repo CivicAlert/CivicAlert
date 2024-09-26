@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.location.Location
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
+import com.example.civicalertoriginal.R
 import com.google.android.gms.location.LocationServices
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
@@ -56,7 +58,8 @@ fun MapBox(
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf(listOf<Pair<String, Point>>()) }
     var selectedLocation by remember { mutableStateOf<Point?>(null) }
-    var mapView: MapView? by remember { mutableStateOf(null) }
+    var mapView: MapView? by remember { mutableStateOf(null)
+    }
     var pointAnnotationManager: PointAnnotationManager? by remember { mutableStateOf(null) }
     var currentMarker: PointAnnotation? by remember { mutableStateOf(null) }
 
@@ -73,7 +76,7 @@ fun MapBox(
 
                 fusedLocationProviderClient.lastLocation.addOnSuccessListener { location: Location? ->
                     if (location != null) {
-                        val userLocation = Point.fromLngLat(30.97033, -25.47512)
+                        val userLocation = Point.fromLngLat(location.longitude, location.latitude)
                         selectedLocation = userLocation
 
                         // Center the camera to the user's current location
@@ -90,6 +93,7 @@ fun MapBox(
                         }
                     }
                 }
+
             } else {
                 // Request permissions if not granted
                 ActivityCompat.requestPermissions(
@@ -116,7 +120,7 @@ fun MapBox(
             label = { Text("Search location") },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(8.dp),
             singleLine = true
         )
 
@@ -157,8 +161,13 @@ fun MapBox(
                 // Initialize the point annotation manager
                 pointAnnotationManager = annotations.createPointAnnotationManager()
 
+
                 // Load the map style and set up the gesture plugin
-                getMapboxMap().loadStyleUri(Style.SATELLITE_STREETS) {
+                getMapboxMap().loadStyleUri(Style.SATELLITE_STREETS) {style ->
+                    style.addImage(
+                        "marker",
+                        BitmapFactory.decodeResource(context.resources, R.drawable.marker)
+                    )
 
                     // Set up a click listener to pick a location on the map
                     gestures.addOnMapClickListener { point ->
@@ -237,7 +246,9 @@ fun addMarker(
 
     val pointAnnotationOptions = PointAnnotationOptions()
         .withPoint(location)
-        .withIconImage("marker-icon")
+        .withIconImage("marker")
+        .withIconSize(0.5)
+
 
     val newMarker = pointAnnotationManager?.create(pointAnnotationOptions)
     newMarker?.let { onMarkerAdded(it) }
