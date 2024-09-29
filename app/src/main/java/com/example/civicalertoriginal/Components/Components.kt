@@ -314,42 +314,28 @@ fun ReportDescriptionText(value1: String, value:String){
     }
 }
 @Composable
-fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController){
-    val context = LocalContext.current
-    val storage = FirebaseStorage.getInstance().reference
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        selectedImageUri = uri
-
-        uri?.let {
-            // Upload to Firebase Storage
-            val fileName = UUID.randomUUID().toString()
-            val imageRef = storage.child("report-image/$fileName")
-
-            imageRef.putFile(it).addOnSuccessListener { taskSnapshot ->
-                imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                    // Update the PictureTextField with the image URL
-                    onChange(downloadUri.toString())
-                    Toast.makeText(context, "Image uploaded successfully", Toast.LENGTH_SHORT).show()
-                }
-            }.addOnFailureListener {
-                Toast.makeText(context, "Image upload failed", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    Column (verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally){
-        OutlinedTextField(value = value , onValueChange = onChange,
-           // placeholder = { Text(text = fieldLabel, color = Color.Green)},
+fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: NavController) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onChange,
             trailingIcon = {
-               Image(painter = painterResource(id = R.drawable.camera), contentDescription = "",
-                   modifier = Modifier.size(40.dp)
-                       .clickable {navController.navigate("camera")}) },
+                Image(
+                    painter = painterResource(id = R.drawable.camera),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clickable {
+                            navController.navigate("camera") // Navigate to CameraScreen
+                        }
+                )
+            },
             keyboardOptions = KeyboardOptions.Default,
-            textStyle = TextStyle(color = Color.Black ), modifier = Modifier
+            textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+            modifier = Modifier
                 .height(50.dp)
                 .fillMaxWidth()
                 .background(Color.White)

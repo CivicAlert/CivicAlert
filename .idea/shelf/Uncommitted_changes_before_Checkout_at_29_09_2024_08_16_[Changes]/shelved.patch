@@ -1,0 +1,14 @@
+Index: .idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17__Changes_.xml
+===================================================================
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17__Changes_.xml b/.idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17__Changes_.xml
+deleted file mode 100644
+--- a/.idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17__Changes_.xml	(revision 8c13fbf58c489b336cfa2d6a6db3784df141de50)
++++ /dev/null	(revision 8c13fbf58c489b336cfa2d6a6db3784df141de50)
+@@ -1,4 +0,0 @@
+-<changelist name="Uncommitted_changes_before_Checkout_at_05_09_2024_15_17_[Changes]" date="1725542251159" recycled="true" deleted="true">
+-  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17_[Changes]/shelved.patch" />
+-  <option name="DESCRIPTION" value="Uncommitted changes before Checkout at 05/09/2024 15:17 [Changes]" />
+-</changelist>
+\ No newline at end of file
+diff --git a/.idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17_[Changes]/shelved.patch b/.idea/shelf/Uncommitted_changes_before_Checkout_at_05_09_2024_15_17_[Changes]/shelved.patch
+deleted file mode 100644
