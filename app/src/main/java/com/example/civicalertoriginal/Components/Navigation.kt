@@ -45,10 +45,18 @@ fun Navigation (){
             HelpAndSupport(navController)
         }
         composable("camera"){
-            CameraScreen(navController)}
+            CameraScreen(navController)
+        }
         composable("upload"){
             UploadImage(navController)
         }
+        composable("Camera"){
+            CameraReport(navController)
+        }
+        composable("uploadReport"){
+            UploadImageReport(navController)
+        }
+
         }
 
     }

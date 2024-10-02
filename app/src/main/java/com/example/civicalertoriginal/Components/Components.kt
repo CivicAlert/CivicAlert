@@ -68,7 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.civicalertoriginal.R
-import com.google.firebase.storage.FirebaseStorage
+// import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 
 
@@ -329,7 +329,7 @@ fun PictureTextFields(value: String, onChange: (String) -> Unit, navController: 
                     modifier = Modifier
                         .size(40.dp)
                         .clickable {
-                            navController.navigate("camera") // Navigate to CameraScreen
+                            navController.navigate("uploadReport") // Navigate to CameraScreen
                         }
                 )
             },
