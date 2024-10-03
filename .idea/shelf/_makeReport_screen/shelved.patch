@@ -1,0 +1,150 @@
+Index: app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package civicalertoriginal.Screen\r\n\r\nimport android.Manifest\r\nimport android.app.Activity\r\nimport android.content.Context\r\nimport android.content.pm.PackageManager\r\nimport android.graphics.Bitmap\r\nimport android.net.Uri\r\nimport android.os.Build\r\nimport android.os.Environment\r\nimport android.provider.MediaStore\r\nimport android.view.ViewGroup\r\nimport android.widget.Toast\r\nimport androidx.activity.compose.ManagedActivityResultLauncher\r\nimport androidx.activity.compose.rememberLauncherForActivityResult\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport androidx.annotation.RequiresApi\r\nimport androidx.camera.core.CameraSelector\r\nimport androidx.camera.core.ImageCapture\r\nimport androidx.camera.core.ImageCaptureException\r\nimport androidx.camera.lifecycle.ProcessCameraProvider\r\nimport androidx.compose.animation.*\r\nimport androidx.compose.animation.core.LinearEasing\r\nimport androidx.compose.animation.core.tween\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.clickable\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material.icons.Icons\r\nimport androidx.compose.material.icons.filled.ArrowBack\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.graphics.asImageBitmap\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.compose.ui.viewinterop.AndroidView\r\nimport androidx.core.app.ActivityCompat\r\nimport androidx.core.content.ContextCompat\r\nimport androidx.lifecycle.LifecycleOwner\r\nimport androidx.navigation.NavController\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Components.*\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.database.ktx.database\r\nimport com.google.firebase.ktx.Firebase\r\nimport java.io.File\r\nimport java.text.SimpleDateFormat\r\nimport java.time.LocalDateTime\r\nimport java.time.format.DateTimeFormatter\r\nimport java.util.Date\r\nimport java.util.Locale\r\n\r\ndata class Reports(\r\n    val incidentType: String = \"\",\r\n    val location: String = \"\",\r\n    val description: String =\"\",\r\n    val dateTime: String =\"\",\r\n\r\n)\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun MakeReports(navController: NavController) {\r\n    var isVisible by remember { mutableStateOf(false) }\r\n\r\n    LaunchedEffect(Unit) {\r\n        isVisible = true\r\n    }\r\n\r\n    Surface(color = Color.White) {\r\n        AnimatedVisibility(\r\n            visible = isVisible,\r\n            enter = slideInVertically(\r\n                initialOffsetY = { it },\r\n                animationSpec = tween(1000, easing = LinearEasing)\r\n            ),\r\n            exit = slideOutVertically(\r\n                targetOffsetY = { it },\r\n                animationSpec = tween(1000, easing = LinearEasing)\r\n            )\r\n        ) {\r\n            AnimatedMakeReports(navController){isVisible = false\r\n            navController.navigate(\"Dashboard\")}\r\n        }\r\n    }\r\n}\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun AnimatedMakeReports(navController: NavController, onClose:()->Unit) {\r\n    val database = Firebase.database\r\n    val myRef = database.getReference(\"Make Report Instance\")\r\n    val auth = FirebaseAuth.getInstance();\r\n    var location by remember { mutableStateOf(\"Enter Location\") }\r\n    var description by remember { mutableStateOf(\"Brief details of the incident\") }\r\n    var picture by remember { mutableStateOf(\"\") }\r\n    val context = LocalContext.current\r\n    val currentDateTime = LocalDateTime.now()\r\n    val formattedDateTime = currentDateTime.format(DateTimeFormatter.ofPattern(\"yyyy-MM-dd HH:mm:ss\"))\r\n\r\n    Column(\r\n        verticalArrangement = Arrangement.spacedBy(30.dp),\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .padding(start = 16.dp, end = 16.dp, top = 50.dp)\r\n            .verticalScroll(rememberScrollState())\r\n    ) {\r\n        Row ( modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {\r\n\r\n            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = \"\", modifier = Modifier\r\n                .size(30.dp)\r\n                .clickable { onClose() },\r\n                tint = Color.Red)\r\n            Spacer(modifier = Modifier.size(25.dp))\r\n            Text(\r\n                text = \"Make A Report\",\r\n                fontSize = 35.sp,\r\n                fontWeight = FontWeight.Bold,\r\n                color = Color.Black\r\n            )\r\n        }\r\n        ReportDescriptionText(\r\n            value1 = \"Incident\",\r\n            value = \"Choose Incident type\"\r\n        )\r\n        var selectedIncident by remember { mutableStateOf(\"Water\") }\r\n        ExposedDropdownMenuBox( selectedIncident = selectedIncident,\r\n            onIncidentSelected = {newIncident -> selectedIncident = newIncident})\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Location(Optional)\",\r\n            value = \"Share the location of the incident\"\r\n        )\r\n        LocationTextFields(value = location, onChange = { location = it }, fieldLabel = \" Enter location\" )\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Photos*\",\r\n            value = \"Take photos of the incident you are reporting\"\r\n        )\r\n        PictureTextFields(value = picture, onChange = { picture = it },  navController = navController)\r\n       // UploadImageScreen(navController = navController, onImageSelected = {imageUrl -> picture = imageUrl})\r\n\r\n        ReportDescriptionText(\r\n            value1 = \"Report Description*\",\r\n            value = \"Short Description of the incident\"\r\n        )\r\n        DescriptionTextFields(value = description, onChange = { description = it }, fieldLabel = \"describe the incident\" )\r\n\r\n        val userReport = Reports(\r\n            incidentType = selectedIncident,\r\n            location = location,\r\n            description = description,\r\n            dateTime =  formattedDateTime\r\n           )\r\n\r\n        fun saveReport(report:Reports) {\r\n            val userId = myRef.push().key ?: return\r\n            myRef.child(userId).setValue(report).addOnCompleteListener { task ->\r\n                if (task.isSuccessful) {\r\n                    // Handle success\r\n                    println(\"Report saved\")\r\n                    Toast.makeText(\r\n                        context,\r\n                        \"Your report has been submitted.\",\r\n                        Toast.LENGTH_SHORT\r\n                    ).show()\r\n                } else {\r\n                    // Handle failure\r\n                    task.exception?.let {\r\n                        println(\"Error saving user: ${it.message}\")\r\n                    }\r\n                }\r\n            }\r\n        }\r\n        Column(\r\n            horizontalAlignment = Alignment.CenterHorizontally) {\r\n            SubmitButton(name = \"Submit\") {\r\n                saveReport(userReport)\r\n                navController.navigate(\"Dashboard\")}\r\n        }\r\n        Spacer(modifier = Modifier.size(8.dp))\r\n\r\n    }\r\n\r\n}\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Preview\r\n@Composable\r\nfun MakeReportsPreview() {\r\n    val navController = rememberNavController()\r\n    MakeReports(navController = navController)\r\n}\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun CameraReport(navController: NavController) {\r\n    val context = LocalContext.current\r\n    val lifecycleOwner = LocalContext.current as LifecycleOwner\r\n    var hasCameraPermission by remember {\r\n        mutableStateOf(\r\n            ContextCompat.checkSelfPermission(\r\n                context,\r\n                Manifest.permission.CAMERA\r\n            ) == PackageManager.PERMISSION_GRANTED\r\n        )\r\n    }\r\n\r\n    // State to hold the image capture instance\r\n    var imageCapture: ImageCapture? by remember { mutableStateOf(null) }\r\n\r\n    // State to hold the preview view\r\n    val previewView = remember {\r\n        androidx.camera.view.PreviewView(context).apply {\r\n            layoutParams = ViewGroup.LayoutParams(\r\n                ViewGroup.LayoutParams.MATCH_PARENT,\r\n                ViewGroup.LayoutParams.MATCH_PARENT\r\n            )\r\n        }\r\n    }\r\n\r\n    // State to hold the selected image URI\r\n    // var selectedImageUri by remember { mutableStateOf<String?>(null) }\r\n\r\n    // Launcher for image picker intent\r\n//    val imagePickerLauncher = rememberLauncherForActivityResult(\r\n//        contract = ActivityResultContracts.StartActivityForResult()\r\n//    ) { result ->\r\n//        if (result.resultCode == Activity.RESULT_OK) {\r\n//            selectedImageUri = result.data?.data.toString()\r\n//        }\r\n//    }\r\n\r\n    val permissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {\r\n            isGranted -> hasCameraPermission = isGranted\r\n    }\r\n\r\n\r\n    if (!hasCameraPermission) {\r\n        AccessCameraScreen(permissionLauncher)\r\n    }\r\n    else {\r\n        LaunchedEffect(key1 = hasCameraPermission) {\r\n            if (hasCameraPermission) {\r\n                // Initialize CameraX and set up image capture\r\n                val cameraProviderFuture = ProcessCameraProvider.getInstance(context)\r\n                cameraProviderFuture.addListener({\r\n                    val cameraProvider = cameraProviderFuture.get()\r\n                    imageCapture = ImageCapture.Builder().build()\r\n\r\n                    // Bind preview and image capture use cases\r\n                    val preview = androidx.camera.core.Preview.Builder().build().also {\r\n                        it.setSurfaceProvider(previewView.surfaceProvider)\r\n                    }\r\n                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA\r\n                    cameraProvider.unbindAll()\r\n                    cameraProvider.bindToLifecycle(lifecycleOwner, cameraSelector, preview, imageCapture)\r\n                }, ContextCompat.getMainExecutor(context))\r\n            }\r\n        }\r\n    }\r\n\r\n    // Surface for camera preview\r\n    Box(modifier = Modifier\r\n        .fillMaxSize()\r\n        .padding(100.dp),) {\r\n        AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())\r\n        Box(modifier = Modifier\r\n            .align(Alignment.BottomCenter)\r\n            .padding(16.dp)) {\r\n            Button(\r\n                onClick = { takePicture(imageCapture, context, ) },\r\n                modifier = Modifier.align(Alignment.BottomCenter)\r\n            ) {\r\n                Text(\"Take Picture\")\r\n            }\r\n        }\r\n    }\r\n}\r\n@Composable\r\nfun AccessCameraScreen(permissionLauncher: ManagedActivityResultLauncher<String, Boolean>) {\r\n    // Screen displayed before permission is granted\r\n    Box(\r\n        modifier = Modifier.fillMaxSize(),\r\n        contentAlignment = Alignment.Center\r\n    ) {\r\n        Column(\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            Text(text = \"Access Camera\")\r\n\r\n            Spacer(modifier = Modifier.height(16.dp))\r\n\r\n            Button(onClick = {\r\n                permissionLauncher\r\n            }) {\r\n                Text(text = \"Request Camera Access\")\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\nprivate fun takePicture(imageCapture: ImageCapture?, context: Context) {\r\n    val photoFile = File(\r\n        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),\r\n        \"civic_alert_${SimpleDateFormat(\"yyyyMMdd_HHmmss\", Locale.US).format(Date())}.jpg\"\r\n    )\r\n\r\n    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()\r\n\r\n    imageCapture?.takePicture(\r\n        outputOptions,\r\n        ContextCompat.getMainExecutor(context),\r\n        object : ImageCapture.OnImageSavedCallback {\r\n            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {\r\n                val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile).toString()\r\n                println(\"Image saved: $savedUri\")\r\n                //onImageCaptured(savedUri.toString()) // Pass the URI to the PictureTextField\r\n            }\r\n\r\n            override fun onError(exception: ImageCaptureException) {\r\n                println(\"Error capturing image: ${exception.message}\")\r\n            }\r\n        }\r\n    )\r\n}\r\n\r\nprivate const val CAMERA_PERMISSION_REQUEST_CODE = 1001\r\n\r\n@Composable\r\nfun UploadImageReport(navController: NavController) {\r\n    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }\r\n    var bitmap by remember { mutableStateOf<Bitmap?>(null) }\r\n    val context = LocalContext.current\r\n\r\n    // Launcher to select an image from the gallery\r\n    val imagePickerLauncher = rememberLauncherForActivityResult(\r\n        contract = ActivityResultContracts.GetContent(),\r\n        onResult = { uri: Uri? ->\r\n            selectedImageUri = uri\r\n            uri?.let {\r\n                // Load the image from the URI\r\n                val inputStream = context.contentResolver.openInputStream(it)\r\n                bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, it)\r\n               // onImageSelected(uri.toString())\r\n            }\r\n        }\r\n    )\r\n\r\n    Row(\r\n        modifier = Modifier.fillMaxSize(),\r\n        horizontalArrangement = Arrangement.SpaceBetween,\r\n        verticalAlignment = Alignment.Bottom\r\n    ) {\r\n        // Button to trigger the image picker\r\n        Button(onClick = {\r\n            // Check if permission is required (for Android 13+)\r\n            if (ContextCompat.checkSelfPermission(\r\n                    context, Manifest.permission.READ_EXTERNAL_STORAGE\r\n                ) != Activity.RESULT_OK\r\n            ) {\r\n                ActivityCompat.requestPermissions(\r\n                    context as Activity,\r\n                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),\r\n                    1\r\n                )\r\n            } else {\r\n                imagePickerLauncher.launch(\"image/*\")\r\n            }\r\n        }) {\r\n            Text(text = \"Select Image\")\r\n        }\r\n        Button(onClick = { navController.navigate(\"Camera\") }) {\r\n            Text(text = \"Access Camera\")\r\n        }\r\n\r\n\r\n        // Display the selected image\r\n        selectedImageUri?.let {\r\n            Spacer(modifier = Modifier.height(16.dp))\r\n            bitmap?.let { bmp ->\r\n                Image(\r\n                    bitmap = bmp.asImageBitmap(),\r\n\r\n                    contentDescription = \"Selected Image\",\r\n                    modifier = Modifier\r\n                        .size(200.dp)\r\n                        .padding(16.dp)\r\n                )\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	(revision 70755e4c0c3883c217d215cb112fd6a8b7459c88)
++++ b/app/src/main/java/com/example/civicalertoriginal/Screens/MakeReports.kt	(date 1727943540151)
+@@ -47,6 +47,7 @@
+ import androidx.navigation.NavController
+ import androidx.navigation.compose.rememberNavController
+ import com.example.civicalertoriginal.Components.*
++import com.example.civicalertoriginal.Screens.UploadImageScreen
+ import com.google.firebase.auth.FirebaseAuth
+ import com.google.firebase.database.ktx.database
+ import com.google.firebase.ktx.Firebase
+@@ -66,7 +67,7 @@
+ )
+ @RequiresApi(Build.VERSION_CODES.O)
+ @Composable
+-fun MakeReports(navController: NavController) {
++fun MakeReports(navController: NavController, imageUrl : String?) {
+     var isVisible by remember { mutableStateOf(false) }
+ 
+     LaunchedEffect(Unit) {
+@@ -144,7 +145,10 @@
+             value = "Take photos of the incident you are reporting"
+         )
+         PictureTextFields(value = picture, onChange = { picture = it },  navController = navController)
+-       // UploadImageScreen(navController = navController, onImageSelected = {imageUrl -> picture = imageUrl})
++        UploadImageScreen(navController)
++        CameraReport(navController) {
++
++        }
+ 
+         ReportDescriptionText(
+             value1 = "Report Description*",
+@@ -195,12 +199,12 @@
+ @Composable
+ fun MakeReportsPreview() {
+     val navController = rememberNavController()
+-    MakeReports(navController = navController)
++   // MakeReports(navController = navController)
+ }
+ 
+ @RequiresApi(Build.VERSION_CODES.O)
+ @Composable
+-fun CameraReport(navController: NavController) {
++fun CameraReport(navController: NavController, onImageCaptured: (String) -> Unit) {
+     val context = LocalContext.current
+     val lifecycleOwner = LocalContext.current as LifecycleOwner
+     var hasCameraPermission by remember {
+@@ -275,7 +279,7 @@
+             .align(Alignment.BottomCenter)
+             .padding(16.dp)) {
+             Button(
+-                onClick = { takePicture(imageCapture, context, ) },
++                onClick = { takePicture(imageCapture, context,navController) },
+                 modifier = Modifier.align(Alignment.BottomCenter)
+             ) {
+                 Text("Take Picture")
+@@ -306,7 +310,7 @@
+     }
+ }
+ 
+-private fun takePicture(imageCapture: ImageCapture?, context: Context) {
++private fun takePicture(imageCapture: ImageCapture?, context: Context, navController: NavController) {
+     val photoFile = File(
+         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+         "civic_alert_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}.jpg"
+@@ -321,8 +325,9 @@
+             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                 val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile).toString()
+                 println("Image saved: $savedUri")
+-                //onImageCaptured(savedUri.toString()) // Pass the URI to the PictureTextField
+-            }
++                navController.navigate("makeReports?imageUrl=${Uri.encode(savedUri.toString())}")
++
++        }
+ 
+             override fun onError(exception: ImageCaptureException) {
+                 println("Error capturing image: ${exception.message}")
+@@ -348,7 +353,7 @@
+                 // Load the image from the URI
+                 val inputStream = context.contentResolver.openInputStream(it)
+                 bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
+-               // onImageSelected(uri.toString())
++               navController.navigate("makeReports?imageUrl=${Uri.encode(it.toString())}")
+             }
+         }
+     )
+Index: app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.civicalertoriginal.Components\r\n\r\nimport LogIn\r\nimport android.os.Build\r\nimport androidx.annotation.RequiresApi\r\nimport civicalertoriginal.Screen.*\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.internal.composableLambda\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.civicalertoriginal.Screens.*\r\n\r\n\r\n@RequiresApi(Build.VERSION_CODES.O)\r\n@Composable\r\nfun Navigation (){\r\n    val navController = rememberNavController()\r\n    NavHost(navController = navController, startDestination = \"Dashboard\") {\r\n        composable(\"registration\"){\r\n            Registration(navController)\r\n        }\r\n        composable(\"forgotPassword\"){\r\n            ForgotPassword(navController)\r\n        }\r\n        composable(\"login\"){\r\n            LogIn(navController)\r\n        }\r\n        composable(\"Dashboard\"){\r\n            Dashboard(navController)\r\n        }\r\n        composable(\"makeReports\"){\r\n            MakeReports(navController)\r\n        }\r\n        composable(\"userProfile\"){\r\n            UpdateProfile(navController)\r\n        }\r\n        composable(\"emergencyContacts\"){\r\n            ContactUs(navController)\r\n        }\r\n        composable(\"Viewreports\"){\r\n            ViewReports(navController)\r\n        }\r\n        composable(\"helpSupport\"){\r\n            HelpAndSupport(navController)\r\n        }\r\n        composable(\"camera\"){\r\n            CameraScreen(navController)\r\n        }\r\n        composable(\"upload\"){\r\n            UploadImage(navController)\r\n        }\r\n        composable(\"Camera\"){\r\n            CameraReport(navController)\r\n        }\r\n        composable(\"uploadReport\"){\r\n            UploadImageReport(navController)\r\n        }\r\n\r\n        }\r\n\r\n    }\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt
+--- a/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	(revision 70755e4c0c3883c217d215cb112fd6a8b7459c88)
++++ b/app/src/main/java/com/example/civicalertoriginal/Components/Navigation.kt	(date 1727943639459)
+@@ -1,14 +1,17 @@
+ package com.example.civicalertoriginal.Components
+ 
+ import LogIn
++import android.net.Uri
+ import android.os.Build
+ import androidx.annotation.RequiresApi
+ import civicalertoriginal.Screen.*
+ import androidx.compose.runtime.Composable
+ import androidx.compose.runtime.internal.composableLambda
++import androidx.navigation.NavType
+ import androidx.navigation.compose.NavHost
+ import androidx.navigation.compose.composable
+ import androidx.navigation.compose.rememberNavController
++import androidx.navigation.navArgument
+ import com.example.civicalertoriginal.Screens.*
+ 
+ 
+@@ -30,7 +33,7 @@
+             Dashboard(navController)
+         }
+         composable("makeReports"){
+-            MakeReports(navController)
++           // MakeReports(navController)
+         }
+         composable("userProfile"){
+             UpdateProfile(navController)
+@@ -50,8 +53,18 @@
+         composable("upload"){
+             UploadImage(navController)
+         }
++        composable("makeReports?imageUrl={imageUrl}", arguments = listOf(navArgument("imageUrl") {
++            defaultValue = null
++            type = NavType.StringType
++        })) { backStackEntry ->
++            val imageUrl = backStackEntry.arguments?.getString("imageUrl")
++            MakeReports(navController = navController, imageUrl = imageUrl)
++        }
++
+         composable("Camera"){
+-            CameraReport(navController)
++            CameraReport(navController){
++                imageUrl -> navController.navigate("makeReports?imageUrl=${Uri.encode(imageUrl)}")
++            }
+         }
+         composable("uploadReport"){
+             UploadImageReport(navController)
