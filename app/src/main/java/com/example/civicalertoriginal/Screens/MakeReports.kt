@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,6 +69,15 @@ data class Reports(
 @Composable
 fun MakeReports(navController: NavController) {
     var isVisible by remember { mutableStateOf(false) }
+    //var isVisible by remember { mutableStateOf(false) }
+    var picture by remember { mutableStateOf("") }
+
+    val savedImageUri = navController.currentBackStackEntry
+        ?.savedStateHandle?.getLiveData<String>("imageUri")
+
+    savedImageUri?.observe(LocalLifecycleOwner.current) { uri ->
+        picture = uri // Set the image URI in PictureTextField
+    }
 
     LaunchedEffect(Unit) {
         isVisible = true
@@ -275,7 +285,11 @@ fun CameraReport(navController: NavController) {
             .align(Alignment.BottomCenter)
             .padding(16.dp)) {
             Button(
-                onClick = { takePicture(imageCapture, context, ) },
+                onClick = {
+                    takePicture(imageCapture,navController,context,){imageUri ->
+                        navController.previousBackStackEntry?.savedStateHandle?.set("imageUri", imageUri)
+                    }
+                          },
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 Text("Take Picture")
@@ -306,7 +320,7 @@ fun AccessCameraScreen(permissionLauncher: ManagedActivityResultLauncher<String,
     }
 }
 
-private fun takePicture(imageCapture: ImageCapture?, context: Context) {
+private fun takePicture(imageCapture: ImageCapture?,navController: NavController, context: Context, onImageCaptured:(String)-> Unit) {
     val photoFile = File(
         context.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
         "civic_alert_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}.jpg"
@@ -321,7 +335,8 @@ private fun takePicture(imageCapture: ImageCapture?, context: Context) {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                 val savedUri = outputFileResults.savedUri ?: Uri.fromFile(photoFile).toString()
                 println("Image saved: $savedUri")
-                //onImageCaptured(savedUri.toString()) // Pass the URI to the PictureTextField
+                navController.previousBackStackEntry?.savedStateHandle?.set("imageUri", savedUri)
+                navController.popBackStack( )// Pass the URI to the PictureTextField
             }
 
             override fun onError(exception: ImageCaptureException) {
@@ -345,7 +360,9 @@ fun UploadImageReport(navController: NavController) {
         onResult = { uri: Uri? ->
             selectedImageUri = uri
             uri?.let {
-                // Load the image from the URI
+               val imageUri = uri.toString()
+                navController.previousBackStackEntry?.savedStateHandle?.set("imageUri",imageUri)
+                navController.popBackStack()
                 val inputStream = context.contentResolver.openInputStream(it)
                 bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
                // onImageSelected(uri.toString())
